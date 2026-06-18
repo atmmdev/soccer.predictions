@@ -2,6 +2,22 @@
 
 ## AppShell - é a estrutura principal da aplicação.
 
+Visualmente:
+
+```
+┌────────────┬─────────────────────────────┐
+│            │ Header                      │
+│            ├─────────────────────────────┤
+│ Sidebar    │                             │
+│            │          Main               │
+│            │                             │
+│            ├─────────────────────────────┤
+│            │ Footer                      │
+└────────────┴─────────────────────────────┘
+```
+
+Arquivos:
+
 ```
 └── 📁layout
   ├── app-breadcrumbs.tsx
