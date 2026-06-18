@@ -1,16 +1,18 @@
 // Icons
 import {
+  BarChart2,
   Bell,
+  ChartSpline,
   CircleHelp,
+  ShieldQuestionMark,
   Home,
   LogOut,
   Settings,
   Trophy,
   User,
-  BarChart2,
-  ClipboardList,
-  Goal,
 } from 'lucide-react';
+import { PiSoccerBallDuotone } from 'react-icons/pi';
+import { GiTrophiesShelf } from 'react-icons/gi';
 // Types
 import { SidebarItem } from '@/types/sidebar';
 // Main navigation items
@@ -28,17 +30,17 @@ export const mainNav: SidebarItem[] = [
   {
     title: 'Bolões',
     url: '/pools',
-    icon: Trophy,
+    icon: GiTrophiesShelf,
   },
   {
     title: 'Jogos',
     url: '/matches',
-    icon: Goal,
+    icon: PiSoccerBallDuotone,
   },
   {
     title: 'Meus Palpites',
     url: '/predictions',
-    icon: ClipboardList,
+    icon: ShieldQuestionMark,
   },
   {
     title: 'Ranking',
@@ -48,7 +50,7 @@ export const mainNav: SidebarItem[] = [
   {
     title: 'Estatísticas',
     url: '/statistics',
-    icon: BarChart2,
+    icon: ChartSpline,
   },
   {
     title: 'Notificações',
