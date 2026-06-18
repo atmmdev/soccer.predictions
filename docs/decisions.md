@@ -39,8 +39,9 @@ Porque é mais profissional e escalável.
 
 - Dashboard
 - Campeonatos / Championships
+- Bolões / Championships Pools
 - Jogos / Matches
-- Meus Palpites / Predictions
+- Meus Palpites / Matches Predictions
 - Ranking
 - Estatísticas / Statistics
 - Ligas / Leagues
