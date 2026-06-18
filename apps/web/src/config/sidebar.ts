@@ -1,6 +1,5 @@
 // Icons
 import {
-  BarChart2,
   Bell,
   ChartSpline,
   CircleHelp,
@@ -13,6 +12,7 @@ import {
 } from 'lucide-react';
 import { PiSoccerBallDuotone } from 'react-icons/pi';
 import { GiTrophiesShelf } from 'react-icons/gi';
+import { FaRankingStar } from "react-icons/fa6";
 // Types
 import { SidebarItem } from '@/types/sidebar';
 // Main navigation items
@@ -45,7 +45,7 @@ export const mainNav: SidebarItem[] = [
   {
     title: 'Ranking',
     url: '/rankings',
-    icon: BarChart2,
+    icon: FaRankingStar,
   },
   {
     title: 'Estatísticas',
