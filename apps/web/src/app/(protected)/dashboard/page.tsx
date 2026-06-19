@@ -1,7 +1,10 @@
+import { StatsCards } from "@/features/dashboard/components/stats-cards";
+
+
 export default function DashboardPage() {
   return (
     <>
-      <h1 className='text-2xl font-bold'>Dashboard Content</h1>
+      <StatsCards />
     </>
   );
 }
