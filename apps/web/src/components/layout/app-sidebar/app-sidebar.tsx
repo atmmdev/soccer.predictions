@@ -6,8 +6,9 @@ import {
   SidebarFooter,
 } from '@/components/ui/sidebar';
 
-import { NavMenu } from '@/components/layout/app-sidebar/nav-main';
 import { AppLogo } from './app-logo';
+import { NavMenu } from './nav-main';
+import { NavUser } from './nav-user';
 
 export function AppSidebar() {
   return (
@@ -19,7 +20,9 @@ export function AppSidebar() {
         <NavMenu items={mainNav} />
         <NavMenu items={secondaryNav} />
       </SidebarContent>
-      <SidebarFooter>User</SidebarFooter>
+      <SidebarFooter>
+        <NavUser />
+      </SidebarFooter>
     </Sidebar>
   );
 }
