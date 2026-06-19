@@ -8,6 +8,7 @@ interface MatchCardProps {
 
 export function MatchCard({ match }: MatchCardProps) {
   return (
+    // TODO: Adicionar tabela com jogos. Resultado vs Palpites e se pontuou.
     <Card className="mb-2">
       <CardContent className="flex items-center justify-between px-4">
         <div className="flex items-center gap-4">
@@ -19,6 +20,7 @@ export function MatchCard({ match }: MatchCardProps) {
             {match.awayTeam} {match.awayScore}
           </div>
         </div>
+        <div>{new Date(match.date).toLocaleString()}</div>
         <MatchStatusBadge status={match.status} />
       </CardContent>
     </Card>
