@@ -9,20 +9,21 @@ interface RankingRowProps {
 
 export function RankingRow({ user, position }: RankingRowProps) {
   return (
-    // TODO: Implementar apenas os 10 primeiros.
+    // TODO: Implementar apenas os 10 primeiros. Trocar para tabela. Adicionar medalhas para os 3 primeiros.
     <div className='flex items-center justify-between gap-3'>
       <div className='flex items-center gap-2'>
-        <span className='font-bold text-lg'>{position}º</span>
+        <span className='font-bold'>{position}º</span>
         <div className='flex items-center gap-1'>
           <Avatar>
             <AvatarFallback>{user.name[0]}</AvatarFallback>
           </Avatar>
-          <span className='font-medium text-lg'>{user.name}</span>
+          <span className='font-medium'>{user.name}</span>
         </div>
       </div>
-      <Badge className='flex items-center gap-1 text-xs'>
+      <Badge className='flex items-center gap-1 text-xs text-right'>
         {user.points} pontos
       </Badge>
+      <span className='font-medium'>R$ 1680,00</span>
     </div>
   );
 }
