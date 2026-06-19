@@ -8,7 +8,7 @@ interface MatchCardProps {
 
 export function MatchCard({ match }: MatchCardProps) {
   return (
-    // TODO: Adicionar tabela com jogos. Resultado vs Palpites e se pontuou.
+    // TODO: Adicionar tabela com jogos. Resultado vs Palpites e se pontuou. Bandeiras dos clubes e times.
     <Card className="mb-2">
       <CardContent className="flex items-center justify-between px-4">
         <div className="flex items-center gap-4">
