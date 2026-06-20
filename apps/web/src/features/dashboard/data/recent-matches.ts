@@ -3,8 +3,14 @@ import { Match } from '@/types/match';
 export const recentMatches: Match[] = [
   {
     id: 1,
-    homeTeam: 'Flamengo',
-    awayTeam: 'Palmeiras',
+    homeTeam: {
+      name: 'Brazil',
+      flag: '🇧🇷',
+    },
+    awayTeam: {
+      name: 'Argentina',
+      flag: '🇦🇷',
+    },
     homeScore: 3,
     awayScore: 3,
 
@@ -18,8 +24,14 @@ export const recentMatches: Match[] = [
   },
   {
     id: 2,
-    homeTeam: 'Botafogo',
-    awayTeam: 'Corinthians',
+    homeTeam: {
+      name: 'Flamengo',
+      flag: 'FLA',
+    },
+    awayTeam: {
+      name: 'Fluminense',
+      flag: 'FLU',
+    },
     homeScore: 3,
     awayScore: 1,
     predictedHomeScore: 2,
@@ -30,8 +42,14 @@ export const recentMatches: Match[] = [
   },
   {
     id: 3,
-    homeTeam: 'Vasco',
-    awayTeam: 'Fluminense',
+    homeTeam: {
+      name: 'Botafogo',
+      flag: 'BTF',
+    },
+    awayTeam: {
+      name: 'Vasco',
+      flag: 'VAS',
+    },
     homeScore: 2,
     awayScore: 1,
     predictedHomeScore: 2,
@@ -40,5 +58,4 @@ export const recentMatches: Match[] = [
     date: '2024-06-01T15:00:00Z',
     status: 'SCHEDULED',
   },
-  
 ];

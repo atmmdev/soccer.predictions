@@ -2,6 +2,8 @@ import { TableRow, TableCell } from '@/components/ui/table';
 import { Match } from '@/types/match';
 import { WinnerBadge } from './winner-badge';
 import { MatchStatusBadge } from './match-status-badge';
+import { MatchResult } from './match-results';
+import { MatchPredictions } from './match-predictions';
 
 interface MatchTableRowProps {
   match: Match;
@@ -16,14 +18,10 @@ export function MatchTableRow({ match }: MatchTableRowProps) {
         <MatchStatusBadge status={match.status} />
       </TableCell>
       <TableCell>
-        {match.homeTeam} {match.homeScore}
-        {' x '}
-        {match.awayScore} {match.awayTeam}
+        <MatchResult match={match} />
       </TableCell>
       <TableCell>
-        {match.homeTeam} {match.predictedHomeScore}
-        {' x '}
-        {match.predictedAwayScore} {match.awayTeam}
+        <MatchPredictions match={match} />
       </TableCell>
       <TableCell>
         <WinnerBadge points={match.points} />

@@ -1,7 +1,9 @@
+import { Team } from "./team";
+
 export interface Match {
   id: number;
-  homeTeam: string;
-  awayTeam: string;
+  homeTeam: Team;
+  awayTeam: Team;
   homeScore: number;
   awayScore: number;
   predictedHomeScore: number;

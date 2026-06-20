@@ -8,11 +8,7 @@ import {
 import { recentMatches } from '../../data/recent-matches';
 import { MatchTableRow } from './match-table-row';
 
-interface MatchCardProps {
-  match: Match;
-}
-
-export function MatchCard({ match }: MatchCardProps) {
+export function MatchTable() {
   return (
     <Table>
       <TableHeader>
