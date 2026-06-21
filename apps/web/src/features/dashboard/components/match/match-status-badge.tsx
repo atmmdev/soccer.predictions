@@ -7,21 +7,21 @@ interface MatchStatusBadgeProps {
 export function MatchStatusBadge({ status }: MatchStatusBadgeProps) {
   if (status === 'SCHEDULED') {
     return (
-      <Badge variant='outline' className='text-xs bg-blue-700 text-white'>
+      <Badge variant='secondary' className='text-xs'>
         Agendada
       </Badge>
     );
   }
   if (status === 'LIVE') {
     return (
-      <Badge variant='outline' className='text-xs bg-green-700 text-white'>
+      <Badge variant='default' className='text-xs'>
         Ao Vivo
       </Badge>
     );
   }
 
   return (
-    <Badge variant='outline' className='text-xs bg-red-700 text-white'>
+    <Badge variant='destructive' className='text-xs'>
       Finalizada
     </Badge>
   );
