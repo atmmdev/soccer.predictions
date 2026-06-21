@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { PiSoccerBallDuotone } from 'react-icons/pi';
 import { GiTrophiesShelf } from 'react-icons/gi';
-import { FaRankingStar } from "react-icons/fa6";
+import { FaRankingStar, FaUsers  } from "react-icons/fa6";
 // Types
 import { SidebarItem } from '@/types/sidebar';
 // Main navigation items
@@ -31,6 +31,11 @@ export const mainNav: SidebarItem[] = [
     title: 'Bolões',
     url: '/pools',
     icon: GiTrophiesShelf,
+  },
+  {
+    title: 'Participantes',
+    url: '/participants',
+    icon: FaUsers ,
   },
   {
     title: 'Jogos',
