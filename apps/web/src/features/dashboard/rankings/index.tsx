@@ -1,5 +1,5 @@
 import { Card } from '@/components/ui/card';
-import { RankingTable } from '../ranking/ranking-table';
+import { RankingTable } from './components/ranking-table';
 import { Label } from '@/components/ui/label';
 
 export function TopRanking() {

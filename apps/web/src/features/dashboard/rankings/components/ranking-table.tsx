@@ -1,4 +1,4 @@
-import { ranking } from '../../data/ranking';
+import { ranking } from '../mocks/ranking';
 import { RankingRow } from './ranking-row';
 
 export function RankingTable() {

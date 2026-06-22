@@ -1,7 +1,6 @@
-
-import { StatsCards } from '@/features/dashboard/components/stats-cards/stats-cards';
-import { TopRanking } from '@/features/dashboard/components/ranking/top-ranking';
-import { MatchSections } from '@/features/dashboard/components/match/match-sections';
+import { StatsCards } from '@/features/dashboard/stats';
+import { TopRanking } from '@/features/dashboard/rankings';
+import { MatchSections } from '@/features/dashboard/matches';
 
 export default function DashboardPage() {
   return (

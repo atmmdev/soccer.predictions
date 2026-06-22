@@ -1,29 +1,29 @@
-import { RankingUser } from '@/types/ranking';
+import { RankingUser } from '@/features/dashboard/rankings/types/ranking';
 
 export const ranking: RankingUser[] = [
-   {
+  {
     id: 1,
-    name: "Anderson",
+    name: 'Anderson',
     points: 158,
   },
   {
     id: 2,
-    name: "Pedro",
+    name: 'Pedro',
     points: 145,
   },
   {
     id: 3,
-    name: "Carlos",
+    name: 'Carlos',
     points: 132,
   },
   {
     id: 4,
-    name: "João",
+    name: 'João',
     points: 120,
   },
   {
     id: 5,
-    name: "Rafael",
+    name: 'Rafael',
     points: 110,
   },
 ];

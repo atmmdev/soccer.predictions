@@ -5,7 +5,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { recentMatches } from '../../data/recent-matches';
+import { recentMatches } from '../mocks/recent-matches';
 import { MatchTableRow } from './match-table-row';
 
 export function MatchTable() {

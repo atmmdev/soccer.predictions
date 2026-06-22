@@ -2,7 +2,7 @@ import { Calendar, Trophy, Users } from 'lucide-react';
 import { GiTakeMyMoney, GiSoccerBall } from 'react-icons/gi';
 import { TbTargetArrow } from 'react-icons/tb';
 
-import { StatsItem } from '@/types/stats';
+import { StatsItem } from '@/features/dashboard/stats/types/stats';
 
 export const stats: StatsItem[] = [
   {

@@ -1,4 +1,4 @@
-import { Team } from '@/types/team';
+import { Team } from '@/features/dashboard/matches/types/team';
 
 interface TeamFlagProps {
   team: Team;

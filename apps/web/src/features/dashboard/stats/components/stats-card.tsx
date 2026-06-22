@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { StatsItem } from '@/types/stats';
-import { StatsIcon } from './stats-icon';
+import { StatsItem } from '@/features/dashboard/stats/types/stats';
+import { StatsIcon } from './stats-icons';
 
 interface StatsCardProps {
   item: StatsItem;
@@ -15,7 +15,11 @@ export function StatsCard({ item }: StatsCardProps) {
         <CardTitle className='text-sm text-muted-foreground'>
           {item.title}
         </CardTitle>
-        <StatsIcon icon={Icon} iconBackground={item.iconBackground} iconColor={item.iconColor} />
+        <StatsIcon
+          icon={Icon}
+          iconBackground={item.iconBackground}
+          iconColor={item.iconColor}
+        />
       </CardHeader>
       <CardContent>
         <p className='text-3xl font-bold'>{item.value}</p>

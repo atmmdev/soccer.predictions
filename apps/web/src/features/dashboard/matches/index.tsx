@@ -2,8 +2,8 @@
 
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { MatchTabs } from './match-tabs';
-import { MatchTable } from './match-table';
+import { MatchTabs } from './components/match-tabs';
+import { MatchTable } from './components/match-table';
 
 export function MatchSections() {
   return (

@@ -1,5 +1,5 @@
-import { stats } from '../../data/stats';
-import { StatsCard } from './stats-card';
+import { stats } from './mocks/stats';
+import { StatsCard } from './components/stats-card';
 
 export function StatsCards() {
   return (
