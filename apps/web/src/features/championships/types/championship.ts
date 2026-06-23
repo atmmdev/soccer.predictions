@@ -1,7 +1,7 @@
 export type ChampionshipStatus = 'ACTIVE' | 'INACTIVE';
 
 export interface Championship {
-  id: string;
+  id: number;
   leagueId: number;
   season: number;
   name: string;

@@ -1,6 +1,6 @@
 class ChampionshipService {
-  findLeague() {}
-  create() {}
-  activate() {}
-  deactivate() {}
+  static create() {}
+  static activate() {}
+  static deactivate() {}
+  static sync() {}
 }
