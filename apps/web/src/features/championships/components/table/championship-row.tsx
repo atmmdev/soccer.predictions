@@ -1,5 +1,5 @@
 import { TableCell, TableRow } from '@/components/ui/table';
-import { Championship } from '../types/championship';
+import { Championship } from '../../types/championship';
 import { Badge } from '@/components/ui/badge';
 
 interface ChampionshipRowProps {

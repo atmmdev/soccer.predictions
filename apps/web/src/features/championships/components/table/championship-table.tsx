@@ -6,11 +6,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import { championships } from '../mocks/championships';
+import { championships } from '../../mocks/championships';
 import { ChampionshipRow } from './championship-row';
+import {  } from '../filters/championship-filters';
 
 export function ChampionshipTable() {
   return (
+
     <Table>
       <TableHeader>
         <TableRow>
