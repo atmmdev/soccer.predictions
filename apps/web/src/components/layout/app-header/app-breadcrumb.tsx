@@ -1,7 +1,9 @@
+import { Label } from "@/components/ui/label";
+
 export function AppBreadcrumb() {
   return (
-    <div>
-      <h1 className='text-lg font-semibold'>Dashboard</h1>
-    </div>
+    <>
+      <Label className='title'>Dashboard</Label>
+    </>
   );
 }

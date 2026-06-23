@@ -5,7 +5,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { recentMatches } from '../mocks/recent-matches';
+import { matches } from '../mocks/matches';
 import { MatchTableRow } from './match-table-row';
 
 export function MatchTable() {
@@ -21,7 +21,7 @@ export function MatchTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {recentMatches.map(match => {
+        {matches.map(match => {
           return <MatchTableRow key={match.id} match={match} />;
         })}
       </TableBody>

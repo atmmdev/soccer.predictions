@@ -8,7 +8,7 @@ import { MatchTable } from './components/match-table';
 export function MatchSections() {
   return (
     <section className='mt-8'>
-      <Label className='text-lg font-semibold py-2'>
+      <Label className='title mb-3'>
         Lista dos jogos recentes, atuais e futuros.
       </Label>
       <Card>

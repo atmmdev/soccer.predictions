@@ -1,6 +1,6 @@
-import { Match } from '@/types/match';
+import { Match } from '../types/match';
 
-export const recentMatches: Match[] = [
+export const matches: Match[] = [
   {
     id: 1,
     homeTeam: {
@@ -13,12 +13,9 @@ export const recentMatches: Match[] = [
     },
     homeScore: 3,
     awayScore: 3,
-
     predictedHomeScore: 3,
     predictedAwayScore: 0,
-
     points: 11,
-
     date: '2024-06-01T15:00:00Z',
     status: 'FINISHED',
   },
