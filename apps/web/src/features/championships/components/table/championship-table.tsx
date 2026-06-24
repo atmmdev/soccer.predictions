@@ -8,11 +8,10 @@ import {
 
 import { championships } from '../../mocks/championships';
 import { ChampionshipRow } from './championship-row';
-import {  } from '../filters/championship-filters';
+import {} from '../filters/championship-filters';
 
 export function ChampionshipTable() {
   return (
-
     <Table>
       <TableHeader>
         <TableRow>

@@ -1,0 +1,1 @@
+export const seasons = [2025, 2026, 2027];

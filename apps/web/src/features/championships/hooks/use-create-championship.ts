@@ -1,4 +1,12 @@
-import { CreateChampionshipFormData } from '../schemas/create-championship';
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import {
+  createChampionshipSchema,
+  CreateChampionshipFormData,
+} from "../schemas/create-championship.schema";
 
 export function useCreateChampionship() {
   return useForm<CreateChampionshipFormData>({
@@ -6,7 +14,7 @@ export function useCreateChampionship() {
 
     defaultValues: {
       season: 2026,
-      country: '',
+      country: "",
       leagueId: 0,
       active: true,
     },
