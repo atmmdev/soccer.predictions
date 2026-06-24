@@ -29,12 +29,20 @@ export function ChampionshipActions({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align='end'>
-        <DropdownMenuItem>Sincronizar</DropdownMenuItem>
+        <DropdownMenuItem>
+          <a href={`/championships/${championship.id}/sync`}>Sincronizar</a>
+        </DropdownMenuItem>
 
         {championship.status === 'ACTIVE' ? (
-          <DropdownMenuItem>Desativar</DropdownMenuItem>
+          <DropdownMenuItem>
+            <a href={`/championships/${championship.id}/deactivate`}>
+              Desativar
+            </a>
+          </DropdownMenuItem>
         ) : (
-          <DropdownMenuItem>Ativar</DropdownMenuItem>
+          <DropdownMenuItem>
+            <a href={`/championships/${championship.id}/activate`}>Ativar</a>
+          </DropdownMenuItem>
         )}
       </DropdownMenuContent>
     </DropdownMenu>
