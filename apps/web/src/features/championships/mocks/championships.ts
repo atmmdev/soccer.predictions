@@ -1,28 +1,34 @@
-import { Championship } from "../types/championship";
+import { Championship } from '../types/championship';
 
 export const championships: Championship[] = [
   {
     id: 1,
-    name: "Brasileirão Série A",
-    country: "Brasil",
+    leagueId: 1,
+    flags: '',
+    type: 'LEAGUE',
+    name: 'Brasileirão Série A',
+    country: 'Brasil',
     season: 2026,
-    status: "ACTIVE",
-    logoUrl: "",
+    status: 'ACTIVE',
   },
   {
     id: 2,
-    name: "Champions League",
-    country: "Europa",
+    leagueId: 2,
+    flags: '',
+    type: 'CUP',
+    name: 'Champions League',
+    country: 'Europa',
     season: 2026,
-    status: "ACTIVE",
-    logoUrl: "",
+    status: 'ACTIVE',
   },
   {
     id: 3,
-    name: "Libertadores",
-    country: "América do Sul",
+    leagueId: 3,
+    flags: '',
+    type: 'CUP',
+    name: 'Libertadores',
+    country: 'América do Sul',
     season: 2026,
-    status: "INACTIVE",
-    logoUrl: "",
+    status: 'INACTIVE',
   },
 ];

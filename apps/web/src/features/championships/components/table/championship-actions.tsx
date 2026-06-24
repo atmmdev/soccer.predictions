@@ -1,6 +1,6 @@
 'use client';
 
-import { MoreHorizontal } from 'lucide-react';
+import { MoreVertical } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
@@ -24,7 +24,7 @@ export function ChampionshipActions({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button size='icon' variant='ghost'>
-          <MoreHorizontal className='size-4' />
+          <MoreVertical className='size-4' />
         </Button>
       </DropdownMenuTrigger>
 

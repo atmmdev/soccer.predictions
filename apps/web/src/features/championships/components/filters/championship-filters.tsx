@@ -1,13 +1,25 @@
-"use client"
+'use client';
 
 import { ChampionshipSearch } from './championship-search';
 import { ChampionshipStatusSelect } from './championship-status-select';
 
-export function ChampionshipFilters() {
+interface ChampionshipFiltersProps {
+  search: string;
+  onSearchChange: (value: string) => void;
+  status: string;
+  onStatusChange: (value: string) => void;
+}
+
+export function ChampionshipFilters({
+  search,
+  onSearchChange,
+  status,
+  onStatusChange,
+}: ChampionshipFiltersProps) {
   return (
-    <div className='flex gap-4'>
-      <ChampionshipSearch value='' onChange={() => {}} />
-      <ChampionshipStatusSelect value='all' onChange={() => {}} />
+    <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
+      <ChampionshipSearch value={search} onChange={onSearchChange} />
+      <ChampionshipStatusSelect value={status} onChange={onStatusChange} />
     </div>
   );
 }

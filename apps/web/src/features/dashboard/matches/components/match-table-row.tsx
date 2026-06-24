@@ -1,5 +1,5 @@
 import { TableRow, TableCell } from '@/components/ui/table';
-import { Match } from '@/types/match';
+import { Match } from '../types/match';
 import { WinnerBadge } from './winner-badge';
 import { MatchStatusBadge } from './match-status-badge';
 import { MatchResult } from './match-results';

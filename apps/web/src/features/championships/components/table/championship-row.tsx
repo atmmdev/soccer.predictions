@@ -1,6 +1,7 @@
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Championship } from '../../types/championship';
-import { Badge } from '@/components/ui/badge';
+import { ChampionshipStatusBadge } from './championship-status-badge';
+import { ChampionshipActions } from './championship-actions';
 
 interface ChampionshipRowProps {
   championship: Championship;
@@ -11,21 +12,20 @@ export function ChampionshipRow({ championship }: ChampionshipRowProps) {
   return (
     <TableRow>
       <TableCell>
-        <span className='mr-2 bg-red-900 text-white px-2 py-1 rounded-lg text-xs'>
-          Bandeira / Logo
-        </span>{' '}
+        <span className='mr-2'>
+        {championship.flags || '🏆'}
+        </span>
         {championship.name}
       </TableCell>
       <TableCell>{championship.country}</TableCell>
       <TableCell>{championship.season}</TableCell>
       <TableCell>
-        <Badge
-          variant={championship.status === 'ACTIVE' ? 'default' : 'destructive'}
-        >
-          {championship.status}
-        </Badge>
+        <ChampionshipStatusBadge status={championship.status} />
       </TableCell>
-      <TableCell>Detalhes</TableCell>
+      <TableCell>Classificação</TableCell>
+      <TableCell>
+        <ChampionshipActions championship={championship} />
+      </TableCell>
     </TableRow>
   );
 }

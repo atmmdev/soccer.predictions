@@ -6,11 +6,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import { championships } from '../../mocks/championships';
+import { Championship } from '../../types/championship';
 import { ChampionshipRow } from './championship-row';
-import {} from '../filters/championship-filters';
 
-export function ChampionshipTable() {
+interface ChampionshipTableProps {
+  championships: Championship[];
+}
+
+export function ChampionshipTable({ championships }: ChampionshipTableProps) {
   return (
     <Table>
       <TableHeader>
@@ -20,6 +23,7 @@ export function ChampionshipTable() {
           <TableHead>Temporada</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Classificação</TableHead>
+          <TableHead>Ações</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
