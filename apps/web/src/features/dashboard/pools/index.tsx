@@ -1,6 +1,6 @@
-import { GiTrophiesShelf } from 'react-icons/gi';
+import Link from 'next/link';
 
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -9,18 +9,25 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { DashboardSectionTitle } from '@/features/dashboard/components/dashboard-section-title';
 import { activePools } from './mocks/active-pools';
 
 export function ActivePools() {
   return (
     <section>
-      <DashboardSectionTitle>Bolões Mais Ativos</DashboardSectionTitle>
       <Card className='shadow-sm'>
+        <CardHeader className='flex flex-row items-center justify-between border-b pb-4'>
+          <h2 className='section-title mb-0'>Bolões Mais Ativos</h2>
+          <Link
+            href='/pools'
+            className='text-primary text-sm font-medium hover:underline'
+          >
+            Ver todos
+          </Link>
+        </CardHeader>
         <CardContent className='overflow-x-auto'>
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className='text-xs'>
                 <TableHead>Bolão</TableHead>
                 <TableHead>Campeonato</TableHead>
                 <TableHead className='text-right'>Participantes</TableHead>
@@ -30,17 +37,14 @@ export function ActivePools() {
             <TableBody>
               {activePools.map(pool => (
                 <TableRow key={pool.id}>
-                  <TableCell>
-                    <div className='flex items-center gap-2 font-medium'>
-                      <GiTrophiesShelf className='text-primary size-4 shrink-0' />
-                      {pool.name}
-                    </div>
+                  <TableCell className='font-medium'>{pool.name}</TableCell>
+                  <TableCell>{pool.championship}</TableCell>
+                  <TableCell className='text-right font-bold'>
+                    {pool.participants}
                   </TableCell>
-                  <TableCell className='text-muted-foreground text-sm'>
-                    {pool.championship}
+                  <TableCell className='text-right font-bold'>
+                    {pool.predictions}
                   </TableCell>
-                  <TableCell className='text-right'>{pool.participants}</TableCell>
-                  <TableCell className='text-right'>{pool.predictions}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

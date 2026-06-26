@@ -1,13 +1,9 @@
-export type ActivityType =
-  | 'participant'
-  | 'pool'
-  | 'prediction'
-  | 'match'
-  | 'ranking';
+export type ActivityType = 'participant' | 'prediction' | 'pool' | 'result';
 
 export interface ActivityItem {
   id: number;
   type: ActivityType;
-  message: string;
+  title: string;
+  description: string;
   timestamp: string;
 }

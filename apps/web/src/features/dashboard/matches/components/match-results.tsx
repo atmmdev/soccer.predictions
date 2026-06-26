@@ -18,7 +18,7 @@ export function MatchResult({ match }: MatchResultProps) {
             home: match.predictedHomeScore,
             away: match.predictedAwayScore,
           }}
-          highlight={match.status !== 'SCHEDULED'}
+          highlight
         />
       )}
     </div>
