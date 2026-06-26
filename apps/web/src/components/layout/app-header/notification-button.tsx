@@ -11,7 +11,9 @@ export function NotificationButton() {
       aria-label='Notificações'
     >
       <Bell className='size-5' />
-      <span className='bg-primary absolute top-2 right-2 size-2 rounded-full' />
+      <span className='bg-primary text-primary-foreground absolute top-1.5 right-1.5 flex size-4 items-center justify-center rounded-full text-[10px] font-bold'>
+        3
+      </span>
     </Button>
   );
 }

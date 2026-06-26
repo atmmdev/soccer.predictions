@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { TableCell, TableRow } from '@/components/ui/table';
 import { RankingUser } from '@/features/dashboard/rankings/types/ranking';
 import { PositionBadge } from './position-badge';
 
@@ -8,25 +8,34 @@ interface RankingRowProps {
   position: number;
 }
 
+function getInitials(name: string) {
+  return name
+    .split(' ')
+    .slice(0, 2)
+    .map(part => part[0])
+    .join('')
+    .toUpperCase();
+}
+
 export function RankingRow({ user, position }: RankingRowProps) {
   return (
-    // TODO: Implementar apenas os 10 primeiros. Trocar para tabela
-    <div className='flex items-center justify-between gap-3'>
-      <div className='flex items-center gap-2'>
-        <span className='font-bold'>
-          <PositionBadge position={position} />
-        </span>
-        <div className='flex items-center gap-1'>
-          <Avatar>
-            <AvatarFallback>{user.name[0]}</AvatarFallback>
+    <TableRow>
+      <TableCell className='w-14'>
+        <PositionBadge position={position} />
+      </TableCell>
+      <TableCell>
+        <div className='flex items-center gap-2.5'>
+          <Avatar className='size-8'>
+            <AvatarFallback className='bg-muted text-xs font-medium'>
+              {getInitials(user.name)}
+            </AvatarFallback>
           </Avatar>
           <span className='font-medium'>{user.name}</span>
         </div>
-      </div>
-      <Badge className='flex items-center gap-1 text-xs text-right'>
-        {user.points} pontos
-      </Badge>
-      <span className='font-medium'>R$ 1680,00</span>
-    </div>
+      </TableCell>
+      <TableCell className='text-right'>
+        <span className='font-bold'>{user.points.toLocaleString('pt-BR')}</span> <span className='text-xs text-muted-foreground'>pts</span>
+      </TableCell>
+    </TableRow>
   );
 }

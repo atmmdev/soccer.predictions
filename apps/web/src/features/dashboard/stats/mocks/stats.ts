@@ -1,50 +1,51 @@
-import { Calendar, Trophy, Users } from 'lucide-react';
-import { GiTakeMyMoney, GiSoccerBall } from 'react-icons/gi';
-import { TbTargetArrow } from 'react-icons/tb';
+import { Calendar, Target, Trophy, Users } from 'lucide-react';
+import { TbPercentage } from 'react-icons/tb';
 
 import { StatsItem } from '@/features/dashboard/stats/types/stats';
 
 export const stats: StatsItem[] = [
   {
-    title: 'Participantes',
-    value: 12.0,
+    title: 'Total de Participantes',
+    value: '1.248',
+    trend: '+12% vs. mês anterior',
+    trendPositive: true,
     icon: Users,
-    iconBackground: 'bg-green-100',
-    iconColor: 'text-green-500',
-  },
-  {
-    title: 'Total de Jogos',
-    value: 8.12,
-    icon: Calendar,
-    iconBackground: 'bg-yellow-100',
-    iconColor: 'text-yellow-500',
+    iconBackground: 'bg-emerald-100',
+    iconColor: 'text-emerald-600',
   },
   {
     title: 'Bolões Ativos',
-    value: 4.12,
+    value: '32',
+    trend: '+3 novos esta semana',
+    trendPositive: true,
     icon: Trophy,
-    iconBackground: 'bg-blue-100',
-    iconColor: 'text-blue-500',
+    iconBackground: 'bg-sky-100',
+    iconColor: 'text-sky-600',
   },
   {
-    title: 'Valore em Premiações',
-    value: 81.2,
-    icon: GiTakeMyMoney,
-    iconBackground: 'bg-lime-100',
-    iconColor: 'text-lime-500',
+    title: 'Jogos Hoje',
+    value: '8',
+    trend: '3 em andamento',
+    icon: Calendar,
+    iconBackground: 'bg-amber-100',
+    iconColor: 'text-amber-600',
   },
   {
-    title: 'Palpites Feitos',
-    value: 22.0,
-    icon: TbTargetArrow,
-    iconBackground: 'bg-red-100',
-    iconColor: 'text-red-500',
+    title: 'Palpites Registrados',
+    value: '2.156',
+    trend: '+18% vs. semana passada',
+    trendPositive: true,
+    icon: Target,
+    iconBackground: 'bg-violet-100',
+    iconColor: 'text-violet-600',
   },
   {
-    title: 'Jogos Finalizados',
-    value: 1.2,
-    icon: GiSoccerBall,
-    iconBackground: 'bg-mist-100',
-    iconColor: 'text-mist-500',
+    title: 'Média de Acertos',
+    value: '43%',
+    trend: '+5% vs. mês anterior',
+    trendPositive: true,
+    icon: TbPercentage,
+    iconBackground: 'bg-rose-100',
+    iconColor: 'text-rose-600',
   },
 ];

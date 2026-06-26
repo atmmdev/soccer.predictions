@@ -1,5 +1,5 @@
 import { Match } from '../types/match';
-import { TeamFlag } from './team-flag';
+import { MatchScore } from './match-score';
 
 interface MatchResultProps {
   match: Match;
@@ -7,12 +7,12 @@ interface MatchResultProps {
 
 export function MatchResult({ match }: MatchResultProps) {
   return (
-    <div className='flex items-center gap-3'>
-      <TeamFlag team={match.homeTeam} />
-      <span className='font-bold'>{match.homeScore}</span>
-      <span>x</span>
-      <span className='font-bold'>{match.awayScore}</span>
-      <TeamFlag team={match.awayTeam} />
+    <div className='flex flex-col gap-0.5'>
+      {match.status === 'SCHEDULED' ? (
+        <span className='font-bold'>—</span>
+      ) : (
+        <MatchScore homeScore={match.homeScore} awayScore={match.awayScore} />
+      )}
     </div>
   );
 }

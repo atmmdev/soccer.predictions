@@ -10,21 +10,24 @@ import { MatchTableRow } from './match-table-row';
 
 export function MatchTable() {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Data</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Resultado Oficial</TableHead>
-          <TableHead>Palpite</TableHead>
-          <TableHead>Pontuação</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {matches.map(match => {
-          return <MatchTableRow key={match.id} match={match} />;
-        })}
-      </TableBody>
-    </Table>
+    <div className='overflow-x-auto'>
+      <Table>
+        <TableHeader>
+          <TableRow className='text-xs'>
+            <TableHead>Data / Hora</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className='text-center'>Jogo</TableHead>
+            <TableHead className='text-center'>Resultado Oficial</TableHead>
+            <TableHead className='text-center'>Meu Palpite</TableHead>
+            <TableHead>Pontos</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {matches.map(match => (
+            <MatchTableRow key={match.id} match={match} />
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

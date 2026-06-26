@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { StatsItem } from '@/features/dashboard/stats/types/stats';
 import { StatsIcon } from './stats-icons';
 
@@ -7,22 +7,27 @@ interface StatsCardProps {
 }
 
 export function StatsCard({ item }: StatsCardProps) {
-  const Icon = item.icon;
-
   return (
-    <Card>
-      <CardHeader className='flex flex-row items-center justify-between'>
-        <CardTitle className='text-sm text-muted-foreground'>
-          {item.title}
-        </CardTitle>
-        <StatsIcon
-          icon={Icon}
-          iconBackground={item.iconBackground}
-          iconColor={item.iconColor}
-        />
-      </CardHeader>
-      <CardContent>
-        <p className='text-3xl font-bold'>{item.value}</p>
+    <Card className='shadow-sm'>
+      <CardContent className='flex flex-col gap-3 pt-4'>
+        <div className='flex items-start justify-between gap-2'>
+          <p className='text-muted-foreground text-sm leading-snug'>{item.title}</p>
+          <StatsIcon
+            icon={item.icon}
+            iconBackground={item.iconBackground}
+            iconColor={item.iconColor}
+          />
+        </div>
+        <p className='text-3xl font-bold tracking-tight'>{item.value}</p>
+        <p
+          className={
+            item.trendPositive
+              ? 'text-primary text-xs font-medium'
+              : 'text-muted-foreground text-xs'
+          }
+        >
+          {item.trend}
+        </p>
       </CardContent>
     </Card>
   );

@@ -1,30 +1,41 @@
-import { TableRow, TableCell } from '@/components/ui/table';
+import { format, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+
+import { TableCell, TableRow } from '@/components/ui/table';
 import { Match } from '../types/match';
-import { WinnerBadge } from './winner-badge';
-import { MatchStatusBadge } from './match-status-badge';
-import { MatchResult } from './match-results';
 import { MatchPredictions } from './match-predictions';
+import { MatchResult } from './match-results';
+import { MatchTeams } from './match-teams';
+import { PointsBadge } from './points-badge';
 
 interface MatchTableRowProps {
   match: Match;
 }
 
+function formatMatchDate(date: string) {
+  return format(parseISO(date), "dd/MM - HH:mm", { locale: ptBR });
+}
+
 export function MatchTableRow({ match }: MatchTableRowProps) {
   return (
-    // TODO: Bandeiras dos clubes e times.
     <TableRow>
-      <TableCell>{match.date}</TableCell>
-      <TableCell>
-        <MatchStatusBadge status={match.status} />
+      <TableCell className='text-muted-foreground whitespace-nowrap text-xs'>
+        {formatMatchDate(match.date)}
       </TableCell>
       <TableCell>
+        <span className='text-muted-foreground text-xs'>{match.status}</span>
+      </TableCell>
+      <TableCell>
+        <MatchTeams match={match} />
+      </TableCell>
+      <TableCell className='text-center'>
         <MatchResult match={match} />
       </TableCell>
-      <TableCell>
+      <TableCell className='text-center'>
         <MatchPredictions match={match} />
       </TableCell>
       <TableCell>
-        <WinnerBadge points={match.points} />
+        <PointsBadge match={match} />
       </TableCell>
     </TableRow>
   );

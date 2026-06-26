@@ -12,7 +12,6 @@ import {
 
 import { AppLogo } from './app-logo';
 import { MainNav, SecondaryNav } from './nav-main';
-import { NavUser } from './nav-user';
 
 export function AppSidebar() {
   return (
@@ -35,9 +34,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className='border-sidebar-border border-t p-2 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:py-2'>
-        <NavUser />
-      </SidebarFooter>
     </Sidebar>
   );
 }

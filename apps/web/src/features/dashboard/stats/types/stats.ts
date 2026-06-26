@@ -1,7 +1,9 @@
 export interface StatsItem {
   title: string;
-  value: number;
+  value: string;
+  trend: string;
+  trendPositive?: boolean;
   icon: React.ElementType;
-  iconColor?: string;
-  iconBackground?: string;
+  iconColor: string;
+  iconBackground: string;
 }

@@ -1,6 +1,7 @@
 import { SidebarTrigger } from '@/components/ui/sidebar';
 
 import { AppBreadcrumb } from './app-breadcrumb';
+import { AppHeaderSearch } from './app-header-search';
 import { AppHeaderUser } from './app-header-user';
 import { NotificationButton } from './notification-button';
 
@@ -15,6 +16,8 @@ export function AppHeader() {
           />
           <AppBreadcrumb />
         </div>
+
+        <AppHeaderSearch />
 
         <div className='ml-auto flex items-center gap-2'>
           <NotificationButton />

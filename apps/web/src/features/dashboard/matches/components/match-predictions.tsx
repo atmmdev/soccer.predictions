@@ -1,5 +1,5 @@
 import { Match } from '../types/match';
-import { TeamFlag } from './team-flag';
+import { MatchScore } from './match-score';
 
 interface MatchPredictionsProps {
   match: Match;
@@ -7,12 +7,10 @@ interface MatchPredictionsProps {
 
 export function MatchPredictions({ match }: MatchPredictionsProps) {
   return (
-    <div className='flex items-center gap-3'>
-      <TeamFlag team={match.homeTeam} />
-      <span className='font-bold'>{match.predictedHomeScore}</span>
-      <span>x</span>
-      <span className='font-bold'>{match.predictedAwayScore}</span>
-      <TeamFlag team={match.awayTeam} />
-    </div>
+    <MatchScore
+      homeScore={match.predictedHomeScore}
+      awayScore={match.predictedAwayScore}
+      className='font-semibold'
+    />
   );
 }
