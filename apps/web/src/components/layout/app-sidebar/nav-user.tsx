@@ -1,17 +1,15 @@
 export function NavUser() {
   return (
-    <div className="flex items-center gap-3 rounded-lg p-3">
-      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
+    <div className='flex items-center gap-3 rounded-lg p-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-2'>
+      <div className='bg-sidebar-primary text-sidebar-primary-foreground flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold'>
         A
       </div>
-
-      <div className="flex flex-col">
-        <span className="text-sm font-medium">
+      <div className='flex min-w-0 flex-col group-data-[collapsible=icon]:hidden'>
+        <span className='text-sidebar-foreground truncate text-sm font-medium'>
           Anderson
         </span>
-
-        <span className="text-xs text-muted-foreground">
-          Software Developer
+        <span className='text-sidebar-foreground/60 truncate text-xs'>
+          Administrador
         </span>
       </div>
     </div>

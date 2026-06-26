@@ -1,26 +1,43 @@
+'use client';
+
 import Link from 'next/link';
-import { SidebarItem } from '@/types/sidebar';
+import { usePathname } from 'next/navigation';
+
+import { mainNav, secondaryNav } from '@/config/sidebar';
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { SidebarItem } from '@/types/sidebar';
 
-interface NavMenuProps {
-  items: SidebarItem[];
-}
+const collapsedButtonClass =
+  'h-11 group-data-[collapsible=icon]:size-11! group-data-[collapsible=icon]:w-11 group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:[&>span]:hidden';
 
-export function NavMenu({ items }: NavMenuProps) {
+function NavMenu({ items }: { items: SidebarItem[] }) {
+  const pathname = usePathname();
+
   return (
-    <SidebarMenu>
+    <SidebarMenu className='group-data-[collapsible=icon]:items-center'>
       {items.map(item => {
         const Icon = item.icon;
+        const isActive =
+          pathname === item.url || pathname.startsWith(`${item.url}/`);
+
         return (
-          <SidebarMenuItem key={item.url}>
-            <SidebarMenuButton asChild>
-              <Link href={item.url} key={item.title}>
-                <Icon size={20} />
-                {item.title}
+          <SidebarMenuItem
+            key={item.url}
+            className='group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center'
+          >
+            <SidebarMenuButton
+              asChild
+              isActive={isActive}
+              tooltip={item.title}
+              className={collapsedButtonClass}
+            >
+              <Link href={item.url}>
+                <Icon className='size-5 shrink-0' />
+                <span>{item.title}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -28,4 +45,12 @@ export function NavMenu({ items }: NavMenuProps) {
       })}
     </SidebarMenu>
   );
+}
+
+export function MainNav() {
+  return <NavMenu items={mainNav} />;
+}
+
+export function SecondaryNav() {
+  return <NavMenu items={secondaryNav} />;
 }

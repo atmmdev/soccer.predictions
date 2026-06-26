@@ -1,4 +1,4 @@
-import { Match } from '../../../../types/match';
+import { Match } from '../types/match';
 import { TeamFlag } from './team-flag';
 
 interface MatchResultProps {
