@@ -11,7 +11,15 @@ export function MatchResult({ match }: MatchResultProps) {
       {match.status === 'SCHEDULED' ? (
         <span className='font-bold'>—</span>
       ) : (
-        <MatchScore homeScore={match.homeScore} awayScore={match.awayScore} />
+        <MatchScore
+          homeScore={match.homeScore}
+          awayScore={match.awayScore}
+          compareWith={{
+            home: match.predictedHomeScore,
+            away: match.predictedAwayScore,
+          }}
+          highlight={match.status !== 'SCHEDULED'}
+        />
       )}
     </div>
   );

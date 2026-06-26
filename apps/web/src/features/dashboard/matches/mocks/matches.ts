@@ -3,7 +3,7 @@ import { Match } from '../types/match';
 export const matches: Match[] = [
   {
     id: 1,
-    homeTeam: { name: 'Flamengo', flag: '🔴⚫' },
+    homeTeam: { name: 'Flamengo', flag: '🔴' },
     awayTeam: { name: 'Palmeiras', flag: '🟢' },
     homeScore: 2,
     awayScore: 1,
@@ -32,7 +32,7 @@ export const matches: Match[] = [
     homeScore: 1,
     awayScore: 0,
     predictedHomeScore: 1,
-    predictedAwayScore: 0,
+    predictedAwayScore: 1,
     points: 2,
     date: '2026-06-16T12:00:00',
     status: 'FINISHED',
@@ -40,7 +40,7 @@ export const matches: Match[] = [
   {
     id: 3,
     homeTeam: { name: 'Real Madrid', flag: '⚪' },
-    awayTeam: { name: 'Barcelona', flag: '🔵🔴' },
+    awayTeam: { name: 'Barcelona', flag: '🔵' },
     homeScore: 0,
     awayScore: 0,
     predictedHomeScore: 1,
@@ -51,8 +51,8 @@ export const matches: Match[] = [
   },
   {
     id: 4,
-    homeTeam: { name: 'São Paulo', flag: '⚪🔴⚫' },
-    awayTeam: { name: 'Corinthians', flag: '⚪⚫' },
+    homeTeam: { name: 'São Paulo', flag: '⚫' },
+    awayTeam: { name: 'Corinthians', flag: '⚪' },
     homeScore: 1,
     awayScore: 0,
     predictedHomeScore: 2,

@@ -10,7 +10,11 @@ export function MatchPredictions({ match }: MatchPredictionsProps) {
     <MatchScore
       homeScore={match.predictedHomeScore}
       awayScore={match.predictedAwayScore}
-      className='font-semibold'
+      compareWith={{
+        home: match.homeScore,
+        away: match.awayScore,
+      }}
+      highlight={match.status !== 'SCHEDULED'}
     />
   );
 }
