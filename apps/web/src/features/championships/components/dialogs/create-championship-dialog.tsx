@@ -80,7 +80,8 @@ export function CreateChampionshipDialog({
                     <NativeSelect
                       value={field.value}
                       onChange={event => {
-                        field.onChange(event.target.value);
+                        const value = event.target.value;
+                        field.onChange(value);
                         resetLeagueCascade();
                       }}
                     >
@@ -107,7 +108,6 @@ export function CreateChampionshipDialog({
                   <FormLabel>Campeonato</FormLabel>
                   <FormControl>
                     <NativeSelect
-                      key={selectedCountry}
                       value={field.value > 0 ? field.value.toString() : ''}
                       onChange={event =>
                         field.onChange(Number(event.target.value))
@@ -115,7 +115,9 @@ export function CreateChampionshipDialog({
                       disabled={!selectedCountry}
                     >
                       <option value='' disabled>
-                        Selecione o campeonato
+                        {selectedCountry
+                          ? 'Selecione o campeonato'
+                          : 'Selecione um país primeiro'}
                       </option>
                       {filteredLeagues.map(league => (
                         <option key={league.id} value={league.id}>

@@ -1,13 +1,7 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { NativeSelect } from '@/components/ui/native-select';
 import { cn } from '@/lib/utils';
 
-import { championshipFilterSelectTriggerClassName } from './championship-select-trigger';
+import { championshipSelectClassName } from './championship-select-styles';
 
 interface ChampionshipSeasonSelectProps {
   value: string;
@@ -21,21 +15,17 @@ export function ChampionshipSeasonSelect({
   seasons,
 }: ChampionshipSeasonSelectProps) {
   return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger
-        size='lg'
-        className={cn(championshipFilterSelectTriggerClassName, 'sm:min-w-48')}
-      >
-        <SelectValue placeholder='Filtrar por temporada' />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value='all'>Todas as temporadas</SelectItem>
-        {seasons.map(item => (
-          <SelectItem key={item} value={item.toString()}>
-            {item}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <NativeSelect
+      value={value}
+      onChange={event => onChange(event.target.value)}
+      className={cn(championshipSelectClassName, 'sm:min-w-48')}
+    >
+      <option value='all'>Todas as temporadas</option>
+      {seasons.map(item => (
+        <option key={item} value={item}>
+          {item}
+        </option>
+      ))}
+    </NativeSelect>
   );
 }

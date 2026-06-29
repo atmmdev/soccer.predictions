@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import type { UseFormReturn } from 'react-hook-form';
+import { useWatch, type UseFormReturn } from 'react-hook-form';
 
 import { CURRENT_SEASON } from '../mocks/seasons';
 import type { CreateChampionshipFormData } from '../schemas/create-championship.schema';
@@ -10,7 +10,12 @@ import { filterLeaguesByCountry } from '../services/league.service';
 export function useImportChampionshipCascade(
   form: UseFormReturn<CreateChampionshipFormData>,
 ) {
-  const selectedCountry = form.watch('country');
+  const selectedCountry =
+    useWatch({
+      control: form.control,
+      name: 'country',
+      defaultValue: '',
+    }) ?? '';
 
   const filteredLeagues = useMemo(
     () => filterLeaguesByCountry(selectedCountry),
