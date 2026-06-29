@@ -1,5 +1,6 @@
 'use client';
 
+import { CreateChampionshipDialog } from '../dialogs/create-championship-dialog';
 import { ChampionshipSearch } from './championship-search';
 import { ChampionshipStatusSelect } from './championship-status-select';
 
@@ -18,8 +19,13 @@ export function ChampionshipFilters({
 }: ChampionshipFiltersProps) {
   return (
     <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
-      <ChampionshipSearch value={search} onChange={onSearchChange} />
+      <ChampionshipSearch
+        value={search}
+        onChange={onSearchChange}
+        className='sm:flex-1'
+      />
       <ChampionshipStatusSelect value={status} onChange={onStatusChange} />
+      <CreateChampionshipDialog />
     </div>
   );
 }

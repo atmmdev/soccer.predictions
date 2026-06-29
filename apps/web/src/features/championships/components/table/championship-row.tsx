@@ -11,9 +11,9 @@ export function ChampionshipRow({ championship }: ChampionshipRowProps) {
   // TODO: Adicionar link para uma pagina (Tabela de Classificação).
   return (
     <TableRow>
-      <TableCell>
-        <span className='mr-2'>
-        {championship.flags || '🏆'}
+      <TableCell className='font-medium'>
+        <span className='mr-2' aria-hidden>
+          {championship.flags || '🏆'}
         </span>
         {championship.name}
       </TableCell>
@@ -22,8 +22,10 @@ export function ChampionshipRow({ championship }: ChampionshipRowProps) {
       <TableCell>
         <ChampionshipStatusBadge status={championship.status} />
       </TableCell>
-      <TableCell>Classificação</TableCell>
-      <TableCell>
+      <TableCell className='text-primary text-xs font-medium text-center'>
+        Classificação
+      </TableCell>
+      <TableCell className='text-right'>
         <ChampionshipActions championship={championship} />
       </TableCell>
     </TableRow>

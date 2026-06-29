@@ -43,7 +43,9 @@ export function CreateChampionshipDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Importar Campeonato</Button>
+        <Button size='lg' className='shrink-0'>
+          Importar Campeonato
+        </Button>
       </DialogTrigger>
 
       <DialogContent>

@@ -17,7 +17,7 @@ export function ChampionshipStatusSelect({
 }: ChampionshipStatusSelectProps) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger>
+      <SelectTrigger className='h-11 w-full data-[size=default]:h-11 sm:w-36'>
         <SelectValue placeholder='Selecione o status' />
       </SelectTrigger>
 
