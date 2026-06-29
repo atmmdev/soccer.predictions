@@ -156,6 +156,12 @@ interface Prediction {
 
 **Componente:** `apps/web/src/features/predictions/components/player-goal-picker.tsx`
 
+**Lineup por time:** `FixtureLineup` — `home` / `away` com `team.flag`, `team.name` e `players[]`. Mock em `mocks/fixture-lineups.ts`.
+
+**API (Semana 3):** NestJS expõe `GET /fixtures/:id/lineup` mapeando [API Football — Lineups](https://www.api-football.com/documentation-v3#tag/Fixtures/operation/get-fixtures-lineups) (`team.logo` + jogadores titulares/reservas). O React **nunca** chama a API Football diretamente.
+
+**Tela (mock MVP):** `/predictions` — lista de jogos, dialog de palpite com placar + `PlayerGoalPicker`.
+
 ## Identity Domain
 
 | Entidade | Descrição |

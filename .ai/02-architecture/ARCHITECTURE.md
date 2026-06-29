@@ -78,7 +78,7 @@ apps/web/src/
 ├── features/
 │   ├── championships/     # types → mocks → components → hooks → schemas → services
 │   ├── dashboard/
-│   ├── pools/             # types/scoring-rules → mocks → dialogs → hooks → services
+│   ├── predictions/         # types → mocks → dialogs → hooks → services
 │   └── ...
 ├── hooks/
 └── lib/
