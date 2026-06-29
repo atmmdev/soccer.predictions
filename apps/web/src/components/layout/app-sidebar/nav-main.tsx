@@ -27,7 +27,7 @@ function NavMenu({ items }: { items: SidebarItem[] }) {
         return (
           <SidebarMenuItem
             key={item.url}
-            className='group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center'
+            className='group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center my-0.5'
           >
             <SidebarMenuButton
               asChild
