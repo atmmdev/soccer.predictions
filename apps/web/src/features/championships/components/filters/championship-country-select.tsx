@@ -9,29 +9,29 @@ import { cn } from '@/lib/utils';
 
 import { championshipFilterSelectTriggerClassName } from './championship-select-trigger';
 
-interface ChampionshipSeasonSelectProps {
+interface ChampionshipCountrySelectProps {
   value: string;
   onChange: (value: string) => void;
-  seasons: number[];
+  countries: string[];
 }
 
-export function ChampionshipSeasonSelect({
+export function ChampionshipCountrySelect({
   value,
   onChange,
-  seasons,
-}: ChampionshipSeasonSelectProps) {
+  countries,
+}: ChampionshipCountrySelectProps) {
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger
         size='lg'
-        className={cn(championshipFilterSelectTriggerClassName, 'sm:min-w-48')}
+        className={cn(championshipFilterSelectTriggerClassName, 'sm:min-w-44')}
       >
-        <SelectValue placeholder='Filtrar por temporada' />
+        <SelectValue placeholder='Filtrar por país' />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value='all'>Todas as temporadas</SelectItem>
-        {seasons.map(item => (
-          <SelectItem key={item} value={item.toString()}>
+        <SelectItem value='all'>Todos os países</SelectItem>
+        {countries.map(item => (
+          <SelectItem key={item} value={item}>
             {item}
           </SelectItem>
         ))}

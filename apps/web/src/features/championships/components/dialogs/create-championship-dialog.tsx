@@ -43,7 +43,7 @@ export function CreateChampionshipDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button size='lg' className='shrink-0'>
+        <Button className='h-11 shrink-0 px-4 py-0'>
           Importar Campeonato
         </Button>
       </DialogTrigger>
@@ -68,7 +68,7 @@ export function CreateChampionshipDialog() {
                     onValueChange={value => field.onChange(Number(value))}
                   >
                     <FormControl className='w-full'>
-                      <SelectTrigger>
+                      <SelectTrigger size='lg' className='w-full'>
                         <SelectValue placeholder='Selecione' />
                       </SelectTrigger>
                     </FormControl>
@@ -97,7 +97,7 @@ export function CreateChampionshipDialog() {
                   <FormLabel>País</FormLabel>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl className='w-full'>
-                      <SelectTrigger>
+                      <SelectTrigger size='lg' className='w-full'>
                         <SelectValue placeholder='Selecione' />
                       </SelectTrigger>
                     </FormControl>
@@ -121,7 +121,7 @@ export function CreateChampionshipDialog() {
                     onValueChange={value => field.onChange(Number(value))}
                   >
                     <FormControl className='w-full'>
-                      <SelectTrigger>
+                      <SelectTrigger size='lg' className='w-full'>
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>

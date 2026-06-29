@@ -1,22 +1,52 @@
 'use client';
 
+import { Card, CardContent } from '@/components/ui/card';
+
 import { useChampionshipFilters } from '../hooks/use-championship-filters';
 import { ChampionshipFilters } from './filters/championship-filters';
 import { ChampionshipTable } from './table/championship-table';
+import { useChampionshipTable } from './table/hooks/use-championship-table';
 
 export function ChampionshipList() {
   const { search, setSearch, status, setStatus, filteredChampionships } =
     useChampionshipFilters();
 
+  const {
+    rows,
+    countries,
+    seasons,
+    country,
+    setCountry,
+    season,
+    setSeason,
+    sortKey,
+    sortDir,
+    toggleSort,
+  } = useChampionshipTable(filteredChampionships);
+
   return (
-    <div className='flex flex-col gap-4'>
-      <ChampionshipFilters
-        search={search}
-        onSearchChange={setSearch}
-        status={status}
-        onStatusChange={setStatus}
-      />
-      <ChampionshipTable championships={filteredChampionships} />
-    </div>
+    <Card className='overflow-visible shadow-sm'>
+      <CardContent className='space-y-4 pt-4'>
+        <ChampionshipFilters
+          search={search}
+          onSearchChange={setSearch}
+          status={status}
+          onStatusChange={setStatus}
+          country={country}
+          onCountryChange={setCountry}
+          countries={countries}
+          season={season}
+          onSeasonChange={setSeason}
+          seasons={seasons}
+          resultCount={rows.length}
+        />
+        <ChampionshipTable
+          rows={rows}
+          sortKey={sortKey}
+          sortDir={sortDir}
+          onSort={toggleSort}
+        />
+      </CardContent>
+    </Card>
   );
 }

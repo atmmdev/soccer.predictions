@@ -5,6 +5,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
+
+import { championshipFilterSelectTriggerClassName } from './championship-select-trigger';
 
 interface ChampionshipStatusSelectProps {
   value: string;
@@ -17,7 +20,10 @@ export function ChampionshipStatusSelect({
 }: ChampionshipStatusSelectProps) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className='h-11 w-full data-[size=default]:h-11 sm:w-36'>
+      <SelectTrigger
+        size='lg'
+        className={cn(championshipFilterSelectTriggerClassName, 'sm:min-w-36')}
+      >
         <SelectValue placeholder='Selecione o status' />
       </SelectTrigger>
 
