@@ -1,6 +1,7 @@
 import type { CreatePoolFormData } from '../schemas/create-pool.schema';
 import type { Pool } from '../types/pool';
 import { findChampionshipById } from './championship-catalog.service';
+import { mapFormToScoringConfig } from './scoring-rules.mapper';
 
 export function getNextPoolId(pools: Pool[]): number {
   const maxId = pools.reduce(
@@ -38,10 +39,12 @@ export class PoolService {
       name: data.name.trim(),
       championshipId: championship.id,
       championshipName: championship.name,
+      championshipType: championship.type,
       season: championship.season,
       participantsCount: 0,
       inviteCode: generateInviteCode(data.name),
       status: data.active ? 'ACTIVE' : 'INACTIVE',
+      scoring: mapFormToScoringConfig(data),
     };
   }
 }

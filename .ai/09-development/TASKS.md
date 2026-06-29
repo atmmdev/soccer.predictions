@@ -39,8 +39,8 @@
 
 ## Semana 2 — Pools + Backend (30 jun – 6 jul)
 
-- [ ] Feature `pools/` completa (padrão Championships)
-- [ ] Formulário `PhaseRule` + `PointRule` (templates LEAGUE/CUP)
+- [~] Feature `pools/` completa (padrão Championships)
+- [x] Formulário `PoolScoringConfig` — regras base + multiplicadores CUP (templates LEAGUE/CUP)
 - [ ] `apps/api` NestJS + Prisma + MySQL + Docker Compose
 - [ ] Clean Architecture: `identity/` + `betting/`
 - [ ] Auth: register/login JWT
@@ -76,7 +76,6 @@
 
 | Arquivo | TODO | Quando |
 |---------|------|--------|
-| `championship.ts` | LEAGUE vs CUP no bolão | Semana 2 |
 | `championship-row.tsx` | Link classificação | V2 |
 | `ranking-row.tsx` | Top 10 | Semana 4 |
 | `match-table-row.tsx` | Bandeiras times | Semana 3 |

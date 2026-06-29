@@ -22,7 +22,8 @@ datasource db {
 ### Betting
 
 - `Pool`, `PoolUser`, `Invitation`
-- `Prediction`, `PhaseRule`, `PointRule`, `PointHistory`
+- `Prediction`, `PointHistory`
+- `Pool.scoring` — `PoolScoringConfig` (JSON ou tabelas normalizadas)
 
 ## Regras
 
@@ -56,13 +57,37 @@ services:
     image: redis:7
 ```
 
+## PoolScoringConfig (persistência)
+
+Estrutura de domínio em `Pool.scoring`:
+
+```typescript
+// Opção A (MVP): coluna JSON em Pool
+model Pool {
+  id              Int     @id @default(autoincrement())
+  championshipId  Int
+  name            String
+  inviteCode      String  @unique
+  status          String
+  scoring         Json    // { base: BaseScoringRules, cupPhases: CupPhaseRule[] | null }
+  // ...
+}
+
+// Opção B (normalizado): tabelas auxiliares
+// PoolScoringBase (1:1 Pool) + CupPhaseMultiplier (1:N Pool, só CUP)
+```
+
+Campos de `BaseScoringRules`: `exactScore`, `winnerScore`, `loserScore`, `correctWinner`, `correctDraw`, `playerGoal`, `playerHatTrickMultiplier`.
+
+Campos de `CupPhaseRule`: `phase` (enum), `label`, `multiplier`.
+
 ## Relacionamentos chave
 
 ```text
 Championship 1──N Fixture
 Championship 1──N Pool
+Pool         1──1 PoolScoringConfig (embutido ou 1:1)
 Pool         1──N PoolUser ──N User
-Pool         1──N PhaseRule ──N PointRule
 Pool         1──N Prediction
 Fixture      1──N Prediction
 Fixture      1──N PointHistory

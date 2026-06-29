@@ -23,9 +23,11 @@ import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
 
 import { useCreatePool } from '../../hooks/use-create-pool';
+import { usePoolScoringTemplate } from '../../hooks/use-pool-scoring-template';
 import { getActiveChampionships } from '../../services/championship-catalog.service';
 import type { CreatePoolFormData } from '../../schemas/create-pool.schema';
 import { PoolActiveSwitch } from './pool-active-switch';
+import { PoolScoringRules } from './pool-scoring-rules';
 
 interface CreatePoolDialogProps {
   onCreate: (data: CreatePoolFormData) => void;
@@ -35,6 +37,8 @@ export function CreatePoolDialog({ onCreate }: CreatePoolDialogProps) {
   const [open, setOpen] = useState(false);
   const form = useCreatePool();
   const activeChampionships = getActiveChampionships();
+  const { championshipType, applyTemplateForChampionship } =
+    usePoolScoringTemplate(form);
 
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen);
@@ -57,7 +61,7 @@ export function CreatePoolDialog({ onCreate }: CreatePoolDialogProps) {
         <Button className='h-11 shrink-0 px-4 py-0'>Criar Bolão</Button>
       </DialogTrigger>
 
-      <DialogContent className='sm:max-w-md'>
+      <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-2xl'>
         <DialogHeader>
           <DialogTitle>Criar Bolão</DialogTitle>
         </DialogHeader>
@@ -91,16 +95,19 @@ export function CreatePoolDialog({ onCreate }: CreatePoolDialogProps) {
                   <FormControl>
                     <NativeSelect
                       value={field.value > 0 ? field.value.toString() : ''}
-                      onChange={event =>
-                        field.onChange(Number(event.target.value))
-                      }
+                      onChange={event => {
+                        const nextId = Number(event.target.value);
+                        field.onChange(nextId);
+                        applyTemplateForChampionship(nextId);
+                      }}
                     >
                       <option value='' disabled>
                         Selecione o campeonato
                       </option>
                       {activeChampionships.map(championship => (
                         <option key={championship.id} value={championship.id}>
-                          {championship.name} ({championship.season})
+                          {championship.name} ({championship.season}) —{' '}
+                          {championship.type === 'CUP' ? 'Mata-mata' : 'Liga'}
                         </option>
                       ))}
                     </NativeSelect>
@@ -108,6 +115,12 @@ export function CreatePoolDialog({ onCreate }: CreatePoolDialogProps) {
                   <FormMessage />
                 </FormItem>
               )}
+            />
+
+            <PoolScoringRules
+              form={form}
+              disabled={!championshipType}
+              championshipType={championshipType}
             />
 
             <FormField

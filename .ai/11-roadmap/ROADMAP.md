@@ -24,8 +24,8 @@
 
 - [ ] NestJS + MySQL + Prisma + Redis
 - [ ] Auth JWT
-- [ ] Pools CRUD + scoring rules
-- [ ] Frontend Pools
+- [~] Pools CRUD + scoring rules (UI mock: lista + criar com `PoolScoringConfig`)
+- [~] Frontend Pools
 
 ## Fase 3 — Dados reais + Palpites (Semana 3)
 
@@ -48,7 +48,7 @@
 |------|------------|
 | Perfil, Estatísticas, Ajuda | Média |
 | CTA Import no Dashboard | Baixa |
-| `PLAYER_SCORED` na pontuação | Média |
+| Múltiplos jogadores por palpite | Média |
 | WebSocket / notificações | Média |
 | PWA offline (fila palpites) | Média |
 | Standings dedicado | Média |

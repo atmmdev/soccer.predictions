@@ -92,6 +92,13 @@
 - CTAs: `Button size="lg"` cor primary verde
 - Labels acima dos campos
 
+### Palpite — jogador para marcar gol
+
+- **1 jogador por partida** (`selectedPlayerId: number | null`)
+- Após seleção: demais jogadores `disabled` na UI
+- **Trocar** reabilita a lista; **Remover** limpa a seleção
+- Componente: `features/predictions/components/player-goal-picker.tsx`
+
 ## PWA (Semana 4)
 
 - manifest + service worker

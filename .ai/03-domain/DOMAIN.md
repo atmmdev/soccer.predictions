@@ -25,7 +25,7 @@ interface Championship {
   name: string;
   country: string;
   flags: string;
-  type: 'LEAGUE' | 'CUP';  // influencia PhaseRule no bolão
+  type: 'LEAGUE' | 'CUP';  // influencia PoolScoringConfig no bolão
   status: 'ACTIVE' | 'INACTIVE';
   isCurrentSeason: boolean;  // backend
   allowNewPools: boolean;    // isCurrentSeason && ACTIVE
@@ -44,9 +44,8 @@ interface Championship {
 | `Pool` | Bolão — referencia `championshipId` |
 | `PoolUser` | Participante — status ACTIVE para palpitar |
 | `Invitation` | Convite manual ou link (`/join/:code`) |
-| `Prediction` | Palpite: pool + user + fixture + placar |
-| `PhaseRule` | Escopo: `round` (LEAGUE) ou `phase` (CUP) |
-| `PointRule` | Tipo + pontos: EXACT_SCORE, CORRECT_WINNER, CORRECT_DRAW, MULTIPLIER |
+| `Prediction` | Palpite: pool + user + fixture + placar + **1 jogador** para marcar gol (opcional) |
+| `PoolScoringConfig` | Regras de pontuação do bolão (base + multiplicadores por fase) |
 | `PointHistory` | Registro imutável de pontos — base do ranking |
 
 ### Pool é o coração
@@ -60,23 +59,102 @@ Brasileirão 2026 (catálogo)
 
 Todos compartilham fixtures; pontuação pode diferir por bolão.
 
-### PhaseRule — escopo
+### PoolScoringConfig
 
-| Tipo campeonato | Campo | Exemplos |
-|-----------------|-------|----------|
-| `LEAGUE` | `round: number` | Rodada 1, 2, 3… |
-| `CUP` | `phase: enum` | GROUP, R16, QF, SF, FINAL |
+Configuração persistida em `Pool.scoring`. O admin confirma ou edita os valores no dialog **Criar Bolão** antes de salvar.
 
-### PointRule — tipos MVP
+```typescript
+interface BaseScoringRules {
+  exactScore: number;              // Placar exato
+  winnerScore: number;             // Placar do time vencedor (gols do lado que venceu)
+  loserScore: number;              // Placar do time perdedor (gols do lado que perdeu)
+  correctWinner: number;           // Vencedor correto, sem placar exato
+  correctDraw: number;             // Empate correto, sem placar exato
+  playerGoal: number;              // Jogador escolhido marcou gol na partida
+  playerHatTrickMultiplier: number; // Multiplicador se o jogador fizer hat-trick (3 gols)
+}
 
-| Tipo | Descrição |
-|------|-----------|
-| `EXACT_SCORE` | Placar exato |
-| `CORRECT_WINNER` | Vencedor (sem placar exato) |
-| `CORRECT_DRAW` | Empate (sem placar exato) |
-| `MULTIPLIER` | Multiplicador na rodada/fase |
+type CupPhase =
+  | 'GROUP'
+  | 'ROUND_OF_32'    // 1/16 de final
+  | 'ROUND_OF_16'    // Oitavas
+  | 'QUARTER_FINAL'
+  | 'SEMI_FINAL'
+  | 'THIRD_PLACE'
+  | 'FINAL';
 
-**V2:** `PLAYER_SCORED` — jogador escolhido marcou gol
+interface CupPhaseRule {
+  phase: CupPhase;
+  label: string;
+  multiplier: number;
+}
+
+interface PoolScoringConfig {
+  base: BaseScoringRules;
+  cupPhases: CupPhaseRule[] | null;  // null para LEAGUE
+}
+```
+
+### Defaults — pontuação base (liga e fase de grupos)
+
+| Campo | Valor padrão |
+|-------|--------------|
+| `exactScore` | 10 |
+| `winnerScore` | 6 |
+| `loserScore` | 4 |
+| `correctWinner` | 3 |
+| `correctDraw` | 3 |
+| `playerGoal` | 10 |
+| `playerHatTrickMultiplier` | 2 |
+
+### Defaults — multiplicadores por fase (CUP)
+
+| Fase | `CupPhase` | Multiplicador |
+|------|------------|---------------|
+| Fase de grupos | `GROUP` | ×1 (mesmas regras da liga) |
+| 1/16 de final | `ROUND_OF_32` | ×2 |
+| Oitavas de final | `ROUND_OF_16` | ×3 |
+| Quartas de final | `QUARTER_FINAL` | ×4 |
+| Semi-final | `SEMI_FINAL` | ×5 |
+| Terceiro lugar | `THIRD_PLACE` | ×6 |
+| Final | `FINAL` | ×6 |
+
+### Escopo por tipo de campeonato
+
+| `Championship.type` | Comportamento |
+|---------------------|---------------|
+| `LEAGUE` | Apenas `base`; pontuação por `Fixture.round` |
+| `CUP` | `base` na fase de grupos; fases eliminatórias aplicam `cupPhases[].multiplier` sobre o total da partida |
+
+### Ordem de avaliação (Scoring Engine)
+
+1. Placar exato — se acertou, não soma vencedor/empate parcial
+2. Placar do vencedor e do perdedor — quando não é placar exato, mas os gols de cada lado batem
+3. Vencedor ou empate sem placar exato
+4. Bônus de jogador (`playerGoal`); hat-trick aplica `playerHatTrickMultiplier`
+5. Em copas, multiplicador da fase (`cupPhases`) sobre o total da partida
+
+**Implementação frontend (mock):** `apps/web/src/features/pools/types/scoring-rules.ts`, templates em `mocks/scoring-templates.ts`, UI em `components/dialogs/pool-scoring-rules.tsx`.
+
+### Prediction — palpite do participante
+
+```typescript
+interface Prediction {
+  id: number;
+  poolId: number;
+  userId: number;
+  fixtureId: number;
+  predictedHomeScore: number;
+  predictedAwayScore: number;
+  selectedPlayerId: number | null;  // no máximo 1 jogador por palpite
+}
+```
+
+**Regra de negócio (MVP):** o participante escolhe **no máximo 1 jogador** para marcar gol na partida. Não é permitido palpitar em dois ou mais jogadores no mesmo fixture.
+
+**Regra de UI:** após selecionar um jogador, os demais ficam desabilitados. Para alterar, o usuário usa **Trocar** (reabilita a lista) ou **Remover** (limpa a seleção).
+
+**Componente:** `apps/web/src/features/predictions/components/player-goal-picker.tsx`
 
 ## Identity Domain
 
@@ -90,7 +168,7 @@ Todos compartilham fixtures; pontuação pode diferir por bolão.
 
 ```text
 1. Admin importa Championship (temporada atual) → Fixtures no catálogo
-2. Admin cria Pool + PhaseRules/PointRules + convites
+2. Admin cria Pool + `PoolScoringConfig` + convites
 3. Participante ACTIVE palpita Prediction
 4. Fixture encerra → ScoringService → PointHistory
 5. Ranking = query sobre PointHistory (geral, rodada, fase, mês…)

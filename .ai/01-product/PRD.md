@@ -71,17 +71,25 @@ Grupos de amigos, família ou trabalho querem organizar bolões de futebol sem p
 
 ### Pontuação
 
-- Configurável **por bolão**, por **rodada** (liga) ou **fase** (copa)
-- Tipos MVP: placar exato, vencedor, empate, multiplicador
+- Configurável **por bolão** — admin confirma ou edita no dialog de criação
+- **Liga (`LEAGUE`):** regras base por rodada
+- **Copa (`CUP`):** mesmas regras base na fase de grupos; fases eliminatórias com multiplicadores (×2 a ×6)
+- Regras base MVP: placar exato, gols do vencedor/perdedor, vencedor/empate sem exato, **1 jogador** para marcar gol, hat-trick
 - Ranking **derivado** de `PointHistory` — não é tabela
 
 ### Convites
 
 - Manual e por link: `https://dominio.com/join/ABC123`
 
+### Palpite de jogador
+
+- **MVP:** exatamente **0 ou 1** jogador por palpite (`selectedPlayerId`)
+- Após selecionar, demais jogadores ficam desabilitados até **Trocar** ou **Remover**
+- Pontuação: `playerGoal` se marcou; hat-trick aplica `playerHatTrickMultiplier`
+
 ## Fora do MVP (V2+)
 
-- Palpite de jogador que marcou gol (`PLAYER_SCORED`)
+- Múltiplos jogadores por palpite
 - WebSocket / push notifications
 - PWA offline (fila de palpites)
 - Perfil, Estatísticas, Ajuda, layout polish avançado

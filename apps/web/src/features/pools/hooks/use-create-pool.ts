@@ -3,10 +3,13 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { getScoringTemplateByChampionshipType } from '../mocks/scoring-templates';
 import {
   createPoolSchema,
   type CreatePoolFormData,
 } from '../schemas/create-pool.schema';
+
+const leagueTemplate = getScoringTemplateByChampionshipType('LEAGUE');
 
 export function useCreatePool() {
   return useForm<CreatePoolFormData>({
@@ -16,6 +19,8 @@ export function useCreatePool() {
     defaultValues: {
       name: '',
       championshipId: 0,
+      baseScoring: { ...leagueTemplate.base },
+      cupPhases: leagueTemplate.cupPhases,
       active: true,
     },
   });
