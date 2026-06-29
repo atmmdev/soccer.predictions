@@ -154,7 +154,11 @@ interface Prediction {
 
 **Regra de UI:** após selecionar um jogador, os demais ficam desabilitados. Para alterar, o usuário usa **Trocar** (reabilita a lista) ou **Remover** (limpa a seleção).
 
-**Componente:** `apps/web/src/features/predictions/components/player-goal-picker.tsx`
+**Prazo do palpite:** envio e edição permitidos apenas até **10 minutos antes** do horário de início (`Fixture.date`). Após o prazo, o palpite fica bloqueado.
+
+**Sem palpite:** se o participante não registrou palpite antes do prazo, **não pontua** na partida (o `ScoringService` ignora — não gera `PointHistory`).
+
+**Implementação:** `constants/prediction-cutoff.ts`, `utils/prediction-window.ts`, validação em `services/prediction.service.ts`.
 
 **Lineup por time:** `FixtureLineup` — `home` / `away` com `team.flag`, `team.name` e `players[]`. Mock em `mocks/fixture-lineups.ts`.
 

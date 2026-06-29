@@ -3,13 +3,18 @@
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
+import { PositionBadge } from '@/features/dashboard/rankings/components/position-badge';
 import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
 
 import { getFixtureLineup } from '../../mocks/fixture-lineups';
 import { findPlayerInLineup } from '../../types/fixture-lineup';
 import type { PredictionFixtureItem } from '../../types/prediction-fixture';
-import { canEditPrediction } from '../../types/prediction-fixture';
+import {
+  canEditPrediction,
+  getPredictionLockMessage,
+} from '../../utils/prediction-window';
+import { formatOfficialResult } from '../../utils/format-official-result';
 import { PredictionMatchStatusBadge } from '../prediction-match-status-badge';
 
 interface PredictionRowProps {
@@ -37,6 +42,19 @@ function getSelectedPlayerName(fixture: PredictionFixtureItem) {
 export function PredictionRow({ fixture, onEdit }: PredictionRowProps) {
   const editable = canEditPrediction(fixture);
   const hasPrediction = fixture.prediction !== null;
+  const lockMessage = getPredictionLockMessage(fixture);
+
+  function getActionLabel() {
+    if (editable) {
+      return hasPrediction ? 'Editar' : 'Palpitar';
+    }
+
+    if (hasPrediction) {
+      return 'Ver';
+    }
+
+    return 'Encerrado';
+  }
 
   return (
     <TableRow>
@@ -55,8 +73,16 @@ export function PredictionRow({ fixture, onEdit }: PredictionRowProps) {
       <TableCell className='text-muted-foreground text-xs'>
         {fixture.poolName}
       </TableCell>
+      <TableCell className='text-center'>
+        <div className='flex justify-center'>
+          <PositionBadge position={fixture.poolPosition} />
+        </div>
+      </TableCell>
       <TableCell className='text-center text-xs'>
         {fixture.round}
+      </TableCell>
+      <TableCell className='text-center text-xs font-medium'>
+        {formatOfficialResult(fixture)}
       </TableCell>
       <TableCell className='text-center text-xs font-medium'>
         {hasPrediction
@@ -73,10 +99,11 @@ export function PredictionRow({ fixture, onEdit }: PredictionRowProps) {
         <Button
           variant='outline'
           size='sm'
-          disabled={!editable}
+          disabled={!editable && !hasPrediction}
+          title={lockMessage ?? undefined}
           onClick={() => onEdit(fixture)}
         >
-          {hasPrediction ? 'Editar' : 'Palpitar'}
+          {getActionLabel()}
         </Button>
       </TableCell>
     </TableRow>

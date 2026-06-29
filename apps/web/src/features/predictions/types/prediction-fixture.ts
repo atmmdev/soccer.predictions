@@ -11,15 +11,16 @@ export interface PredictionFixtureItem {
   id: number;
   poolId: number;
   poolName: string;
+  /** Posição atual do participante no ranking do bolão. */
+  poolPosition: number;
   championshipName: string;
   round: number;
   homeTeam: string;
   awayTeam: string;
   date: string;
   matchStatus: MatchStatus;
+  /** Placar oficial; null enquanto o jogo não começou. */
+  officialHomeScore: number | null;
+  officialAwayScore: number | null;
   prediction: UserPrediction | null;
-}
-
-export function canEditPrediction(fixture: PredictionFixtureItem): boolean {
-  return fixture.matchStatus === 'SCHEDULED';
 }

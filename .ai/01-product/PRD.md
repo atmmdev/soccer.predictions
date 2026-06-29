@@ -87,6 +87,12 @@ Grupos de amigos, família ou trabalho querem organizar bolões de futebol sem p
 - Após selecionar, demais jogadores ficam desabilitados até **Trocar** ou **Remover**
 - Pontuação: `playerGoal` se marcou; hat-trick aplica `playerHatTrickMultiplier`
 
+### Prazo do palpite
+
+- Envio/edição até **10 minutos antes** do início do jogo
+- Depois do prazo: bloqueado
+- **Sem palpite no prazo = 0 pontos** na partida
+
 ## Fora do MVP (V2+)
 
 - Múltiplos jogadores por palpite

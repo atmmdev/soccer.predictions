@@ -70,6 +70,22 @@ export const fixtureLineups: Record<number, FixtureLineup> = {
       ],
     },
   },
+  105: {
+    home: {
+      team: { id: 9, name: 'Grêmio', flag: '🔵⚫⚪' },
+      players: [
+        { id: 5001, name: 'Luis Suárez', teamId: 9 },
+        { id: 5002, name: 'Geromel', teamId: 9 },
+      ],
+    },
+    away: {
+      team: { id: 10, name: 'Internacional', flag: '🔴⚪' },
+      players: [
+        { id: 5003, name: 'Wanderson', teamId: 10 },
+        { id: 5004, name: 'Borré', teamId: 10 },
+      ],
+    },
+  },
 };
 
 export function getFixtureLineup(fixtureId: number): FixtureLineup | null {

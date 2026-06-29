@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -24,14 +25,17 @@ import { getFixtureLineup } from '../../mocks/fixture-lineups';
 import { useSubmitPredictionForm } from '../../hooks/use-submit-prediction';
 import type { SubmitPredictionFormData } from '../../schemas/submit-prediction.schema';
 import type { PredictionFixtureItem } from '../../types/prediction-fixture';
-import { canEditPrediction } from '../../types/prediction-fixture';
+import {
+  canEditPrediction,
+  getPredictionLockMessage,
+} from '../../utils/prediction-window';
 import { PlayerGoalPicker } from '../player-goal-picker';
 
 interface SubmitPredictionDialogProps {
   fixture: PredictionFixtureItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (fixtureId: number, data: SubmitPredictionFormData) => void;
+  onSubmit: (fixtureId: number, data: SubmitPredictionFormData) => boolean;
 }
 
 export function SubmitPredictionDialog({
@@ -43,6 +47,7 @@ export function SubmitPredictionDialog({
   const form = useSubmitPredictionForm(fixture?.prediction);
   const lineup = fixture ? getFixtureLineup(fixture.id) : null;
   const isEditable = fixture ? canEditPrediction(fixture) : false;
+  const lockMessage = fixture ? getPredictionLockMessage(fixture) : null;
 
   useEffect(() => {
     if (open && fixture) {
@@ -59,7 +64,12 @@ export function SubmitPredictionDialog({
       return;
     }
 
-    onSubmit(fixture.id, data);
+    const saved = onSubmit(fixture.id, data);
+
+    if (!saved) {
+      return;
+    }
+
     toast.success('Palpite salvo com sucesso!');
     onOpenChange(false);
   }
@@ -73,9 +83,19 @@ export function SubmitPredictionDialog({
       <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-xl'>
         <DialogHeader>
           <DialogTitle>
-            {fixture.prediction ? 'Editar palpite' : 'Registrar palpite'}
+            {!isEditable && fixture.prediction
+              ? 'Visualizar palpite'
+              : fixture.prediction
+                ? 'Editar palpite'
+                : 'Registrar palpite'}
           </DialogTitle>
         </DialogHeader>
+
+        {lockMessage ? (
+          <Alert>
+            <AlertDescription>{lockMessage}</AlertDescription>
+          </Alert>
+        ) : null}
 
         <div className='space-y-1 rounded-lg border p-3'>
           <p className='text-sm font-medium'>
@@ -166,11 +186,11 @@ export function SubmitPredictionDialog({
                 variant='outline'
                 onClick={() => onOpenChange(false)}
               >
-                Cancelar
+                {isEditable ? 'Cancelar' : 'Fechar'}
               </Button>
-              <Button type='submit' disabled={!isEditable}>
-                Salvar palpite
-              </Button>
+              {isEditable ? (
+                <Button type='submit'>Salvar palpite</Button>
+              ) : null}
             </div>
           </form>
         </Form>

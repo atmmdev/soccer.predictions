@@ -3,6 +3,7 @@ import type {
   PredictionFixtureItem,
   UserPrediction,
 } from '../types/prediction-fixture';
+import { canEditPrediction } from '../utils/prediction-window';
 
 export class PredictionService {
   static submit(
@@ -10,9 +11,21 @@ export class PredictionService {
     fixtureId: number,
     data: SubmitPredictionFormData,
   ): PredictionFixtureItem[] {
-    return fixtures.map(fixture => {
-      if (fixture.id !== fixtureId) {
-        return fixture;
+    const fixture = fixtures.find(item => item.id === fixtureId);
+
+    if (!fixture) {
+      throw new Error('Jogo não encontrado');
+    }
+
+    if (!canEditPrediction(fixture)) {
+      throw new Error(
+        'Prazo encerrado. Palpites só podem ser enviados até 10 minutos antes do jogo.',
+      );
+    }
+
+    return fixtures.map(item => {
+      if (item.id !== fixtureId) {
+        return item;
       }
 
       const prediction: UserPrediction = {
@@ -22,7 +35,7 @@ export class PredictionService {
         selectedPlayerId: data.selectedPlayerId,
       };
 
-      return { ...fixture, prediction };
+      return { ...item, prediction };
     });
   }
 }

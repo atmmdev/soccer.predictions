@@ -11,6 +11,7 @@ O `ScoringService` (backend, contexto Betting) compara palpites com resultados r
 ```text
 Fixture status → FT
   → buscar Predictions do pool
+  → ignorar participantes sem Prediction no fixture (0 pontos)
   → carregar Pool.scoring (BaseScoringRules + cupPhases se CUP)
   → resolver fase/rodada do Fixture
   → calcular pontos por palpite
@@ -32,6 +33,16 @@ Ver tipos completos em `DOMAIN.md`. Resumo:
 
 - **`base`** — regras de pontuação por partida (liga e fase de grupos)
 - **`cupPhases`** — multiplicadores por fase do mata-mata (`null` em ligas)
+
+## Prazo e elegibilidade do palpite
+
+| Regra | Comportamento |
+|-------|---------------|
+| Prazo | Palpite aceito até **10 minutos antes** do início (`kickoff - 10 min`) |
+| Após o prazo | Bloqueio de criação/edição (frontend + backend) |
+| Sem palpite | **0 pontos** — não entra no cálculo do `ScoringService` |
+
+Validação frontend: `features/predictions/utils/prediction-window.ts`.
 
 ## Regras base — pontos por partida
 

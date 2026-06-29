@@ -39,7 +39,13 @@ export function PredictionTable({ rows, onEdit }: PredictionTableProps) {
             </TableHead>
             <TableHead className='text-muted-foreground text-xs'>Bolão</TableHead>
             <TableHead className='text-muted-foreground text-center text-xs'>
+              Posição
+            </TableHead>
+            <TableHead className='text-muted-foreground text-center text-xs'>
               Rodada
+            </TableHead>
+            <TableHead className='text-muted-foreground text-center text-xs'>
+              Resultado
             </TableHead>
             <TableHead className='text-muted-foreground text-center text-xs'>
               Palpite
