@@ -7,7 +7,7 @@ import { PoolFilters } from './filters/pool-filters';
 import { PoolTable } from './table/pool-table';
 
 export function PoolList() {
-  const { searchFilters, tableState } = usePoolList();
+  const { createPool, searchFilters, tableState } = usePoolList();
 
   return (
     <Card className='overflow-visible shadow-sm'>
@@ -18,6 +18,7 @@ export function PoolList() {
           status={searchFilters.status}
           onStatusChange={searchFilters.setStatus}
           resultCount={tableState.rows.length}
+          onCreatePool={createPool}
         />
         <PoolTable
           rows={tableState.rows}

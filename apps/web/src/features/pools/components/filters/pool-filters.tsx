@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-
+import type { CreatePoolFormData } from '../../schemas/create-pool.schema';
+import { CreatePoolDialog } from '../dialogs/create-pool-dialog';
 import { PoolSearch } from './pool-search';
 import { PoolStatusSelect } from './pool-status-select';
 
@@ -11,6 +11,7 @@ interface PoolFiltersProps {
   status: string;
   onStatusChange: (value: string) => void;
   resultCount: number;
+  onCreatePool: (data: CreatePoolFormData) => void;
 }
 
 export function PoolFilters({
@@ -19,6 +20,7 @@ export function PoolFilters({
   status,
   onStatusChange,
   resultCount,
+  onCreatePool,
 }: PoolFiltersProps) {
   return (
     <>
@@ -29,9 +31,7 @@ export function PoolFilters({
           className='xl:flex-1'
         />
         <PoolStatusSelect value={status} onChange={onStatusChange} />
-        <Button className='h-11 shrink-0 px-4 py-0' disabled>
-          Criar Bolão
-        </Button>
+        <CreatePoolDialog onCreate={onCreatePool} />
       </div>
 
       <p className='text-muted-foreground px-2 text-xs xl:ml-auto'>
