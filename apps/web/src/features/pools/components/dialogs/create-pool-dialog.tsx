@@ -1,8 +1,10 @@
 'use client';
 
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+import { ActionButton } from '@/components/ui/action-button';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -58,7 +60,7 @@ export function CreatePoolDialog({ onCreate }: CreatePoolDialogProps) {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className='h-11 shrink-0 px-4 py-0'>Criar Bolão</Button>
+        <ActionButton icon={Plus}>Criar Bolão</ActionButton>
       </DialogTrigger>
 
       <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-2xl'>

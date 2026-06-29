@@ -2,11 +2,12 @@
 
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Pencil, Target } from 'lucide-react';
 
+import { StatusBadge } from '@/components/ui/status-badge';
+import { TableActionBadge } from '@/components/ui/table-action-badge';
 import { PositionBadge } from '@/features/dashboard/rankings/components/position-badge';
-import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { cn } from '@/lib/utils';
 
 import { getFixtureLineup } from '../../mocks/fixture-lineups';
 import { findPlayerInLineup } from '../../types/fixture-lineup';
@@ -14,10 +15,10 @@ import type { PredictionFixtureItem } from '../../types/prediction-fixture';
 import { formatOfficialResult } from '../../utils/format-official-result';
 import {
   getPredictionActionLabel,
+  getPredictionStatusLabel,
   getPredictionUiState,
-  predictionUiStateClassName,
+  predictionUiTone,
 } from '../../utils/prediction-ui-state';
-import { PredictionStatePill } from '../prediction-state-pill';
 
 interface PredictionRowProps {
   fixture: PredictionFixtureItem;
@@ -25,7 +26,7 @@ interface PredictionRowProps {
 }
 
 function formatFixtureDate(date: string) {
-  return format(parseISO(date), "dd/MM - HH:mm", { locale: ptBR });
+  return format(parseISO(date), 'dd/MM - HH:mm', { locale: ptBR });
 }
 
 function getSelectedPlayerName(fixture: PredictionFixtureItem) {
@@ -45,7 +46,9 @@ export function PredictionRow({ fixture, onPredict }: PredictionRowProps) {
   const hasPrediction = fixture.prediction !== null;
   const uiState = getPredictionUiState(fixture);
   const isOpen = uiState === 'OPEN';
+  const tone = predictionUiTone[uiState];
   const actionLabel = getPredictionActionLabel(uiState, hasPrediction);
+  const ActionIcon = isOpen && hasPrediction ? Pencil : isOpen ? Target : undefined;
 
   return (
     <TableRow>
@@ -84,21 +87,19 @@ export function PredictionRow({ fixture, onPredict }: PredictionRowProps) {
         {getSelectedPlayerName(fixture)}
       </TableCell>
       <TableCell>
-        <PredictionStatePill state={uiState} />
+        <StatusBadge tone={tone}>
+          {getPredictionStatusLabel(uiState)}
+        </StatusBadge>
       </TableCell>
       <TableCell className='text-right'>
-        <Button
-          size='sm'
+        <TableActionBadge
+          tone={tone}
+          icon={ActionIcon}
           disabled={!isOpen}
           onClick={() => onPredict(fixture)}
-          className={cn(
-            'min-w-[88px] border-0 font-medium shadow-none',
-            predictionUiStateClassName[uiState],
-            !isOpen && 'cursor-not-allowed opacity-100',
-          )}
         >
           {actionLabel}
-        </Button>
+        </TableActionBadge>
       </TableCell>
     </TableRow>
   );

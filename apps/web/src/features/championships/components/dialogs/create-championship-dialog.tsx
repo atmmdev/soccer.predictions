@@ -1,8 +1,10 @@
 'use client';
 
+import { Download } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+import { ActionButton } from '@/components/ui/action-button';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -58,9 +60,7 @@ export function CreateChampionshipDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className='h-11 shrink-0 px-4 py-0'>
-          Importar Campeonato
-        </Button>
+        <ActionButton icon={Download}>Importar Campeonato</ActionButton>
       </DialogTrigger>
 
       <DialogContent className='sm:max-w-md'>

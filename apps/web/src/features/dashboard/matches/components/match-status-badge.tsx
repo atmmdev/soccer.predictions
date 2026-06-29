@@ -1,29 +1,17 @@
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/status-badge';
 
 interface MatchStatusBadgeProps {
   status: 'SCHEDULED' | 'LIVE' | 'FINISHED';
 }
 
+const config = {
+  SCHEDULED: { tone: 'neutral' as const, label: 'Agendado' },
+  LIVE: { tone: 'success' as const, label: 'Ao vivo' },
+  FINISHED: { tone: 'warning' as const, label: 'Finalizado' },
+};
+
 export function MatchStatusBadge({ status }: MatchStatusBadgeProps) {
-  if (status === 'SCHEDULED') {
-    return (
-      <Badge variant='secondary' className='mt-1 text-xs font-normal'>
-        Agendado
-      </Badge>
-    );
-  }
+  const { tone, label } = config[status];
 
-  if (status === 'LIVE') {
-    return (
-      <Badge className='mt-1 bg-primary text-xs font-normal hover:bg-primary'>
-        Ao vivo
-      </Badge>
-    );
-  }
-
-  return (
-    <Badge variant='outline' className='mt-1 text-xs font-normal'>
-      Finalizado
-    </Badge>
-  );
+  return <StatusBadge tone={tone}>{label}</StatusBadge>;
 }

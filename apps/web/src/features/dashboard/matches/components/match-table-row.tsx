@@ -5,6 +5,7 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import { Match } from '../types/match';
 import { MatchPredictions } from './match-predictions';
 import { MatchResult } from './match-results';
+import { MatchStatusBadge } from './match-status-badge';
 import { MatchTeams } from './match-teams';
 import { PointsBadge } from './points-badge';
 
@@ -23,7 +24,7 @@ export function MatchTableRow({ match }: MatchTableRowProps) {
         {formatMatchDate(match.date)}
       </TableCell>
       <TableCell>
-        <span className='text-muted-foreground text-xs'>{match.status}</span>
+        <MatchStatusBadge status={match.status} />
       </TableCell>
       <TableCell>
         <MatchTeams match={match} />

@@ -99,15 +99,24 @@
 - **Trocar** reabilita a lista; **Remover** limpa a seleção
 - Componente: `features/predictions/components/player-goal-picker.tsx`
 
-### Palpite — status e ação na tabela
+### Badges de status e pontuação
 
-| Estado | Condição | Status | Botão |
-|--------|----------|--------|-------|
-| Aberto | Dentro do prazo (10 min antes) | `Ao vivo` — verde claro / texto verde escuro | `Palpitar` ou `Editar` — mesmo estilo |
-| Bloqueado | Prazo expirado, jogo não encerrado | `Bloqueado` — vermelho claro / texto branco | `Bloqueado` (desabilitado) |
-| Encerrado | Partida finalizada | `Encerrado` — amarelo / texto preto | `Encerrado` (desabilitado) |
+Componente único: `components/ui/status-badge.tsx` — pill, fundo pastel, texto com contraste.
 
-Sem botão **Ver** — dados visíveis na própria tabela.
+| Tom | Uso | Estilo |
+|-----|-----|--------|
+| `success` | Ativo, ao vivo, palpite aberto, 4+ pts | `bg-primary/10 text-primary` |
+| `warning` | Encerrado, 1–3 pts, finalizado | `bg-amber-100 text-amber-700` |
+| `danger` | Bloqueado, 0 pts, inativo crítico | `bg-destructive/10 text-destructive` |
+| `neutral` | Inativo, agendado, sem dado (`—`) | `bg-muted text-muted-foreground` |
+
+Ações em tabela: `TableActionBadge` — mesmo visual do status, com ícone opcional.
+
+### Botões de ação (CTA)
+
+`ActionButton` — ícone + texto, variantes `soft` (verde sutil) e `soft-muted`.
+
+Ex.: Importar Campeonato, Criar Bolão.
 
 ## PWA (Semana 4)
 

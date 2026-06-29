@@ -34,7 +34,7 @@ function PlayerButton({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        'w-full rounded-lg border px-3 py-2 text-left transition-colors',
+        'w-full cursor-pointer rounded-lg border px-3 py-2 text-left transition-colors',
         'hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40',
         isSelected && 'border-primary bg-primary/5 ring-1 ring-primary/30',
       )}

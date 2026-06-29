@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/status-badge';
 
 import type { PoolStatus } from '../../types/pool';
 
@@ -10,8 +10,8 @@ export function PoolStatusBadge({ status }: PoolStatusBadgeProps) {
   const isActive = status === 'ACTIVE';
 
   return (
-    <Badge variant={isActive ? 'default' : 'secondary'}>
+    <StatusBadge tone={isActive ? 'success' : 'neutral'}>
       {isActive ? 'Ativo' : 'Inativo'}
-    </Badge>
+    </StatusBadge>
   );
 }

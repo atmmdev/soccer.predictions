@@ -1,3 +1,5 @@
+import type { StatusTone } from '@/components/ui/status-badge';
+
 import type { PredictionFixtureItem } from '../types/prediction-fixture';
 import { canEditPrediction } from './prediction-window';
 
@@ -44,8 +46,8 @@ export function getPredictionActionLabel(
   return 'Encerrado';
 }
 
-export const predictionUiStateClassName: Record<PredictionUiState, string> = {
-  OPEN: 'bg-green-100 text-green-800',
-  BLOCKED: 'bg-red-400 text-white',
-  FINISHED: 'bg-yellow-300 text-black',
+export const predictionUiTone: Record<PredictionUiState, StatusTone> = {
+  OPEN: 'success',
+  BLOCKED: 'danger',
+  FINISHED: 'warning',
 };
