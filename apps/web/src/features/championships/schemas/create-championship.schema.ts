@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 export const createChampionshipSchema = z.object({
-  leagueId: z.number(),
-  country: z.string({message: 'Selecione um país'}),
+  country: z.string().min(1, 'Selecione um país'),
+  leagueId: z.number().min(1, 'Selecione um campeonato'),
   season: z.number(),
   active: z.boolean(),
 });

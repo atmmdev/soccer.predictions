@@ -3,13 +3,15 @@
 import { Card, CardContent } from '@/components/ui/card';
 
 import { useChampionshipFilters } from '../hooks/use-championship-filters';
+import { useChampionships } from '../hooks/use-championships';
 import { ChampionshipFilters } from './filters/championship-filters';
 import { ChampionshipTable } from './table/championship-table';
 import { useChampionshipTable } from './table/hooks/use-championship-table';
 
 export function ChampionshipList() {
+  const { championships, createChampionship } = useChampionships();
   const { search, setSearch, status, setStatus, filteredChampionships } =
-    useChampionshipFilters();
+    useChampionshipFilters(championships);
 
   const {
     rows,
@@ -39,6 +41,7 @@ export function ChampionshipList() {
           onSeasonChange={setSeason}
           seasons={seasons}
           resultCount={rows.length}
+          onCreateChampionship={createChampionship}
         />
         <ChampionshipTable
           rows={rows}

@@ -1,10 +1,11 @@
+import { getCountryFlag } from './countries';
 import { Championship } from '../types/championship';
 
 export const championships: Championship[] = [
   {
     id: 1,
-    leagueId: 1,
-    flags: '',
+    leagueId: 71,
+    flags: getCountryFlag('Brasil'),
     type: 'LEAGUE',
     name: 'Brasileirão Série A',
     country: 'Brasil',
@@ -14,7 +15,7 @@ export const championships: Championship[] = [
   {
     id: 2,
     leagueId: 2,
-    flags: '',
+    flags: '🏆',
     type: 'CUP',
     name: 'Champions League',
     country: 'Europa',
@@ -23,8 +24,8 @@ export const championships: Championship[] = [
   },
   {
     id: 3,
-    leagueId: 3,
-    flags: '',
+    leagueId: 13,
+    flags: '🏆',
     type: 'CUP',
     name: 'Libertadores',
     country: 'América do Sul',

@@ -1,7 +1,7 @@
 'use client';
 
-import { Label } from '@/components/ui/label';
 import { CreateChampionshipDialog } from '../dialogs/create-championship-dialog';
+import type { CreateChampionshipFormData } from '../../schemas/create-championship.schema';
 import { ChampionshipCountrySelect } from './championship-country-select';
 import { ChampionshipSearch } from './championship-search';
 import { ChampionshipSeasonSelect } from './championship-season-select';
@@ -19,6 +19,7 @@ interface ChampionshipFiltersProps {
   onSeasonChange: (value: string) => void;
   seasons: number[];
   resultCount: number;
+  onCreateChampionship: (data: CreateChampionshipFormData) => void;
 }
 
 export function ChampionshipFilters({
@@ -33,6 +34,7 @@ export function ChampionshipFilters({
   onSeasonChange,
   seasons,
   resultCount,
+  onCreateChampionship,
 }: ChampionshipFiltersProps) {
   return (
     <>
@@ -53,7 +55,7 @@ export function ChampionshipFilters({
           seasons={seasons}
         />
         <ChampionshipStatusSelect value={status} onChange={onStatusChange} />
-        <CreateChampionshipDialog />
+        <CreateChampionshipDialog onCreate={onCreateChampionship} />
       </div>
 
       <p className='text-muted-foreground xl:ml-auto text-xs px-2'>

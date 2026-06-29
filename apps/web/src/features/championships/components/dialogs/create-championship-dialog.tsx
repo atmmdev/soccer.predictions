@@ -1,5 +1,9 @@
 'use client';
 
+import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -7,154 +11,140 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-
-import { Switch } from '@/components/ui/switch';
-
-import { Button } from '@/components/ui/button';
-
 import { useCreateChampionship } from '../../hooks/use-create-championship';
-import { ChampionshipService } from '../../services/championship.service';
+import { CURRENT_SEASON } from '../../mocks/seasons';
 import { leagues } from '../../mocks/leagues';
+import type { CreateChampionshipFormData } from '../../schemas/create-championship.schema';
+import { ChampionshipActiveSwitch } from './championship-active-switch';
+import { ChampionshipCountrySelect } from './championship-country-select';
+import { ChampionshipLeagueSelect } from './championship-league-select';
+import { ChampionshipSeasonSelect } from './championship-season-select';
 
-export function CreateChampionshipDialog() {
+interface CreateChampionshipDialogProps {
+  onCreate: (data: CreateChampionshipFormData) => void;
+}
+
+export function CreateChampionshipDialog({
+  onCreate,
+}: CreateChampionshipDialogProps) {
+  const [open, setOpen] = useState(false);
   const form = useCreateChampionship();
+  const country = form.watch('country');
 
-  function onSubmit(value: any) {
-    ChampionshipService.create(value);
+  const filteredLeagues = useMemo(
+    () => leagues.filter(league => league.country === country),
+    [country],
+  );
+
+  useEffect(() => {
+    form.setValue('leagueId', 0);
+    form.setValue('season', CURRENT_SEASON);
+  }, [country, form.setValue]);
+
+  function handleOpenChange(nextOpen: boolean) {
+    setOpen(nextOpen);
+
+    if (!nextOpen) {
+      form.reset();
+    }
+  }
+
+  function onSubmit(data: CreateChampionshipFormData) {
+    onCreate(data);
+    toast.success('Campeonato importado com sucesso!');
+    form.reset();
+    setOpen(false);
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button className='h-11 shrink-0 px-4 py-0'>
           Importar Campeonato
         </Button>
       </DialogTrigger>
 
-      <DialogContent>
+      <DialogContent className='sm:max-w-md'>
         <DialogHeader>
           <DialogTitle>Importar Campeonato</DialogTitle>
         </DialogHeader>
 
-        {/* Form aqui */}
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+            <FormField
+              control={form.control}
+              name='country'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>País</FormLabel>
+                  <ChampionshipCountrySelect
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name='leagueId'
               render={({ field }) => (
-                <FormItem className='mb-3'>
+                <FormItem>
                   <FormLabel>Campeonato</FormLabel>
-
-                  <Select
-                    value={field.value.toString()}
-                    onValueChange={value => field.onChange(Number(value))}
-                  >
-                    <FormControl className='w-full'>
-                      <SelectTrigger size='lg' className='w-full'>
-                        <SelectValue placeholder='Selecione' />
-                      </SelectTrigger>
-                    </FormControl>
-
-                    <SelectContent>
-                      {leagues.map(league => (
-                        <SelectItem
-                          key={league.id}
-                          value={league.id.toString()}
-                        >
-                          {league.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
+                  <ChampionshipLeagueSelect
+                    resetKey={country}
+                    value={field.value > 0 ? field.value.toString() : undefined}
+                    onChange={value => field.onChange(Number(value))}
+                    leagues={filteredLeagues}
+                    disabled={!country}
+                  />
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {/* <FormField
-              control={form.control}
-              name='country'
-              render={({ field }) => (
-                <FormItem className='mb-3'>
-                  <FormLabel>País</FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <FormControl className='w-full'>
-                      <SelectTrigger size='lg' className='w-full'>
-                        <SelectValue placeholder='Selecione' />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value='Brasil'>Brasil</SelectItem>
-                      <SelectItem value='Argentina'>Argentina</SelectItem>
-                      <SelectItem value='Inglaterra'>Inglaterra</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
+
             <FormField
               control={form.control}
               name='season'
               render={({ field }) => (
-                <FormItem className='mb-3'>
+                <FormItem>
                   <FormLabel>Temporada</FormLabel>
-                  <Select
+                  <ChampionshipSeasonSelect
                     value={field.value.toString()}
-                    onValueChange={value => field.onChange(Number(value))}
-                  >
-                    <FormControl className='w-full'>
-                      <SelectTrigger size='lg' className='w-full'>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-
-                    <SelectContent>
-                      <SelectItem value='2025'>2025</SelectItem>
-                      <SelectItem value='2026'>2026</SelectItem>
-                      <SelectItem value='2027'>2027</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    onChange={value => field.onChange(Number(value))}
+                    disabled={!country}
+                  />
                   <FormMessage />
-                </FormItem>
-              )}
-            /> */}
-            <FormField
-              control={form.control}
-              name='active'
-              render={({ field }) => (
-                <FormItem className='flex items-center p-3'>
-                  <FormLabel>Deseja ativar o Campeonato?</FormLabel>
-
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
                 </FormItem>
               )}
             />
 
+            <FormField
+              control={form.control}
+              name='active'
+              render={({ field }) => (
+                <ChampionshipActiveSwitch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
+            />
+
             <div className='flex justify-end gap-2'>
-              <Button variant='outline' type='button'>
+              <Button
+                variant='outline'
+                type='button'
+                onClick={() => handleOpenChange(false)}
+              >
                 Cancelar
               </Button>
               <Button type='submit'>Importar</Button>
