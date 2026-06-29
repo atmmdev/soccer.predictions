@@ -1,0 +1,222 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum UserRole {
+  ADMIN
+  PARTICIPANT
+}
+
+enum ChampionshipType {
+  LEAGUE
+  CUP
+}
+
+enum ChampionshipStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum FixtureStatus {
+  SCHEDULED
+  LIVE
+  FINISHED
+  POSTPONED
+  CANCELLED
+}
+
+enum PoolStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum PoolUserStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+enum CupPhase {
+  GROUP
+  ROUND_OF_32
+  ROUND_OF_16
+  QUARTER_FINAL
+  SEMI_FINAL
+  THIRD_PLACE
+  FINAL
+}
+
+enum ScoringAchievementType {
+  EXACT_SCORE
+  WINNER_SCORE
+  LOSER_SCORE
+  CORRECT_WINNER
+  CORRECT_DRAW
+  PLAYER_GOAL
+  PLAYER_HAT_TRICK
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  password  String
+  role      UserRole @default(PARTICIPANT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  poolUsers    PoolUser[]
+  predictions  Prediction[]
+  pointHistory PointHistory[]
+}
+
+model League {
+  id         Int      @id @default(autoincrement())
+  externalId Int      @unique
+  name       String
+  country    String
+  type       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  championships Championship[]
+}
+
+model Championship {
+  id               Int                @id @default(autoincrement())
+  leagueId         Int
+  season           Int
+  name             String
+  country          String
+  flags            String             @default("")
+  type             ChampionshipType
+  status           ChampionshipStatus @default(ACTIVE)
+  isCurrentSeason  Boolean            @default(false)
+  allowNewPools    Boolean            @default(true)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  league   League    @relation(fields: [leagueId], references: [id])
+  fixtures Fixture[]
+  pools    Pool[]
+
+  @@index([season, status])
+}
+
+model Team {
+  id         Int      @id @default(autoincrement())
+  externalId Int      @unique
+  name       String
+  logo       String   @default("")
+  country    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  homeFixtures Fixture[] @relation("HomeTeam")
+  awayFixtures Fixture[] @relation("AwayTeam")
+}
+
+model Fixture {
+  id             Int           @id @default(autoincrement())
+  externalId     Int           @unique
+  championshipId Int
+  homeTeamId     Int
+  awayTeamId     Int
+  date           DateTime
+  status         FixtureStatus @default(SCHEDULED)
+  homeScore      Int?
+  awayScore      Int?
+  round          Int?
+  phase          CupPhase?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  championship Championship   @relation(fields: [championshipId], references: [id])
+  homeTeam     Team           @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam     Team           @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  predictions  Prediction[]
+  pointHistory PointHistory[]
+
+  @@index([championshipId, round, status])
+}
+
+model Pool {
+  id             Int        @id @default(autoincrement())
+  championshipId Int
+  name           String
+  inviteCode     String     @unique
+  status         PoolStatus @default(ACTIVE)
+  scoring        Json
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  championship Championship   @relation(fields: [championshipId], references: [id])
+  poolUsers    PoolUser[]
+  invitations  Invitation[]
+  predictions  Prediction[]
+  pointHistory PointHistory[]
+}
+
+model PoolUser {
+  id       Int            @id @default(autoincrement())
+  poolId   Int
+  userId   Int
+  status   PoolUserStatus @default(ACTIVE)
+  joinedAt DateTime       @default(now())
+
+  pool Pool @relation(fields: [poolId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([poolId, userId])
+}
+
+model Invitation {
+  id        Int       @id @default(autoincrement())
+  poolId    Int
+  code      String    @unique
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+
+  pool Pool @relation(fields: [poolId], references: [id])
+}
+
+model Prediction {
+  id                 Int      @id @default(autoincrement())
+  poolId             Int
+  userId             Int
+  fixtureId          Int
+  predictedHomeScore Int
+  predictedAwayScore Int
+  selectedPlayerId   Int?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  pool    Pool    @relation(fields: [poolId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  fixture Fixture @relation(fields: [fixtureId], references: [id])
+
+  @@unique([poolId, userId, fixtureId])
+}
+
+model PointHistory {
+  id              Int                     @id @default(autoincrement())
+  poolId          Int
+  userId          Int
+  fixtureId       Int
+  points          Int
+  achievementType ScoringAchievementType?
+  breakdown       Json?
+  createdAt       DateTime                @default(now())
+
+  pool    Pool    @relation(fields: [poolId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  fixture Fixture @relation(fields: [fixtureId], references: [id])
+
+  @@index([poolId, userId])
+  @@index([poolId, userId, fixtureId])
+}

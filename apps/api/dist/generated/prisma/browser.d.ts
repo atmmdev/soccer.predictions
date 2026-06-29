@@ -1,0 +1,14 @@
+import * as Prisma from './internal/prismaNamespaceBrowser.js';
+export { Prisma };
+export * as $Enums from './enums.js';
+export * from './enums.js';
+export type User = Prisma.UserModel;
+export type League = Prisma.LeagueModel;
+export type Championship = Prisma.ChampionshipModel;
+export type Team = Prisma.TeamModel;
+export type Fixture = Prisma.FixtureModel;
+export type Pool = Prisma.PoolModel;
+export type PoolUser = Prisma.PoolUserModel;
+export type Invitation = Prisma.InvitationModel;
+export type Prediction = Prisma.PredictionModel;
+export type PointHistory = Prisma.PointHistoryModel;
