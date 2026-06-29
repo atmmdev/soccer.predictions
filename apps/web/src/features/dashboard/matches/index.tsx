@@ -12,7 +12,7 @@ export function MatchSections() {
         <CardHeader className='flex flex-row items-center justify-between border-b'>
           <h2 className='section-title mb-0'>Próximos Jogos e Meus Palpites</h2>
           <Link
-            href='/matches'
+            href='/predictions'
             className='text-primary text-sm font-medium hover:underline'
           >
             Ver todos

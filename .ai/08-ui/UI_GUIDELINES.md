@@ -99,6 +99,16 @@
 - **Trocar** reabilita a lista; **Remover** limpa a seleção
 - Componente: `features/predictions/components/player-goal-picker.tsx`
 
+### Palpite — status e ação na tabela
+
+| Estado | Condição | Status | Botão |
+|--------|----------|--------|-------|
+| Aberto | Dentro do prazo (10 min antes) | `Ao vivo` — verde claro / texto verde escuro | `Palpitar` ou `Editar` — mesmo estilo |
+| Bloqueado | Prazo expirado, jogo não encerrado | `Bloqueado` — vermelho claro / texto branco | `Bloqueado` (desabilitado) |
+| Encerrado | Partida finalizada | `Encerrado` — amarelo / texto preto | `Encerrado` (desabilitado) |
+
+Sem botão **Ver** — dados visíveis na própria tabela.
+
 ## PWA (Semana 4)
 
 - manifest + service worker

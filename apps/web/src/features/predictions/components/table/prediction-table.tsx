@@ -13,15 +13,18 @@ import { PredictionRow } from './prediction-row';
 
 interface PredictionTableProps {
   rows: PredictionFixtureItem[];
-  onEdit: (fixture: PredictionFixtureItem) => void;
+  onPredict: (fixture: PredictionFixtureItem) => void;
 }
 
-export function PredictionTable({ rows, onEdit }: PredictionTableProps) {
+export function PredictionTable({ rows, onPredict }: PredictionTableProps) {
   if (rows.length === 0) {
     return (
       <div className='flex items-center justify-center py-12'>
-        <p className='text-muted-foreground text-sm'>
+        <p className='text-muted-foreground text-sm text-center'>
           Nenhum jogo encontrado com os filtros selecionados.
+          <br />
+          Tente limpar a busca e usar &quot;Todos&quot; nos filtros de bolão e
+          palpite.
         </p>
       </div>
     );
@@ -64,7 +67,7 @@ export function PredictionTable({ rows, onEdit }: PredictionTableProps) {
             <PredictionRow
               key={fixture.id}
               fixture={fixture}
-              onEdit={onEdit}
+              onPredict={onPredict}
             />
           ))}
         </TableBody>

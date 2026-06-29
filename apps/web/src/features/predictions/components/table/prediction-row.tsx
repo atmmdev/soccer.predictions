@@ -6,20 +6,22 @@ import { ptBR } from 'date-fns/locale';
 import { PositionBadge } from '@/features/dashboard/rankings/components/position-badge';
 import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 
 import { getFixtureLineup } from '../../mocks/fixture-lineups';
 import { findPlayerInLineup } from '../../types/fixture-lineup';
 import type { PredictionFixtureItem } from '../../types/prediction-fixture';
-import {
-  canEditPrediction,
-  getPredictionLockMessage,
-} from '../../utils/prediction-window';
 import { formatOfficialResult } from '../../utils/format-official-result';
-import { PredictionMatchStatusBadge } from '../prediction-match-status-badge';
+import {
+  getPredictionActionLabel,
+  getPredictionUiState,
+  predictionUiStateClassName,
+} from '../../utils/prediction-ui-state';
+import { PredictionStatePill } from '../prediction-state-pill';
 
 interface PredictionRowProps {
   fixture: PredictionFixtureItem;
-  onEdit: (fixture: PredictionFixtureItem) => void;
+  onPredict: (fixture: PredictionFixtureItem) => void;
 }
 
 function formatFixtureDate(date: string) {
@@ -39,22 +41,11 @@ function getSelectedPlayerName(fixture: PredictionFixtureItem) {
   return selected?.player.name ?? '—';
 }
 
-export function PredictionRow({ fixture, onEdit }: PredictionRowProps) {
-  const editable = canEditPrediction(fixture);
+export function PredictionRow({ fixture, onPredict }: PredictionRowProps) {
   const hasPrediction = fixture.prediction !== null;
-  const lockMessage = getPredictionLockMessage(fixture);
-
-  function getActionLabel() {
-    if (editable) {
-      return hasPrediction ? 'Editar' : 'Palpitar';
-    }
-
-    if (hasPrediction) {
-      return 'Ver';
-    }
-
-    return 'Encerrado';
-  }
+  const uiState = getPredictionUiState(fixture);
+  const isOpen = uiState === 'OPEN';
+  const actionLabel = getPredictionActionLabel(uiState, hasPrediction);
 
   return (
     <TableRow>
@@ -93,17 +84,20 @@ export function PredictionRow({ fixture, onEdit }: PredictionRowProps) {
         {getSelectedPlayerName(fixture)}
       </TableCell>
       <TableCell>
-        <PredictionMatchStatusBadge status={fixture.matchStatus} />
+        <PredictionStatePill state={uiState} />
       </TableCell>
       <TableCell className='text-right'>
         <Button
-          variant='outline'
           size='sm'
-          disabled={!editable && !hasPrediction}
-          title={lockMessage ?? undefined}
-          onClick={() => onEdit(fixture)}
+          disabled={!isOpen}
+          onClick={() => onPredict(fixture)}
+          className={cn(
+            'min-w-[88px] border-0 font-medium shadow-none',
+            predictionUiStateClassName[uiState],
+            !isOpen && 'cursor-not-allowed opacity-100',
+          )}
         >
-          {getActionLabel()}
+          {actionLabel}
         </Button>
       </TableCell>
     </TableRow>

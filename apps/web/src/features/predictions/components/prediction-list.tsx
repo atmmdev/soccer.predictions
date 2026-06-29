@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 
 import { usePredictionList } from '../hooks/use-prediction-list';
 import type { PredictionFixtureItem } from '../types/prediction-fixture';
+import { canEditPrediction } from '../utils/prediction-window';
 import { SubmitPredictionDialog } from './dialogs/submit-prediction-dialog';
 import { PredictionFilters } from './filters/prediction-filters';
 import { PredictionTable } from './table/prediction-table';
@@ -16,7 +17,11 @@ export function PredictionList() {
   const [selectedFixture, setSelectedFixture] =
     useState<PredictionFixtureItem | null>(null);
 
-  function handleEdit(fixture: PredictionFixtureItem) {
+  function handlePredict(fixture: PredictionFixtureItem) {
+    if (!canEditPrediction(fixture)) {
+      return;
+    }
+
     setSelectedFixture(fixture);
     setDialogOpen(true);
   }
@@ -45,7 +50,7 @@ export function PredictionList() {
           />
           <PredictionTable
             rows={searchFilters.filteredFixtures}
-            onEdit={handleEdit}
+            onPredict={handlePredict}
           />
         </CardContent>
       </Card>
