@@ -1,12 +1,22 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import type { Championship } from '../types/championship';
 
+const DEFAULT_STATUS = 'all';
+
 export function useChampionshipSearchFilters(items: Championship[]) {
   const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('all');
+  const [status, setStatus] = useState(DEFAULT_STATUS);
+
+  const hasActiveFilters =
+    search.trim().length > 0 || status !== DEFAULT_STATUS;
+
+  const clearFilters = useCallback(() => {
+    setSearch('');
+    setStatus(DEFAULT_STATUS);
+  }, []);
 
   const filteredChampionships = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -18,7 +28,7 @@ export function useChampionshipSearchFilters(items: Championship[]) {
         championship.country.toLowerCase().includes(query);
 
       const matchesStatus =
-        status === 'all' ||
+        status === DEFAULT_STATUS ||
         (status === 'active' && championship.status === 'ACTIVE') ||
         (status === 'inactive' && championship.status === 'INACTIVE');
 
@@ -32,5 +42,7 @@ export function useChampionshipSearchFilters(items: Championship[]) {
     status,
     setStatus,
     filteredChampionships,
+    hasActiveFilters,
+    clearFilters,
   };
 }

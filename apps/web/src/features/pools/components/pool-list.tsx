@@ -18,6 +18,8 @@ export function PoolList() {
           status={searchFilters.status}
           onStatusChange={searchFilters.setStatus}
           resultCount={tableState.rows.length}
+          hasActiveFilters={searchFilters.hasActiveFilters}
+          onClearFilters={searchFilters.clearFilters}
           onCreatePool={createPool}
         />
         <PoolTable

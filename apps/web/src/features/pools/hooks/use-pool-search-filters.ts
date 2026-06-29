@@ -1,12 +1,22 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import type { Pool } from '../types/pool';
 
+const DEFAULT_STATUS = 'all';
+
 export function usePoolSearchFilters(items: Pool[]) {
   const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('all');
+  const [status, setStatus] = useState(DEFAULT_STATUS);
+
+  const hasActiveFilters =
+    search.trim().length > 0 || status !== DEFAULT_STATUS;
+
+  const clearFilters = useCallback(() => {
+    setSearch('');
+    setStatus(DEFAULT_STATUS);
+  }, []);
 
   const filteredPools = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -19,7 +29,7 @@ export function usePoolSearchFilters(items: Pool[]) {
         pool.inviteCode.toLowerCase().includes(query);
 
       const matchesStatus =
-        status === 'all' ||
+        status === DEFAULT_STATUS ||
         (status === 'active' && pool.status === 'ACTIVE') ||
         (status === 'inactive' && pool.status === 'INACTIVE');
 
@@ -33,5 +43,7 @@ export function usePoolSearchFilters(items: Pool[]) {
     status,
     setStatus,
     filteredPools,
+    hasActiveFilters,
+    clearFilters,
   };
 }

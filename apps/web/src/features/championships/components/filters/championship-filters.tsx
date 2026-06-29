@@ -1,5 +1,7 @@
 'use client';
 
+import { ClearFiltersButton } from '@/components/ui/clear-filters-button';
+
 import type { ChampionshipFiltersProps } from '../../types/championship-filters';
 import { CreateChampionshipDialog } from '../dialogs/create-championship-dialog';
 import { ChampionshipCountrySelect } from './championship-country-select';
@@ -19,15 +21,17 @@ export function ChampionshipFilters({
   onSeasonChange,
   seasons,
   resultCount,
+  hasActiveFilters,
+  onClearFilters,
   onCreateChampionship,
 }: ChampionshipFiltersProps) {
   return (
     <>
-      <div className='flex flex-col gap-3 xl:flex-row xl:items-center'>
+      <div className='flex flex-col gap-3 xl:flex-row xl:flex-wrap xl:items-center'>
         <ChampionshipSearch
           value={search}
           onChange={onSearchChange}
-          className='xl:flex-1'
+          className='xl:min-w-[200px] xl:flex-1'
         />
         <ChampionshipCountrySelect
           value={country}
@@ -40,6 +44,10 @@ export function ChampionshipFilters({
           seasons={seasons}
         />
         <ChampionshipStatusSelect value={status} onChange={onStatusChange} />
+        <ClearFiltersButton
+          onClick={onClearFilters}
+          disabled={!hasActiveFilters}
+        />
         <CreateChampionshipDialog onCreate={onCreateChampionship} />
       </div>
 

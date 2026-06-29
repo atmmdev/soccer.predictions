@@ -7,7 +7,7 @@ import { ChampionshipFilters } from './filters/championship-filters';
 import { ChampionshipTable } from './table/championship-table';
 
 export function ChampionshipList() {
-  const { createChampionship, searchFilters, tableState } =
+  const { createChampionship, searchFilters, tableState, hasActiveFilters, clearFilters } =
     useChampionshipList();
 
   return (
@@ -25,6 +25,8 @@ export function ChampionshipList() {
           onSeasonChange={tableState.setSeason}
           seasons={tableState.seasons}
           resultCount={tableState.rows.length}
+          hasActiveFilters={hasActiveFilters}
+          onClearFilters={clearFilters}
           onCreateChampionship={createChampionship}
         />
         <ChampionshipTable

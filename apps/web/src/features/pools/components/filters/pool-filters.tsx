@@ -1,5 +1,7 @@
 'use client';
 
+import { ClearFiltersButton } from '@/components/ui/clear-filters-button';
+
 import type { CreatePoolFormData } from '../../schemas/create-pool.schema';
 import { CreatePoolDialog } from '../dialogs/create-pool-dialog';
 import { PoolSearch } from './pool-search';
@@ -11,6 +13,8 @@ interface PoolFiltersProps {
   status: string;
   onStatusChange: (value: string) => void;
   resultCount: number;
+  hasActiveFilters: boolean;
+  onClearFilters: () => void;
   onCreatePool: (data: CreatePoolFormData) => void;
 }
 
@@ -20,17 +24,23 @@ export function PoolFilters({
   status,
   onStatusChange,
   resultCount,
+  hasActiveFilters,
+  onClearFilters,
   onCreatePool,
 }: PoolFiltersProps) {
   return (
     <>
-      <div className='flex flex-col gap-3 xl:flex-row xl:items-center'>
+      <div className='flex flex-col gap-3 xl:flex-row xl:flex-wrap xl:items-center'>
         <PoolSearch
           value={search}
           onChange={onSearchChange}
-          className='xl:flex-1'
+          className='xl:min-w-[200px] xl:flex-1'
         />
         <PoolStatusSelect value={status} onChange={onStatusChange} />
+        <ClearFiltersButton
+          onClick={onClearFilters}
+          disabled={!hasActiveFilters}
+        />
         <CreatePoolDialog onCreate={onCreatePool} />
       </div>
 

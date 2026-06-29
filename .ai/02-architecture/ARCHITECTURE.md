@@ -78,6 +78,7 @@ apps/web/src/
 ├── features/
 │   ├── championships/     # types → mocks → components → hooks → schemas → services
 │   ├── dashboard/
+│   ├── matches/             # types → mocks → filters → table → page
 │   ├── predictions/         # types → mocks → dialogs → hooks → services
 │   └── ...
 ├── hooks/

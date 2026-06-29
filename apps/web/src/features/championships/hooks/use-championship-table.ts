@@ -1,17 +1,28 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import type { Championship } from '../types/championship';
 
 export type ChampionshipSortKey = 'name' | 'country' | 'season' | 'status';
 export type SortDirection = 'asc' | 'desc';
 
+const DEFAULT_COUNTRY = 'all';
+const DEFAULT_SEASON = 'all';
+
 export function useChampionshipTable(championships: Championship[]) {
-  const [country, setCountry] = useState('all');
-  const [season, setSeason] = useState('all');
+  const [country, setCountry] = useState(DEFAULT_COUNTRY);
+  const [season, setSeason] = useState(DEFAULT_SEASON);
   const [sortKey, setSortKey] = useState<ChampionshipSortKey>('name');
   const [sortDir, setSortDir] = useState<SortDirection>('asc');
+
+  const hasActiveFilters =
+    country !== DEFAULT_COUNTRY || season !== DEFAULT_SEASON;
+
+  const clearFilters = useCallback(() => {
+    setCountry(DEFAULT_COUNTRY);
+    setSeason(DEFAULT_SEASON);
+  }, []);
 
   const countries = useMemo(
     () => [...new Set(championships.map(item => item.country))].sort(),
@@ -28,9 +39,10 @@ export function useChampionshipTable(championships: Championship[]) {
 
   const rows = useMemo(() => {
     const filtered = championships.filter(item => {
-      const matchesCountry = country === 'all' || item.country === country;
+      const matchesCountry =
+        country === DEFAULT_COUNTRY || item.country === country;
       const matchesSeason =
-        season === 'all' || item.season === Number(season);
+        season === DEFAULT_SEASON || item.season === Number(season);
       return matchesCountry && matchesSeason;
     });
 
@@ -77,5 +89,7 @@ export function useChampionshipTable(championships: Championship[]) {
     sortKey,
     sortDir,
     toggleSort,
+    hasActiveFilters,
+    clearFilters,
   };
 }

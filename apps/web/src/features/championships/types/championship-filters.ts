@@ -20,5 +20,7 @@ export interface ChampionshipFiltersProps
   extends ChampionshipSearchFiltersProps,
     ChampionshipTableFiltersProps {
   resultCount: number;
+  hasActiveFilters: boolean;
+  onClearFilters: () => void;
   onCreateChampionship: (data: CreateChampionshipFormData) => void;
 }

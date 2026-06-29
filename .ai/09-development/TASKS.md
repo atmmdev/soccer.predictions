@@ -42,6 +42,7 @@
 - [~] Feature `pools/` completa (padrão Championships)
 - [x] Formulário `PoolScoringConfig` — regras base + multiplicadores CUP (templates LEAGUE/CUP)
 - [~] Feature `predictions/` — lista + dialog palpite + `PlayerGoalPicker` (mock)
+- [~] Feature `matches/` — lista de jogos + filtros (mock)
 - [ ] `apps/api` NestJS + Prisma + MySQL + Docker Compose
 - [ ] Clean Architecture: `identity/` + `betting/`
 - [ ] Auth: register/login JWT

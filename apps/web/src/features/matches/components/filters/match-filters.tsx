@@ -6,33 +6,41 @@ import { ClearFiltersButton } from '@/components/ui/clear-filters-button';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
 
-import type { PredictionFilterStatus } from '../../hooks/use-prediction-search-filters';
+import type { MatchFilterStatus } from '../../hooks/use-match-search-filters';
 
-interface PredictionFiltersProps {
+interface MatchFiltersProps {
   search: string;
   onSearchChange: (value: string) => void;
-  status: PredictionFilterStatus;
-  onStatusChange: (value: PredictionFilterStatus) => void;
-  poolName: string;
-  onPoolNameChange: (value: string) => void;
-  poolOptions: string[];
+  status: MatchFilterStatus;
+  onStatusChange: (value: MatchFilterStatus) => void;
+  championshipName: string;
+  onChampionshipNameChange: (value: string) => void;
+  dateFrom: string;
+  onDateFromChange: (value: string) => void;
+  dateTo: string;
+  onDateToChange: (value: string) => void;
+  championshipOptions: string[];
   resultCount: number;
   hasActiveFilters: boolean;
   onClearFilters: () => void;
 }
 
-export function PredictionFilters({
+export function MatchFilters({
   search,
   onSearchChange,
   status,
   onStatusChange,
-  poolName,
-  onPoolNameChange,
-  poolOptions,
+  championshipName,
+  onChampionshipNameChange,
+  dateFrom,
+  onDateFromChange,
+  dateTo,
+  onDateToChange,
+  championshipOptions,
   resultCount,
   hasActiveFilters,
   onClearFilters,
-}: PredictionFiltersProps) {
+}: MatchFiltersProps) {
   return (
     <>
       <div className='flex flex-col gap-3 xl:flex-row xl:flex-wrap xl:items-center'>
@@ -47,12 +55,12 @@ export function PredictionFilters({
         </div>
 
         <NativeSelect
-          value={poolName}
-          onChange={event => onPoolNameChange(event.target.value)}
-          className='xl:w-52'
+          value={championshipName}
+          onChange={event => onChampionshipNameChange(event.target.value)}
+          className='xl:w-56'
         >
-          <option value='ALL'>Todos os bolões</option>
-          {poolOptions.map(name => (
+          <option value='ALL'>Todos os campeonatos</option>
+          {championshipOptions.map(name => (
             <option key={name} value={name}>
               {name}
             </option>
@@ -62,14 +70,36 @@ export function PredictionFilters({
         <NativeSelect
           value={status}
           onChange={event =>
-            onStatusChange(event.target.value as PredictionFilterStatus)
+            onStatusChange(event.target.value as MatchFilterStatus)
           }
           className='xl:w-44'
         >
           <option value='ALL'>Todos</option>
-          <option value='PENDING'>Sem palpite</option>
-          <option value='SUBMITTED'>Com palpite</option>
+          <option value='SCHEDULED'>Agendado</option>
+          <option value='LIVE'>Ao vivo</option>
+          <option value='FINISHED'>Encerrado</option>
         </NativeSelect>
+
+        <Input
+          id='match-date-from'
+          type='date'
+          aria-label='Data inicial'
+          title='Data inicial'
+          className='h-11 xl:w-40'
+          value={dateFrom}
+          onChange={event => onDateFromChange(event.target.value)}
+        />
+
+        <Input
+          id='match-date-to'
+          type='date'
+          aria-label='Data final'
+          title='Data final'
+          className='h-11 xl:w-40'
+          min={dateFrom || undefined}
+          value={dateTo}
+          onChange={event => onDateToChange(event.target.value)}
+        />
 
         <ClearFiltersButton
           onClick={onClearFilters}

@@ -26,11 +26,11 @@ export function PoolActions({ pool }: PoolActionsProps) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align='end'>
-        <DropdownMenuItem disabled>Ver participantes</DropdownMenuItem>
-        <DropdownMenuItem disabled>
+        <DropdownMenuItem disabled  className='text-xs'>Participantes</DropdownMenuItem>
+        <DropdownMenuItem disabled  className='text-xs'>
           Copiar código {pool.inviteCode}
         </DropdownMenuItem>
-        <DropdownMenuItem disabled>
+        <DropdownMenuItem disabled  className='text-xs'>
           {pool.status === 'ACTIVE' ? 'Desativar' : 'Ativar'}
         </DropdownMenuItem>
       </DropdownMenuContent>

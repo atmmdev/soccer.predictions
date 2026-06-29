@@ -47,6 +47,8 @@ export function PredictionList() {
             onPoolNameChange={searchFilters.setPoolName}
             poolOptions={searchFilters.poolOptions}
             resultCount={searchFilters.filteredFixtures.length}
+            hasActiveFilters={searchFilters.hasActiveFilters}
+            onClearFilters={searchFilters.clearFilters}
           />
           <PredictionTable
             rows={searchFilters.filteredFixtures}
