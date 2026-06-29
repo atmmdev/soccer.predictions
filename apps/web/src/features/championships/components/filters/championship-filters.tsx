@@ -1,26 +1,11 @@
 'use client';
 
+import type { ChampionshipFiltersProps } from '../../types/championship-filters';
 import { CreateChampionshipDialog } from '../dialogs/create-championship-dialog';
-import type { CreateChampionshipFormData } from '../../schemas/create-championship.schema';
 import { ChampionshipCountrySelect } from './championship-country-select';
 import { ChampionshipSearch } from './championship-search';
 import { ChampionshipSeasonSelect } from './championship-season-select';
 import { ChampionshipStatusSelect } from './championship-status-select';
-
-interface ChampionshipFiltersProps {
-  search: string;
-  onSearchChange: (value: string) => void;
-  status: string;
-  onStatusChange: (value: string) => void;
-  country: string;
-  onCountryChange: (value: string) => void;
-  countries: string[];
-  season: string;
-  onSeasonChange: (value: string) => void;
-  seasons: number[];
-  resultCount: number;
-  onCreateChampionship: (data: CreateChampionshipFormData) => void;
-}
 
 export function ChampionshipFilters({
   search,
@@ -58,13 +43,9 @@ export function ChampionshipFilters({
         <CreateChampionshipDialog onCreate={onCreateChampionship} />
       </div>
 
-      <p className='text-muted-foreground xl:ml-auto text-xs px-2'>
+      <p className='text-muted-foreground px-2 text-xs xl:ml-auto'>
         <span
-          className={
-            resultCount === 0
-              ? 'text-red-500'
-              : 'text-primary'
-          }
+          className={resultCount === 0 ? 'text-red-500' : 'text-primary'}
         >
           {resultCount} Campeonato
           {resultCount !== 1 ? 's' : ''} encontrados

@@ -14,7 +14,7 @@ import { ChampionshipSortableHead } from './championship-sortable-head';
 import type {
   ChampionshipSortKey,
   SortDirection,
-} from './hooks/use-championship-table';
+} from '../../hooks/use-championship-table';
 
 interface ChampionshipTableProps {
   rows: Championship[];

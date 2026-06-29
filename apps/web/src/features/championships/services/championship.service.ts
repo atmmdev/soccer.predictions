@@ -1,20 +1,21 @@
 import { getCountryFlag } from '../mocks/countries';
-import { leagues } from '../mocks/leagues';
 import { CreateChampionshipFormData } from '../schemas/create-championship.schema';
 import { Championship } from '../types/championship';
-
-let nextId = 100;
+import { findLeagueById } from './league.service';
 
 export class ChampionshipService {
-  static create(data: CreateChampionshipFormData): Championship {
-    const league = leagues.find(item => item.id === data.leagueId);
+  static create(
+    data: CreateChampionshipFormData,
+    nextId: number,
+  ): Championship {
+    const league = findLeagueById(data.leagueId);
 
     if (!league) {
       throw new Error('Liga não encontrada');
     }
 
-    const championship: Championship = {
-      id: nextId++,
+    return {
+      id: nextId,
       leagueId: data.leagueId,
       name: league.name,
       country: data.country,
@@ -23,8 +24,6 @@ export class ChampionshipService {
       type: league.type,
       status: data.active ? 'ACTIVE' : 'INACTIVE',
     };
-
-    return championship;
   }
 
   static activate(id: string) {
@@ -38,4 +37,13 @@ export class ChampionshipService {
   static sync(id: string) {
     console.log('Syncing championship with id:', id);
   }
+}
+
+export function getNextChampionshipId(championships: Championship[]): number {
+  const maxId = championships.reduce(
+    (currentMax, championship) => Math.max(currentMax, championship.id),
+    0,
+  );
+
+  return Math.max(maxId, 99) + 1;
 }

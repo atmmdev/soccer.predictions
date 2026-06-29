@@ -12,6 +12,8 @@ import {
 export function useCreateChampionship() {
   return useForm<CreateChampionshipFormData>({
     resolver: zodResolver(createChampionshipSchema),
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
 
     defaultValues: {
       season: CURRENT_SEASON,

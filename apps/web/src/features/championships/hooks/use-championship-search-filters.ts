@@ -1,26 +1,27 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { Championship } from '../types/championship';
-import { championships as defaultChampionships } from '../mocks/championships';
 
-export function useChampionshipFilters(
-  items: Championship[] = defaultChampionships,
-) {
+import type { Championship } from '../types/championship';
+
+export function useChampionshipSearchFilters(items: Championship[]) {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
 
   const filteredChampionships = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return items.filter(championships => {
+
+    return items.filter(championship => {
       const matchesSearch =
         query.length === 0 ||
-        championships.name.toLowerCase().includes(query) ||
-        championships.country.toLowerCase().includes(query);
+        championship.name.toLowerCase().includes(query) ||
+        championship.country.toLowerCase().includes(query);
+
       const matchesStatus =
         status === 'all' ||
-        (status === 'active' && championships.status === 'ACTIVE') ||
-        (status === 'inactive' && championships.status === 'INACTIVE');
+        (status === 'active' && championship.status === 'ACTIVE') ||
+        (status === 'inactive' && championship.status === 'INACTIVE');
+
       return matchesSearch && matchesStatus;
     });
   }, [items, search, status]);
@@ -30,6 +31,6 @@ export function useChampionshipFilters(
     setSearch,
     status,
     setStatus,
-    filteredChampionships
+    filteredChampionships,
   };
 }

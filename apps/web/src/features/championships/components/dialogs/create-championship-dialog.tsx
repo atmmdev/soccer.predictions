@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -13,20 +13,20 @@ import {
 } from '@/components/ui/dialog';
 import {
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { NativeSelect } from '@/components/ui/native-select';
 
 import { useCreateChampionship } from '../../hooks/use-create-championship';
+import { useImportChampionshipCascade } from '../../hooks/use-import-championship-cascade';
+import { countries } from '../../mocks/countries';
 import { CURRENT_SEASON } from '../../mocks/seasons';
-import { leagues } from '../../mocks/leagues';
 import type { CreateChampionshipFormData } from '../../schemas/create-championship.schema';
 import { ChampionshipActiveSwitch } from './championship-active-switch';
-import { ChampionshipCountrySelect } from './championship-country-select';
-import { ChampionshipLeagueSelect } from './championship-league-select';
-import { ChampionshipSeasonSelect } from './championship-season-select';
 
 interface CreateChampionshipDialogProps {
   onCreate: (data: CreateChampionshipFormData) => void;
@@ -37,17 +37,8 @@ export function CreateChampionshipDialog({
 }: CreateChampionshipDialogProps) {
   const [open, setOpen] = useState(false);
   const form = useCreateChampionship();
-  const country = form.watch('country');
-
-  const filteredLeagues = useMemo(
-    () => leagues.filter(league => league.country === country),
-    [country],
-  );
-
-  useEffect(() => {
-    form.setValue('leagueId', 0);
-    form.setValue('season', CURRENT_SEASON);
-  }, [country, form.setValue]);
+  const { selectedCountry, filteredLeagues, resetLeagueCascade } =
+    useImportChampionshipCascade(form);
 
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen);
@@ -85,10 +76,24 @@ export function CreateChampionshipDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>País</FormLabel>
-                  <ChampionshipCountrySelect
-                    value={field.value}
-                    onChange={field.onChange}
-                  />
+                  <FormControl>
+                    <NativeSelect
+                      value={field.value}
+                      onChange={event => {
+                        field.onChange(event.target.value);
+                        resetLeagueCascade();
+                      }}
+                    >
+                      <option value='' disabled>
+                        Selecione o país
+                      </option>
+                      {countries.map(country => (
+                        <option key={country.name} value={country.name}>
+                          {country.flag} {country.name}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -100,13 +105,25 @@ export function CreateChampionshipDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Campeonato</FormLabel>
-                  <ChampionshipLeagueSelect
-                    resetKey={country}
-                    value={field.value > 0 ? field.value.toString() : undefined}
-                    onChange={value => field.onChange(Number(value))}
-                    leagues={filteredLeagues}
-                    disabled={!country}
-                  />
+                  <FormControl>
+                    <NativeSelect
+                      key={selectedCountry}
+                      value={field.value > 0 ? field.value.toString() : ''}
+                      onChange={event =>
+                        field.onChange(Number(event.target.value))
+                      }
+                      disabled={!selectedCountry}
+                    >
+                      <option value='' disabled>
+                        Selecione o campeonato
+                      </option>
+                      {filteredLeagues.map(league => (
+                        <option key={league.id} value={league.id}>
+                          {league.name}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -118,11 +135,17 @@ export function CreateChampionshipDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Temporada</FormLabel>
-                  <ChampionshipSeasonSelect
-                    value={field.value.toString()}
-                    onChange={value => field.onChange(Number(value))}
-                    disabled={!country}
-                  />
+                  <FormControl>
+                    <NativeSelect
+                      value={field.value.toString()}
+                      onChange={event =>
+                        field.onChange(Number(event.target.value))
+                      }
+                      disabled={!selectedCountry}
+                    >
+                      <option value={CURRENT_SEASON}>{CURRENT_SEASON}</option>
+                    </NativeSelect>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
-import type { Championship } from '../../../types/championship';
+import type { Championship } from '../types/championship';
 
 export type ChampionshipSortKey = 'name' | 'country' | 'season' | 'status';
 export type SortDirection = 'asc' | 'desc';

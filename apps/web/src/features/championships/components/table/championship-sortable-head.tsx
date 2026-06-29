@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import type {
   ChampionshipSortKey,
   SortDirection,
-} from './hooks/use-championship-table';
+} from '../../hooks/use-championship-table';
 
 interface ChampionshipSortableHeadProps {
   label: string;
