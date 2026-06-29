@@ -27,7 +27,7 @@ export const championships: Championship[] = [
     leagueId: 13,
     flags: '🏆',
     type: 'CUP',
-    name: 'Libertadores',
+    name: 'Copa Libertadores',
     country: 'América do Sul',
     season: 2026,
     status: 'INACTIVE',

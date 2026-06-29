@@ -37,4 +37,10 @@ export const leagues: League[] = [
     country: 'Europa',
     type: 'CUP',
   },
+  {
+    id: 13,
+    name: 'Copa Libertadores',
+    country: 'América do Sul',
+    type: 'CUP',
+  },
 ];
