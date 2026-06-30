@@ -296,9 +296,6 @@ export type LeagueScalarRelationFilter = {
     is?: Prisma.LeagueWhereInput;
     isNot?: Prisma.LeagueWhereInput;
 };
-export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null;
-};
 export type LeagueCreateNestedOneWithoutChampionshipsInput = {
     create?: Prisma.XOR<Prisma.LeagueCreateWithoutChampionshipsInput, Prisma.LeagueUncheckedCreateWithoutChampionshipsInput>;
     connectOrCreate?: Prisma.LeagueCreateOrConnectWithoutChampionshipsInput;

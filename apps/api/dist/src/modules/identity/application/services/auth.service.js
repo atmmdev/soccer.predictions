@@ -35,6 +35,7 @@ let AuthService = class AuthService {
                 name: dto.name,
                 email: dto.email,
                 password: passwordHash,
+                authProvider: 'LOCAL',
             },
         });
         return this.buildAuthResponse(user);
@@ -46,11 +47,54 @@ let AuthService = class AuthService {
         if (!user) {
             throw new common_1.UnauthorizedException('Credenciais inválidas');
         }
+        if (!user.password) {
+            throw new common_1.UnauthorizedException('Esta conta usa login social. Entre com Google ou Instagram.');
+        }
         const passwordMatches = await (0, bcryptjs_1.compare)(dto.password, user.password);
         if (!passwordMatches) {
             throw new common_1.UnauthorizedException('Credenciais inválidas');
         }
         return this.buildAuthResponse(user);
+    }
+    async validateOAuthLogin(profile) {
+        const existingOAuthUser = await this.prisma.user.findFirst({
+            where: {
+                authProvider: profile.provider,
+                providerId: profile.providerId,
+            },
+        });
+        if (existingOAuthUser) {
+            return this.toAuthUser(existingOAuthUser);
+        }
+        if (profile.email) {
+            const existingEmailUser = await this.prisma.user.findUnique({
+                where: { email: profile.email },
+            });
+            if (existingEmailUser) {
+                const linkedUser = await this.prisma.user.update({
+                    where: { id: existingEmailUser.id },
+                    data: {
+                        authProvider: profile.provider,
+                        providerId: profile.providerId,
+                        name: existingEmailUser.name || profile.name,
+                        password: null,
+                    },
+                });
+                return this.toAuthUser(linkedUser);
+            }
+        }
+        const email = profile.email ??
+            `${profile.provider.toLowerCase()}_${profile.providerId}@oauth.soccer.local`;
+        const user = await this.prisma.user.create({
+            data: {
+                name: profile.name,
+                email,
+                authProvider: profile.provider,
+                providerId: profile.providerId,
+                password: null,
+            },
+        });
+        return this.toAuthUser(user);
     }
     async validateUser(userId) {
         const user = await this.prisma.user.findUnique({
@@ -60,6 +104,9 @@ let AuthService = class AuthService {
             return null;
         }
         return this.toAuthUser(user);
+    }
+    buildAuthResponseFromUser(user) {
+        return this.buildAuthResponse(user);
     }
     buildAuthResponse(user) {
         const payload = {

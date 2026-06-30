@@ -14,6 +14,7 @@ import type {
   AuthUser,
   JwtPayload,
 } from '../types/auth-user.js';
+import type { OAuthProfile } from '../types/oauth-profile.js';
 
 const PASSWORD_SALT_ROUNDS = 10;
 
@@ -40,6 +41,7 @@ export class AuthService {
         name: dto.name,
         email: dto.email,
         password: passwordHash,
+        authProvider: 'LOCAL',
       },
     });
 
@@ -55,6 +57,12 @@ export class AuthService {
       throw new UnauthorizedException('Credenciais inválidas');
     }
 
+    if (!user.password) {
+      throw new UnauthorizedException(
+        'Esta conta usa login social. Entre com Google ou Instagram.',
+      );
+    }
+
     const passwordMatches = await compare(dto.password, user.password);
 
     if (!passwordMatches) {
@@ -62,6 +70,55 @@ export class AuthService {
     }
 
     return this.buildAuthResponse(user);
+  }
+
+  async validateOAuthLogin(profile: OAuthProfile): Promise<AuthUser> {
+    const existingOAuthUser = await this.prisma.user.findFirst({
+      where: {
+        authProvider: profile.provider,
+        providerId: profile.providerId,
+      },
+    });
+
+    if (existingOAuthUser) {
+      return this.toAuthUser(existingOAuthUser);
+    }
+
+    if (profile.email) {
+      const existingEmailUser = await this.prisma.user.findUnique({
+        where: { email: profile.email },
+      });
+
+      if (existingEmailUser) {
+        const linkedUser = await this.prisma.user.update({
+          where: { id: existingEmailUser.id },
+          data: {
+            authProvider: profile.provider,
+            providerId: profile.providerId,
+            name: existingEmailUser.name || profile.name,
+            password: null,
+          },
+        });
+
+        return this.toAuthUser(linkedUser);
+      }
+    }
+
+    const email =
+      profile.email ??
+      `${profile.provider.toLowerCase()}_${profile.providerId}@oauth.soccer.local`;
+
+    const user = await this.prisma.user.create({
+      data: {
+        name: profile.name,
+        email,
+        authProvider: profile.provider,
+        providerId: profile.providerId,
+        password: null,
+      },
+    });
+
+    return this.toAuthUser(user);
   }
 
   async validateUser(userId: number): Promise<AuthUser | null> {
@@ -74,6 +131,10 @@ export class AuthService {
     }
 
     return this.toAuthUser(user);
+  }
+
+  buildAuthResponseFromUser(user: AuthUser): AuthResponse {
+    return this.buildAuthResponse(user);
   }
 
   private buildAuthResponse(user: {

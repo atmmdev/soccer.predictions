@@ -19,6 +19,7 @@ interface RankingFiltersProps {
   onScoringRuleChange: (value: RankingScoringRuleFilter) => void;
   championshipName: string | null;
   resultCount: number;
+  isPoolSelected: boolean;
   hasActiveFilters: boolean;
   onClearFilters: () => void;
 }
@@ -33,6 +34,7 @@ export function RankingFilters({
   onScoringRuleChange,
   championshipName,
   resultCount,
+  isPoolSelected,
   hasActiveFilters,
   onClearFilters,
 }: RankingFiltersProps) {
@@ -45,6 +47,7 @@ export function RankingFilters({
             placeholder='Buscar participante...'
             className='h-11 pl-9'
             value={search}
+            disabled={!isPoolSelected}
             onChange={event => onSearchChange(event.target.value)}
           />
         </div>
@@ -54,7 +57,7 @@ export function RankingFilters({
           onChange={event => onPoolNameChange(event.target.value)}
           className='xl:w-56'
         >
-          <option value='ALL'>Todos os bolões</option>
+          <option value=''>Selecione um bolão</option>
           {poolOptions.map(name => (
             <option key={name} value={name}>
               {name}
@@ -71,6 +74,7 @@ export function RankingFilters({
           }
           className='xl:w-64'
           aria-label='Regra de pontuação'
+          disabled={!isPoolSelected}
         >
           {SCORING_RULE_FILTER_OPTIONS.map(option => (
             <option key={option.value} value={option.value}>
@@ -88,7 +92,7 @@ export function RankingFilters({
       <div className='flex flex-col gap-1 px-2 sm:flex-row sm:items-center sm:justify-between'>
         {championshipName ? (
           <p className='text-muted-foreground text-xs'>
-            Campeonato:
+            Campeonato:{' '}
             <span className='text-foreground font-medium'>
               {championshipName}
             </span>
@@ -98,11 +102,18 @@ export function RankingFilters({
         )}
 
         <p className='text-muted-foreground text-xs xl:ml-auto'>
-          <span
-            className={resultCount === 0 ? 'text-red-500' : 'text-primary'}
-          >
-            {resultCount} participante{resultCount !== 1 ? 's' : ''} no ranking
-          </span>
+          {isPoolSelected ? (
+            <span
+              className={resultCount === 0 ? 'text-red-500' : 'text-primary'}
+            >
+              {resultCount} participante{resultCount !== 1 ? 's' : ''} no
+              ranking
+            </span>
+          ) : (
+            <span className='text-muted-foreground'>
+              Selecione um bolão para ver o ranking
+            </span>
+          )}
         </p>
       </div>
     </>

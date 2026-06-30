@@ -7,6 +7,12 @@ datasource db {
   provider = "mysql"
 }
 
+enum AuthProvider {
+  LOCAL
+  GOOGLE
+  INSTAGRAM
+}
+
 enum UserRole {
   ADMIN
   PARTICIPANT
@@ -62,17 +68,21 @@ enum ScoringAchievementType {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String
-  password  String
-  role      UserRole @default(PARTICIPANT)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           Int          @id @default(autoincrement())
+  email        String       @unique
+  name         String
+  password     String?
+  authProvider AuthProvider @default(LOCAL)
+  providerId   String?
+  role         UserRole     @default(PARTICIPANT)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   poolUsers    PoolUser[]
   predictions  Prediction[]
   pointHistory PointHistory[]
+
+  @@unique([authProvider, providerId])
 }
 
 model League {

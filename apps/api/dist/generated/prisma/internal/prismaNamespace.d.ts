@@ -879,6 +879,8 @@ export declare const UserScalarFieldEnum: {
     readonly email: "email";
     readonly name: "name";
     readonly password: "password";
+    readonly authProvider: "authProvider";
+    readonly providerId: "providerId";
     readonly role: "role";
     readonly createdAt: "createdAt";
     readonly updatedAt: "updatedAt";
@@ -999,17 +1001,18 @@ export declare const NullableJsonNullValueInput: {
     readonly JsonNull: runtime.JsonNullClass;
 };
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput];
-export declare const UserOrderByRelevanceFieldEnum: {
-    readonly email: "email";
-    readonly name: "name";
-    readonly password: "password";
-};
-export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum];
 export declare const NullsOrder: {
     readonly first: "first";
     readonly last: "last";
 };
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder];
+export declare const UserOrderByRelevanceFieldEnum: {
+    readonly email: "email";
+    readonly name: "name";
+    readonly password: "password";
+    readonly providerId: "providerId";
+};
+export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum];
 export declare const LeagueOrderByRelevanceFieldEnum: {
     readonly name: "name";
     readonly country: "country";
@@ -1050,6 +1053,7 @@ export declare const InvitationOrderByRelevanceFieldEnum: {
 export type InvitationOrderByRelevanceFieldEnum = (typeof InvitationOrderByRelevanceFieldEnum)[keyof typeof InvitationOrderByRelevanceFieldEnum];
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>;
 export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String'>;
+export type EnumAuthProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuthProvider'>;
 export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>;
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>;
 export type EnumChampionshipTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChampionshipType'>;

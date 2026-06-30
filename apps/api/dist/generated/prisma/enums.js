@@ -1,6 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ScoringAchievementType = exports.CupPhase = exports.PoolUserStatus = exports.PoolStatus = exports.FixtureStatus = exports.ChampionshipStatus = exports.ChampionshipType = exports.UserRole = void 0;
+exports.ScoringAchievementType = exports.CupPhase = exports.PoolUserStatus = exports.PoolStatus = exports.FixtureStatus = exports.ChampionshipStatus = exports.ChampionshipType = exports.UserRole = exports.AuthProvider = void 0;
+exports.AuthProvider = {
+    LOCAL: 'LOCAL',
+    GOOGLE: 'GOOGLE',
+    INSTAGRAM: 'INSTAGRAM'
+};
 exports.UserRole = {
     ADMIN: 'ADMIN',
     PARTICIPANT: 'PARTICIPANT'

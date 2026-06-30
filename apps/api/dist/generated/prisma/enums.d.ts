@@ -1,3 +1,9 @@
+export declare const AuthProvider: {
+    readonly LOCAL: "LOCAL";
+    readonly GOOGLE: "GOOGLE";
+    readonly INSTAGRAM: "INSTAGRAM";
+};
+export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider];
 export declare const UserRole: {
     readonly ADMIN: "ADMIN";
     readonly PARTICIPANT: "PARTICIPANT";

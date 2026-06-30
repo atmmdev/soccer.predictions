@@ -3,6 +3,7 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import { PositionBadge } from '@/features/dashboard/rankings/components/position-badge';
 import { cn } from '@/lib/utils';
 
+import { SCORING_ACHIEVEMENT_COLUMNS } from '../../constants/scoring-rule-filters';
 import type {
   RankingEntry,
   RankingScoringRuleFilter,
@@ -12,7 +13,6 @@ import { getAchievementCount } from '../../utils/ranking-scoring';
 interface RankingRowProps {
   entry: RankingEntry;
   position: number;
-  showPoolColumn: boolean;
   scoringRule: RankingScoringRuleFilter;
 }
 
@@ -28,14 +28,8 @@ function getInitials(name: string) {
 export function RankingRow({
   entry,
   position,
-  showPoolColumn,
   scoringRule,
 }: RankingRowProps) {
-  const ruleCount =
-    scoringRule === 'ALL'
-      ? entry.scoringAchievements.exactScore
-      : getAchievementCount(entry, scoringRule);
-
   return (
     <TableRow
       className={cn(entry.isCurrentUser && 'bg-primary/5 hover:bg-primary/10')}
@@ -58,15 +52,17 @@ export function RankingRow({
           </div>
         </div>
       </TableCell>
-      {showPoolColumn ? (
-        <TableCell className='text-muted-foreground hidden text-sm sm:table-cell'>
-          {entry.poolName}
+      {SCORING_ACHIEVEMENT_COLUMNS.map(column => (
+        <TableCell
+          key={column.key}
+          className={cn(
+            'text-center text-sm font-medium',
+            scoringRule === column.key && 'bg-primary/5 text-primary',
+          )}
+        >
+          {getAchievementCount(entry, column.key)}
         </TableCell>
-      ) : null}
-      <TableCell className='text-center text-sm font-medium'>{ruleCount}</TableCell>
-      <TableCell className='text-center text-sm'>
-        {entry.predictionsCount}
-      </TableCell>
+      ))}
       <TableCell className='text-right'>
         <span className='font-bold'>
           {entry.points.toLocaleString('pt-BR')}

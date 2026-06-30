@@ -24,3 +24,11 @@ export const SCORING_ACHIEVEMENT_LABELS: Record<ScoringAchievementKey, string> =
         option.value !== 'ALL',
     ).map(option => [option.value, option.label]),
   ) as Record<ScoringAchievementKey, string>;
+
+export const SCORING_ACHIEVEMENT_COLUMNS = SCORING_RULE_FILTER_OPTIONS.filter(
+  (option): option is { value: ScoringAchievementKey; label: string } =>
+    option.value !== 'ALL',
+).map(option => ({
+  key: option.value,
+  label: option.label,
+}));

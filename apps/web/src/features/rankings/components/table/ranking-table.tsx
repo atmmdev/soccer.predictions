@@ -7,28 +7,49 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 
+import { SCORING_ACHIEVEMENT_COLUMNS } from '../../constants/scoring-rule-filters';
+import type { RankingSortKey, SortDirection } from '../../hooks/use-ranking-table';
 import type {
   RankingEntry,
   RankingScoringRuleFilter,
 } from '../../types/ranking-entry';
 import { RankingRow } from './ranking-row';
+import { RankingSortableHead } from './ranking-sortable-head';
 
 interface RankingTableProps {
   rows: RankingEntry[];
-  showPoolColumn: boolean;
+  isPoolSelected: boolean;
   scoringRule: RankingScoringRuleFilter;
-  scoringRuleLabel: string | null;
+  sortKey: RankingSortKey;
+  sortDir: SortDirection;
+  onSort: (key: RankingSortKey) => void;
 }
 
 export function RankingTable({
   rows,
-  showPoolColumn,
+  isPoolSelected,
   scoringRule,
-  scoringRuleLabel,
+  sortKey,
+  sortDir,
+  onSort,
 }: RankingTableProps) {
-  const metricColumnLabel =
-    scoringRuleLabel ?? 'Placares exatos';
+  if (!isPoolSelected) {
+    return (
+      <div className='flex items-center justify-center py-16'>
+        <div className='max-w-sm space-y-2 text-center'>
+          <p className='text-foreground text-sm font-medium'>
+            Selecione um bolão
+          </p>
+          <p className='text-muted-foreground text-sm'>
+            Escolha um bolão no filtro acima para visualizar a classificação
+            dos participantes.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (rows.length === 0) {
     return (
@@ -48,23 +69,28 @@ export function RankingTable({
       <Table>
         <TableHeader>
           <TableRow className='hover:bg-transparent'>
-            <TableHead className='text-muted-foreground w-14 text-xs'>
+            <TableHead className='text-muted-foreground w-14 text-center text-xs'>
               Posição
             </TableHead>
-            <TableHead className='text-muted-foreground text-xs'>
+            <TableHead className='text-muted-foreground min-w-[180px] text-xs'>
               Participante
             </TableHead>
-            {showPoolColumn ? (
-              <TableHead className='text-muted-foreground hidden text-xs sm:table-cell'>
-                Bolão
-              </TableHead>
-            ) : null}
-            <TableHead className='text-muted-foreground text-center text-xs'>
-              {metricColumnLabel}
-            </TableHead>
-            <TableHead className='text-muted-foreground text-center text-xs'>
-              Palpites
-            </TableHead>
+            {SCORING_ACHIEVEMENT_COLUMNS.map(column => (
+              <RankingSortableHead
+                key={column.key}
+                label={column.label}
+                column={column.key}
+                sortKey={sortKey}
+                sortDir={sortDir}
+                onSort={onSort}
+                align='center'
+                className={cn(
+                  'min-w-[88px]',
+                  scoringRule === column.key && 'bg-primary/5',
+                )}
+                title={column.label}
+              />
+            ))}
             <TableHead className='text-muted-foreground text-right text-xs'>
               Pontos
             </TableHead>
@@ -76,7 +102,6 @@ export function RankingTable({
               key={entry.id}
               entry={entry}
               position={index + 1}
-              showPoolColumn={showPoolColumn}
               scoringRule={scoringRule}
             />
           ))}

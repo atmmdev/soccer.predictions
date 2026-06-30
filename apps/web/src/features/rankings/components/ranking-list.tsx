@@ -7,7 +7,7 @@ import { RankingFilters } from './filters/ranking-filters';
 import { RankingTable } from './table/ranking-table';
 
 export function RankingList() {
-  const { searchFilters } = useRankingList();
+  const { searchFilters, tableState } = useRankingList();
 
   return (
     <Card className='overflow-visible shadow-sm'>
@@ -21,15 +21,18 @@ export function RankingList() {
           scoringRule={searchFilters.scoringRule}
           onScoringRuleChange={searchFilters.setScoringRule}
           championshipName={searchFilters.selectedChampionshipName}
-          resultCount={searchFilters.filteredEntries.length}
+          resultCount={tableState.rows.length}
+          isPoolSelected={searchFilters.isPoolSelected}
           hasActiveFilters={searchFilters.hasActiveFilters}
           onClearFilters={searchFilters.clearFilters}
         />
         <RankingTable
-          rows={searchFilters.filteredEntries}
-          showPoolColumn={searchFilters.poolName === 'ALL'}
+          rows={tableState.rows}
+          isPoolSelected={searchFilters.isPoolSelected}
           scoringRule={searchFilters.scoringRule}
-          scoringRuleLabel={searchFilters.activeScoringRuleLabel}
+          sortKey={tableState.sortKey}
+          sortDir={tableState.sortDir}
+          onSort={tableState.toggleSort}
         />
       </CardContent>
     </Card>

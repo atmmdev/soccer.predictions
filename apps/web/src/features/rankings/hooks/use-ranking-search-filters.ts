@@ -8,11 +8,10 @@ import type {
   RankingScoringRuleFilter,
 } from '../types/ranking-entry';
 import {
-  compareByScoringRule,
   matchesScoringRuleFilter,
 } from '../utils/ranking-scoring';
 
-const DEFAULT_POOL = 'ALL';
+const DEFAULT_POOL = '';
 const DEFAULT_SCORING_RULE: RankingScoringRuleFilter = 'ALL';
 
 export function useRankingSearchFilters(entries: RankingEntry[]) {
@@ -21,6 +20,8 @@ export function useRankingSearchFilters(entries: RankingEntry[]) {
   const [scoringRule, setScoringRule] =
     useState<RankingScoringRuleFilter>(DEFAULT_SCORING_RULE);
 
+  const isPoolSelected = poolName.length > 0;
+
   const poolOptions = useMemo(() => {
     const names = [...new Set(entries.map(entry => entry.poolName))];
 
@@ -28,8 +29,8 @@ export function useRankingSearchFilters(entries: RankingEntry[]) {
   }, [entries]);
 
   const hasActiveFilters =
+    isPoolSelected ||
     search.trim().length > 0 ||
-    poolName !== DEFAULT_POOL ||
     scoringRule !== DEFAULT_SCORING_RULE;
 
   const clearFilters = useCallback(() => {
@@ -39,6 +40,10 @@ export function useRankingSearchFilters(entries: RankingEntry[]) {
   }, []);
 
   const filteredEntries = useMemo(() => {
+    if (!isPoolSelected) {
+      return [];
+    }
+
     const normalizedSearch = search.trim().toLowerCase();
 
     const filtered = entries.filter(entry => {
@@ -46,21 +51,18 @@ export function useRankingSearchFilters(entries: RankingEntry[]) {
         normalizedSearch.length === 0 ||
         entry.name.toLowerCase().includes(normalizedSearch);
 
-      const matchesPool =
-        poolName === DEFAULT_POOL || entry.poolName === poolName;
+      const matchesPool = entry.poolName === poolName;
 
       const matchesScoringRule = matchesScoringRuleFilter(entry, scoringRule);
 
       return matchesSearch && matchesPool && matchesScoringRule;
     });
 
-    return [...filtered].sort((a, b) =>
-      compareByScoringRule(a, b, scoringRule),
-    );
-  }, [entries, poolName, scoringRule, search]);
+    return filtered;
+  }, [entries, isPoolSelected, poolName, scoringRule, search]);
 
   const selectedChampionshipName = useMemo(() => {
-    if (poolName === DEFAULT_POOL) {
+    if (!isPoolSelected) {
       return null;
     }
 
@@ -68,7 +70,7 @@ export function useRankingSearchFilters(entries: RankingEntry[]) {
       entries.find(entry => entry.poolName === poolName)?.championshipName ??
       null
     );
-  }, [entries, poolName]);
+  }, [entries, isPoolSelected, poolName]);
 
   const activeScoringRuleLabel =
     scoringRule === 'ALL' ? null : SCORING_ACHIEVEMENT_LABELS[scoringRule];
@@ -84,6 +86,7 @@ export function useRankingSearchFilters(entries: RankingEntry[]) {
     selectedChampionshipName,
     activeScoringRuleLabel,
     filteredEntries,
+    isPoolSelected,
     hasActiveFilters,
     clearFilters,
   };
