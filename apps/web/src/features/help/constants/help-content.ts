@@ -107,11 +107,11 @@ export const SCORING_RULES = [
       'Acertou quem venceu, mas errou os gols de ambos os lados.',
   },
   {
-    key: 'correctDraw',
+    key: 'drawWithoutExactScore',
     label: 'Empate sem placar exato',
-    points: defaultBaseScoringRules.correctDraw,
+    points: defaultBaseScoringRules.drawWithoutExactScore,
     description:
-      'Acertou que seria empate, mas errou o número de gols de um ou ambos os times.',
+      'Resultado oficial e palpite são empates, mas com placares diferentes (ex.: 3×3 oficial e 1×1 no palpite).',
   },
   {
     key: 'playerGoal',
@@ -187,13 +187,13 @@ export const SCORING_EXAMPLES = [
     note: 'Acertou que o Liverpool venceria, mas errou a quantidade de gols.',
   },
   {
-    id: 'correct-draw',
-    title: 'Empate correto',
-    result: 'Inter 1 × 1 Milan',
-    prediction: '0 × 0',
+    id: 'draw-without-exact-score',
+    title: 'Empate sem placar exato',
+    result: 'Flamengo 3 × 3 Palmeiras',
+    prediction: '1 × 1',
     breakdown: ['Empate sem placar exato: 3 pts'],
     total: 3,
-    note: 'Acertou o empate, mas errou quantos gols cada time marcaria.',
+    note: 'Acertou que seria empate, mas errou o placar exato.',
   },
   {
     id: 'wrong-result',

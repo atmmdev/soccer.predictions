@@ -69,7 +69,7 @@ interface BaseScoringRules {
   winnerScore: number;             // Placar do time vencedor (gols do lado que venceu)
   loserScore: number;              // Placar do time perdedor (gols do lado que perdeu)
   correctWinner: number;           // Vencedor correto, sem placar exato
-  correctDraw: number;             // Empate correto, sem placar exato
+  drawWithoutExactScore: number;   // Empate no resultado, sem placar exato
   playerGoal: number;              // Jogador escolhido marcou gol na partida
   playerHatTrickMultiplier: number; // Multiplicador se o jogador fizer hat-trick (3 gols)
 }
@@ -103,7 +103,7 @@ interface PoolScoringConfig {
 | `winnerScore` | 6 |
 | `loserScore` | 4 |
 | `correctWinner` | 3 |
-| `correctDraw` | 3 |
+| `drawWithoutExactScore` | 3 |
 | `playerGoal` | 10 |
 | `playerHatTrickMultiplier` | 2 |
 

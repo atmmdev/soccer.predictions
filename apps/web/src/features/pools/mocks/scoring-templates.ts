@@ -11,7 +11,7 @@ export const defaultBaseScoringRules: BaseScoringRules = {
   winnerScore: 6,
   loserScore: 4,
   correctWinner: 3,
-  correctDraw: 3,
+  drawWithoutExactScore: 3,
   playerGoal: 10,
   playerHatTrickMultiplier: 2,
 };

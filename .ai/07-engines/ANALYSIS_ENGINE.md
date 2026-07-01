@@ -52,7 +52,7 @@ Validação frontend: `features/predictions/utils/prediction-window.ts`.
 | `winnerScore` | Gols do time vencedor batem (sem placar exato) | 6 |
 | `loserScore` | Gols do time perdedor batem (sem placar exato) | 4 |
 | `correctWinner` | Acertou vencedor, sem placar exato nem gols parciais | 3 |
-| `correctDraw` | Empate correto, sem placar exato nem gols parciais | 3 |
+| `drawWithoutExactScore` | Empate no resultado (sem placar exato) | 3 |
 | `playerGoal` | Jogador escolhido (`selectedPlayerId`) marcou pelo menos 1 gol | 10 |
 | `playerHatTrickMultiplier` | Jogador escolhido fez 3+ gols — multiplica bônus do jogador | ×2 |
 

@@ -39,7 +39,7 @@ const BASE_SCORING_FIELDS = [
     step: 1,
   },
   {
-    name: 'correctDraw' as const,
+    name: 'drawWithoutExactScore' as const,
     label: 'Empate sem placar exato',
     min: 0,
     step: 1,

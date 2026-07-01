@@ -77,7 +77,7 @@ model Pool {
 // PoolScoringBase (1:1 Pool) + CupPhaseMultiplier (1:N Pool, só CUP)
 ```
 
-Campos de `BaseScoringRules`: `exactScore`, `winnerScore`, `loserScore`, `correctWinner`, `correctDraw`, `playerGoal`, `playerHatTrickMultiplier`.
+Campos de `BaseScoringRules`: `exactScore`, `winnerScore`, `loserScore`, `correctWinner`, `drawWithoutExactScore`, `playerGoal`, `playerHatTrickMultiplier`.
 
 Campos de `CupPhaseRule`: `phase` (enum), `label`, `multiplier`.
 

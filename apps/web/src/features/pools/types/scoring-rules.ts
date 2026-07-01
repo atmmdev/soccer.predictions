@@ -12,7 +12,7 @@ export interface BaseScoringRules {
   winnerScore: number;
   loserScore: number;
   correctWinner: number;
-  correctDraw: number;
+  drawWithoutExactScore: number;
   playerGoal: number;
   playerHatTrickMultiplier: number;
 }

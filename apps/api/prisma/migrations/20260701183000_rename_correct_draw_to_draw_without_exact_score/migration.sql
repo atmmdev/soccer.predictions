@@ -1,0 +1,10 @@
+-- Rename ScoringAchievementType enum value CORRECT_DRAW -> DRAW_WITHOUT_EXACT_SCORE
+ALTER TABLE `PointHistory` MODIFY `achievementType` ENUM(
+  'EXACT_SCORE',
+  'WINNER_SCORE',
+  'LOSER_SCORE',
+  'CORRECT_WINNER',
+  'DRAW_WITHOUT_EXACT_SCORE',
+  'PLAYER_GOAL',
+  'PLAYER_HAT_TRICK'
+) NULL;

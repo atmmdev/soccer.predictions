@@ -3,7 +3,7 @@ export type ScoringAchievementKey =
   | 'winnerScore'
   | 'loserScore'
   | 'correctWinner'
-  | 'correctDraw'
+  | 'drawWithoutExactScore'
   | 'playerGoal'
   | 'playerHatTrick';
 
@@ -14,7 +14,7 @@ export interface RankingScoringAchievements {
   winnerScore: number;
   loserScore: number;
   correctWinner: number;
-  correctDraw: number;
+  drawWithoutExactScore: number;
   playerGoal: number;
   playerHatTrick: number;
 }

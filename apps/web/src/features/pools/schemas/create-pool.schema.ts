@@ -5,7 +5,7 @@ const baseScoringSchema = z.object({
   winnerScore: z.number().min(0, 'Informe os pontos'),
   loserScore: z.number().min(0, 'Informe os pontos'),
   correctWinner: z.number().min(0, 'Informe os pontos'),
-  correctDraw: z.number().min(0, 'Informe os pontos'),
+  drawWithoutExactScore: z.number().min(0, 'Informe os pontos'),
   playerGoal: z.number().min(0, 'Informe os pontos'),
   playerHatTrickMultiplier: z
     .number()
