@@ -11,6 +11,7 @@ import { PasswordResetService } from './application/services/password-reset.serv
 import { AuthController } from './infrastructure/http/auth.controller.js';
 import { GoogleAuthGuard } from './infrastructure/http/google-auth.guard.js';
 import { GoogleStrategy } from './infrastructure/http/google.strategy.js';
+import { JwtAuthGuard } from './infrastructure/http/jwt-auth.guard.js';
 import { JwtStrategy } from './infrastructure/http/jwt.strategy.js';
 import { OAuthController } from './infrastructure/http/oauth.controller.js';
 
@@ -41,8 +42,9 @@ const googleOAuthProviders: Provider[] = process.env.GOOGLE_CLIENT_ID
     PasswordResetService,
     PasswordResetEmailService,
     JwtStrategy,
+    JwtAuthGuard,
     ...googleOAuthProviders,
   ],
-  exports: [AuthService, JwtModule, PassportModule],
+  exports: [AuthService, JwtModule, PassportModule, JwtAuthGuard],
 })
 export class IdentityModule {}

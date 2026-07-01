@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { mainNav, secondaryNav } from '@/config/sidebar';
+import { filterSidebarItems } from '@/features/auth/lib/role-access';
+import { getStoredUser } from '@/features/auth/lib/auth-storage';
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -16,10 +18,12 @@ const collapsedButtonClass =
 
 function NavMenu({ items }: { items: SidebarItem[] }) {
   const pathname = usePathname();
+  const role = getStoredUser()?.role;
+  const visibleItems = filterSidebarItems(items, role);
 
   return (
     <SidebarMenu className='group-data-[collapsible=icon]:items-center'>
-      {items.map(item => {
+      {visibleItems.map(item => {
         const Icon = item.icon;
         const isActive =
           pathname === item.url || pathname.startsWith(`${item.url}/`);

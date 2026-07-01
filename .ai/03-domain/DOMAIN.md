@@ -170,9 +170,21 @@ interface Prediction {
 
 | Entidade | Descrição |
 |----------|-----------|
-| `User` | Usuário |
-| `Role` | ADMIN, PARTICIPANT (futuro) |
+| `User` | Usuário com `role`: `SUPER_ADMIN`, `ADMIN`, `PARTICIPANT` |
+| `Pool.ownerId` | Único administrador do bolão (também é `PoolUser` ACTIVE) |
 | `Notification` | V2 |
+
+### Papéis
+
+- **PARTICIPANT:** cadastro; acesso restrito (sem Campeonatos, Participantes globais, Notificações, Configurações).
+- **ADMIN:** promovido ao criar o 1º bolão; irreversível; gerencia só bolões próprios.
+- **SUPER_ADMIN:** seed padrão; override de plataforma.
+
+### PoolStatus
+
+- `ACTIVE` — aceita palpites e convites
+- `INACTIVE` — pausado
+- `CLOSED` — encerrado; libera histórico de palpites entre participantes
 
 ## Fluxo principal
 

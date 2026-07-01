@@ -11,12 +11,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ForgotPasswordDto = void 0;
 const class_validator_1 = require("class-validator");
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+$/;
 class ForgotPasswordDto {
     email;
 }
 exports.ForgotPasswordDto = ForgotPasswordDto;
 __decorate([
-    (0, class_validator_1.IsEmail)({}, { message: 'Informe um e-mail válido' }),
+    (0, class_validator_1.Matches)(EMAIL_PATTERN, { message: 'Informe um e-mail válido' }),
     __metadata("design:type", String)
 ], ForgotPasswordDto.prototype, "email", void 0);
 //# sourceMappingURL=forgot-password.dto.js.map

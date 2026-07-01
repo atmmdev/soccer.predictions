@@ -36,6 +36,7 @@ let AuthService = class AuthService {
                 email: dto.email,
                 password: passwordHash,
                 authProvider: 'LOCAL',
+                role: 'PARTICIPANT',
             },
         });
         return this.buildAuthResponse(user);

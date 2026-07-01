@@ -15,6 +15,7 @@ enum AuthProvider {
 }
 
 enum UserRole {
+  SUPER_ADMIN
   ADMIN
   PARTICIPANT
 }
@@ -40,6 +41,7 @@ enum FixtureStatus {
 enum PoolStatus {
   ACTIVE
   INACTIVE
+  CLOSED
 }
 
 enum PoolUserStatus {
@@ -80,6 +82,7 @@ model User {
   updatedAt    DateTime     @updatedAt
 
   poolUsers    PoolUser[]
+  ownedPools   Pool[]       @relation("PoolOwner")
   predictions  Prediction[]
   pointHistory PointHistory[]
   passwordResetTokens PasswordResetToken[]
@@ -172,6 +175,7 @@ model Fixture {
 
 model Pool {
   id             Int        @id @default(autoincrement())
+  ownerId        Int
   championshipId Int
   name           String
   inviteCode     String     @unique
@@ -180,11 +184,14 @@ model Pool {
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 
+  owner        User           @relation("PoolOwner", fields: [ownerId], references: [id])
   championship Championship   @relation(fields: [championshipId], references: [id])
   poolUsers    PoolUser[]
   invitations  Invitation[]
   predictions  Prediction[]
   pointHistory PointHistory[]
+
+  @@index([ownerId])
 }
 
 model PoolUser {

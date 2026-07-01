@@ -26,6 +26,7 @@ export const mainNav: SidebarItem[] = [
     title: 'Campeonatos',
     url: '/championships',
     icon: Trophy,
+    roles: ['ADMIN', 'SUPER_ADMIN'],
   },
   {
     title: 'Bolões',
@@ -36,6 +37,7 @@ export const mainNav: SidebarItem[] = [
     title: 'Participantes',
     url: '/participants',
     icon: FaUsers ,
+    roles: ['ADMIN', 'SUPER_ADMIN'],
   },
   {
     title: 'Jogos',
@@ -61,6 +63,7 @@ export const mainNav: SidebarItem[] = [
     title: 'Notificações',
     url: '/notifications',
     icon: Bell,
+    roles: ['ADMIN', 'SUPER_ADMIN'],
   },
   {
     title: 'Perfil',
@@ -74,6 +77,7 @@ export const secondaryNav: SidebarItem[] = [
     title: 'Configurações',
     url: '/settings',
     icon: Settings,
+    roles: ['ADMIN', 'SUPER_ADMIN'],
   },
   {
     title: 'Ajuda',

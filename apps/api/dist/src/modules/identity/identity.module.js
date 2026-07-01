@@ -19,6 +19,7 @@ const password_reset_service_js_1 = require("./application/services/password-res
 const auth_controller_js_1 = require("./infrastructure/http/auth.controller.js");
 const google_auth_guard_js_1 = require("./infrastructure/http/google-auth.guard.js");
 const google_strategy_js_1 = require("./infrastructure/http/google.strategy.js");
+const jwt_auth_guard_js_1 = require("./infrastructure/http/jwt-auth.guard.js");
 const jwt_strategy_js_1 = require("./infrastructure/http/jwt.strategy.js");
 const oauth_controller_js_1 = require("./infrastructure/http/oauth.controller.js");
 const googleOAuthProviders = process.env.GOOGLE_CLIENT_ID
@@ -50,9 +51,10 @@ exports.IdentityModule = IdentityModule = __decorate([
             password_reset_service_js_1.PasswordResetService,
             password_reset_email_service_js_1.PasswordResetEmailService,
             jwt_strategy_js_1.JwtStrategy,
+            jwt_auth_guard_js_1.JwtAuthGuard,
             ...googleOAuthProviders,
         ],
-        exports: [auth_service_js_1.AuthService, jwt_1.JwtModule, passport_1.PassportModule],
+        exports: [auth_service_js_1.AuthService, jwt_1.JwtModule, passport_1.PassportModule, jwt_auth_guard_js_1.JwtAuthGuard],
     })
 ], IdentityModule);
 //# sourceMappingURL=identity.module.js.map

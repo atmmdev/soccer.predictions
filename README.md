@@ -36,13 +36,20 @@ npm run start:dev
 
 API: `http://localhost:3001/api/health`
 
+### Credenciais padrão (seed)
+
+| E-mail | Senha | Papel |
+|--------|-------|-------|
+| `admin@admin` | `admin123` | SUPER_ADMIN |
+
+Rodar seed: `cd apps/api && npm run prisma:seed`
+
 ## Documentation API Football
 
 URL: https://www.api-football.com/documentation-v3
 
-Credenciais de Teste:
-participante@gmail.com (Participante)
-senha123
+Credenciais de Teste (seed):
 
-atmm.rj@gmail.com (Admin)
-admin123456
+- `admin@admin` / `admin123` (SUPER_ADMIN)
+
+Demais usuários: cadastro em `/register` (sempre PARTICIPANT; vira ADMIN ao criar o 1º bolão).

@@ -7,6 +7,7 @@ exports.AuthProvider = {
     INSTAGRAM: 'INSTAGRAM'
 };
 exports.UserRole = {
+    SUPER_ADMIN: 'SUPER_ADMIN',
     ADMIN: 'ADMIN',
     PARTICIPANT: 'PARTICIPANT'
 };
@@ -27,7 +28,8 @@ exports.FixtureStatus = {
 };
 exports.PoolStatus = {
     ACTIVE: 'ACTIVE',
-    INACTIVE: 'INACTIVE'
+    INACTIVE: 'INACTIVE',
+    CLOSED: 'CLOSED'
 };
 exports.PoolUserStatus = {
     ACTIVE: 'ACTIVE',

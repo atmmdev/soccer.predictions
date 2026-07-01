@@ -23,12 +23,21 @@ Grupos de amigos, família ou trabalho querem organizar bolões de futebol sem p
 5. Palpitam placares antes do jogo fechar
 6. Sistema calcula pontos (`PointHistory`) e exibe ranking derivado
 
-## Usuários
+## Usuários e papéis
 
-| Papel | Ações principais |
-|-------|------------------|
-| **Admin** | Importar campeonatos, criar bolões, configurar regras, convidar |
-| **Participante** | Entrar no bolão, palpitar, ver ranking e jogos |
+| Papel | Como obtém | Escopo |
+|-------|------------|--------|
+| **PARTICIPANT** | Cadastro (`/register`) | Bolões inscritos; palpites, ranking, jogos e estatísticas próprias |
+| **ADMIN** | Ao criar o **1º bolão** (irreversível) | Gestão dos **bolões que criou** (`Pool.ownerId`); import de campeonato no fluxo de criar bolão; menus Campeonatos, Participantes (dos seus bolões), Notificações e Configurações |
+| **SUPER_ADMIN** | Seed `admin@admin` / `admin123` | Acesso total à plataforma |
+
+Regras:
+
+- Cada bolão tem **um único proprietário** (`ownerId`); o dono também participa (palpite, ranking).
+- ADMIN **não gerencia** bolões de outros admins; se convidado, entra como participante.
+- Participante importa campeonato **apenas no wizard Criar bolão** (sem menu `/championships`).
+- Promoção PARTICIPANT → ADMIN **não reverte** ao apagar bolões.
+- Palpites de outros participantes ficam visíveis após jogo **FINISHED** e bolão **CLOSED** (histórico).
 
 **Futuro:** potencial SaaS multi-tenant.
 

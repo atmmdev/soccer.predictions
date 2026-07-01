@@ -5,6 +5,7 @@ export declare const AuthProvider: {
 };
 export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider];
 export declare const UserRole: {
+    readonly SUPER_ADMIN: "SUPER_ADMIN";
     readonly ADMIN: "ADMIN";
     readonly PARTICIPANT: "PARTICIPANT";
 };
@@ -30,6 +31,7 @@ export type FixtureStatus = (typeof FixtureStatus)[keyof typeof FixtureStatus];
 export declare const PoolStatus: {
     readonly ACTIVE: "ACTIVE";
     readonly INACTIVE: "INACTIVE";
+    readonly CLOSED: "CLOSED";
 };
 export type PoolStatus = (typeof PoolStatus)[keyof typeof PoolStatus];
 export declare const PoolUserStatus: {

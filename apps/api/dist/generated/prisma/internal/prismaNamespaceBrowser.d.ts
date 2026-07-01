@@ -105,6 +105,7 @@ export declare const FixtureScalarFieldEnum: {
 export type FixtureScalarFieldEnum = (typeof FixtureScalarFieldEnum)[keyof typeof FixtureScalarFieldEnum];
 export declare const PoolScalarFieldEnum: {
     readonly id: "id";
+    readonly ownerId: "ownerId";
     readonly championshipId: "championshipId";
     readonly name: "name";
     readonly inviteCode: "inviteCode";

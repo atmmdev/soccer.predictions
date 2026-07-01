@@ -1,8 +1,9 @@
 import {
   ACCESS_TOKEN_COOKIE,
   ACCESS_TOKEN_MAX_AGE_SECONDS,
+  USER_ROLE_COOKIE,
 } from '../config/auth';
-import type { AuthUser } from '../types/auth';
+import type { AuthUser, UserRole } from '../types/auth';
 
 const USER_KEY = 'soccer_predictions_user';
 
@@ -10,20 +11,40 @@ function setAccessTokenCookie(token: string): void {
   document.cookie = `${ACCESS_TOKEN_COOKIE}=${encodeURIComponent(token)}; path=/; max-age=${ACCESS_TOKEN_MAX_AGE_SECONDS}; SameSite=Lax`;
 }
 
+function setUserRoleCookie(role: UserRole): void {
+  document.cookie = `${USER_ROLE_COOKIE}=${encodeURIComponent(role)}; path=/; max-age=${ACCESS_TOKEN_MAX_AGE_SECONDS}; SameSite=Lax`;
+}
+
 function clearAccessTokenCookie(): void {
   document.cookie = `${ACCESS_TOKEN_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
+}
+
+function clearUserRoleCookie(): void {
+  document.cookie = `${USER_ROLE_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
 }
 
 export function saveAuthSession(accessToken: string, user: AuthUser): void {
   localStorage.setItem(ACCESS_TOKEN_COOKIE, accessToken);
   localStorage.setItem(USER_KEY, JSON.stringify(user));
   setAccessTokenCookie(accessToken);
+  setUserRoleCookie(user.role);
+}
+
+export function updateStoredUser(user: AuthUser): void {
+  const token = getAccessToken();
+
+  if (!token) {
+    return;
+  }
+
+  saveAuthSession(token, user);
 }
 
 export function clearAuthSession(): void {
   localStorage.removeItem(ACCESS_TOKEN_COOKIE);
   localStorage.removeItem(USER_KEY);
   clearAccessTokenCookie();
+  clearUserRoleCookie();
 }
 
 export function getAccessToken(): string | null {

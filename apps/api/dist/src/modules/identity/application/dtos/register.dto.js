@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RegisterDto = void 0;
 const class_validator_1 = require("class-validator");
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+$/;
 class RegisterDto {
     name;
     email;
@@ -24,7 +25,7 @@ __decorate([
     __metadata("design:type", String)
 ], RegisterDto.prototype, "name", void 0);
 __decorate([
-    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.Matches)(EMAIL_PATTERN, { message: 'email must be an email' }),
     __metadata("design:type", String)
 ], RegisterDto.prototype, "email", void 0);
 __decorate([

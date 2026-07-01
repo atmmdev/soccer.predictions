@@ -1,7 +1,9 @@
-import { IsEmail, IsString, MinLength } from 'class-validator';
+import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+$/;
 
 export class LoginDto {
-  @IsEmail()
+  @Matches(EMAIL_PATTERN, { message: 'email must be an email' })
   email!: string;
 
   @IsString()

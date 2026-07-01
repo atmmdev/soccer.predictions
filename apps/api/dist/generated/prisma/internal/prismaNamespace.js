@@ -146,6 +146,7 @@ exports.FixtureScalarFieldEnum = {
 };
 exports.PoolScalarFieldEnum = {
     id: 'id',
+    ownerId: 'ownerId',
     championshipId: 'championshipId',
     name: 'name',
     inviteCode: 'inviteCode',

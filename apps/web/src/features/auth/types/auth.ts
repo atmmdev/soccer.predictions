@@ -1,4 +1,4 @@
-export type UserRole = 'ADMIN' | 'PARTICIPANT';
+export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'PARTICIPANT';
 
 export interface AuthUser {
   id: number;
