@@ -7,6 +7,7 @@ export declare const PrismaClient: $Class.PrismaClientConstructor;
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>;
 export { Prisma };
 export type User = Prisma.UserModel;
+export type PasswordResetToken = Prisma.PasswordResetTokenModel;
 export type League = Prisma.LeagueModel;
 export type Championship = Prisma.ChampionshipModel;
 export type Team = Prisma.TeamModel;

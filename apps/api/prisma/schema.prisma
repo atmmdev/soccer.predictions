@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
@@ -81,8 +82,22 @@ model User {
   poolUsers    PoolUser[]
   predictions  Prediction[]
   pointHistory PointHistory[]
+  passwordResetTokens PasswordResetToken[]
 
   @@unique([authProvider, providerId])
+}
+
+model PasswordResetToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
 }
 
 model League {

@@ -14,21 +14,32 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
+const forgot_password_dto_js_1 = require("../../application/dtos/forgot-password.dto.js");
 const login_dto_js_1 = require("../../application/dtos/login.dto.js");
 const register_dto_js_1 = require("../../application/dtos/register.dto.js");
+const reset_password_dto_js_1 = require("../../application/dtos/reset-password.dto.js");
 const auth_service_js_1 = require("../../application/services/auth.service.js");
+const password_reset_service_js_1 = require("../../application/services/password-reset.service.js");
 const current_user_decorator_js_1 = require("./current-user.decorator.js");
 const jwt_auth_guard_js_1 = require("./jwt-auth.guard.js");
 let AuthController = class AuthController {
     authService;
-    constructor(authService) {
+    passwordResetService;
+    constructor(authService, passwordResetService) {
         this.authService = authService;
+        this.passwordResetService = passwordResetService;
     }
     register(dto) {
         return this.authService.register(dto);
     }
     login(dto) {
         return this.authService.login(dto);
+    }
+    forgotPassword(dto) {
+        return this.passwordResetService.requestReset(dto);
+    }
+    resetPassword(dto) {
+        return this.passwordResetService.resetPassword(dto);
     }
     me(user) {
         return { user };
@@ -50,6 +61,20 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "login", null);
 __decorate([
+    (0, common_1.Post)('forgot-password'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [forgot_password_dto_js_1.ForgotPasswordDto]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "forgotPassword", null);
+__decorate([
+    (0, common_1.Post)('reset-password'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [reset_password_dto_js_1.ResetPasswordDto]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "resetPassword", null);
+__decorate([
     (0, common_1.Get)('me'),
     (0, common_1.UseGuards)(jwt_auth_guard_js_1.JwtAuthGuard),
     __param(0, (0, current_user_decorator_js_1.CurrentUser)()),
@@ -59,6 +84,7 @@ __decorate([
 ], AuthController.prototype, "me", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
-    __metadata("design:paramtypes", [auth_service_js_1.AuthService])
+    __metadata("design:paramtypes", [auth_service_js_1.AuthService,
+        password_reset_service_js_1.PasswordResetService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

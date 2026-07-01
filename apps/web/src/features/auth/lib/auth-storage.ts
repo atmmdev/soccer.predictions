@@ -1,16 +1,29 @@
+import {
+  ACCESS_TOKEN_COOKIE,
+  ACCESS_TOKEN_MAX_AGE_SECONDS,
+} from '../config/auth';
 import type { AuthUser } from '../types/auth';
 
-const ACCESS_TOKEN_KEY = 'soccer_predictions_access_token';
 const USER_KEY = 'soccer_predictions_user';
 
+function setAccessTokenCookie(token: string): void {
+  document.cookie = `${ACCESS_TOKEN_COOKIE}=${encodeURIComponent(token)}; path=/; max-age=${ACCESS_TOKEN_MAX_AGE_SECONDS}; SameSite=Lax`;
+}
+
+function clearAccessTokenCookie(): void {
+  document.cookie = `${ACCESS_TOKEN_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
+}
+
 export function saveAuthSession(accessToken: string, user: AuthUser): void {
-  localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+  localStorage.setItem(ACCESS_TOKEN_COOKIE, accessToken);
   localStorage.setItem(USER_KEY, JSON.stringify(user));
+  setAccessTokenCookie(accessToken);
 }
 
 export function clearAuthSession(): void {
-  localStorage.removeItem(ACCESS_TOKEN_KEY);
+  localStorage.removeItem(ACCESS_TOKEN_COOKIE);
   localStorage.removeItem(USER_KEY);
+  clearAccessTokenCookie();
 }
 
 export function getAccessToken(): string | null {
@@ -18,7 +31,7 @@ export function getAccessToken(): string | null {
     return null;
   }
 
-  return localStorage.getItem(ACCESS_TOKEN_KEY);
+  return localStorage.getItem(ACCESS_TOKEN_COOKIE);
 }
 
 export function getStoredUser(): AuthUser | null {

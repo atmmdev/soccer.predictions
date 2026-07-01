@@ -152,6 +152,7 @@ export type UserWhereInput = {
     poolUsers?: Prisma.PoolUserListRelationFilter;
     predictions?: Prisma.PredictionListRelationFilter;
     pointHistory?: Prisma.PointHistoryListRelationFilter;
+    passwordResetTokens?: Prisma.PasswordResetTokenListRelationFilter;
 };
 export type UserOrderByWithRelationInput = {
     id?: Prisma.SortOrder;
@@ -166,6 +167,7 @@ export type UserOrderByWithRelationInput = {
     poolUsers?: Prisma.PoolUserOrderByRelationAggregateInput;
     predictions?: Prisma.PredictionOrderByRelationAggregateInput;
     pointHistory?: Prisma.PointHistoryOrderByRelationAggregateInput;
+    passwordResetTokens?: Prisma.PasswordResetTokenOrderByRelationAggregateInput;
     _relevance?: Prisma.UserOrderByRelevanceInput;
 };
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -185,6 +187,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
     poolUsers?: Prisma.PoolUserListRelationFilter;
     predictions?: Prisma.PredictionListRelationFilter;
     pointHistory?: Prisma.PointHistoryListRelationFilter;
+    passwordResetTokens?: Prisma.PasswordResetTokenListRelationFilter;
 }, "id" | "email" | "authProvider_providerId">;
 export type UserOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
@@ -228,6 +231,7 @@ export type UserCreateInput = {
     poolUsers?: Prisma.PoolUserCreateNestedManyWithoutUserInput;
     predictions?: Prisma.PredictionCreateNestedManyWithoutUserInput;
     pointHistory?: Prisma.PointHistoryCreateNestedManyWithoutUserInput;
+    passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput;
 };
 export type UserUncheckedCreateInput = {
     id?: number;
@@ -242,6 +246,7 @@ export type UserUncheckedCreateInput = {
     poolUsers?: Prisma.PoolUserUncheckedCreateNestedManyWithoutUserInput;
     predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutUserInput;
     pointHistory?: Prisma.PointHistoryUncheckedCreateNestedManyWithoutUserInput;
+    passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput;
 };
 export type UserUpdateInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -255,6 +260,7 @@ export type UserUpdateInput = {
     poolUsers?: Prisma.PoolUserUpdateManyWithoutUserNestedInput;
     predictions?: Prisma.PredictionUpdateManyWithoutUserNestedInput;
     pointHistory?: Prisma.PointHistoryUpdateManyWithoutUserNestedInput;
+    passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput;
 };
 export type UserUncheckedUpdateInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -269,6 +275,7 @@ export type UserUncheckedUpdateInput = {
     poolUsers?: Prisma.PoolUserUncheckedUpdateManyWithoutUserNestedInput;
     predictions?: Prisma.PredictionUncheckedUpdateManyWithoutUserNestedInput;
     pointHistory?: Prisma.PointHistoryUncheckedUpdateManyWithoutUserNestedInput;
+    passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput;
 };
 export type UserCreateManyInput = {
     id?: number;
@@ -376,6 +383,18 @@ export type IntFieldUpdateOperationsInput = {
     multiply?: number;
     divide?: number;
 };
+export type UserCreateNestedOneWithoutPasswordResetTokensInput = {
+    create?: Prisma.XOR<Prisma.UserCreateWithoutPasswordResetTokensInput, Prisma.UserUncheckedCreateWithoutPasswordResetTokensInput>;
+    connectOrCreate?: Prisma.UserCreateOrConnectWithoutPasswordResetTokensInput;
+    connect?: Prisma.UserWhereUniqueInput;
+};
+export type UserUpdateOneRequiredWithoutPasswordResetTokensNestedInput = {
+    create?: Prisma.XOR<Prisma.UserCreateWithoutPasswordResetTokensInput, Prisma.UserUncheckedCreateWithoutPasswordResetTokensInput>;
+    connectOrCreate?: Prisma.UserCreateOrConnectWithoutPasswordResetTokensInput;
+    upsert?: Prisma.UserUpsertWithoutPasswordResetTokensInput;
+    connect?: Prisma.UserWhereUniqueInput;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPasswordResetTokensInput, Prisma.UserUpdateWithoutPasswordResetTokensInput>, Prisma.UserUncheckedUpdateWithoutPasswordResetTokensInput>;
+};
 export type UserCreateNestedOneWithoutPoolUsersInput = {
     create?: Prisma.XOR<Prisma.UserCreateWithoutPoolUsersInput, Prisma.UserUncheckedCreateWithoutPoolUsersInput>;
     connectOrCreate?: Prisma.UserCreateOrConnectWithoutPoolUsersInput;
@@ -412,6 +431,73 @@ export type UserUpdateOneRequiredWithoutPointHistoryNestedInput = {
     connect?: Prisma.UserWhereUniqueInput;
     update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPointHistoryInput, Prisma.UserUpdateWithoutPointHistoryInput>, Prisma.UserUncheckedUpdateWithoutPointHistoryInput>;
 };
+export type UserCreateWithoutPasswordResetTokensInput = {
+    email: string;
+    name: string;
+    password?: string | null;
+    authProvider?: $Enums.AuthProvider;
+    providerId?: string | null;
+    role?: $Enums.UserRole;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    poolUsers?: Prisma.PoolUserCreateNestedManyWithoutUserInput;
+    predictions?: Prisma.PredictionCreateNestedManyWithoutUserInput;
+    pointHistory?: Prisma.PointHistoryCreateNestedManyWithoutUserInput;
+};
+export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
+    id?: number;
+    email: string;
+    name: string;
+    password?: string | null;
+    authProvider?: $Enums.AuthProvider;
+    providerId?: string | null;
+    role?: $Enums.UserRole;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    poolUsers?: Prisma.PoolUserUncheckedCreateNestedManyWithoutUserInput;
+    predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutUserInput;
+    pointHistory?: Prisma.PointHistoryUncheckedCreateNestedManyWithoutUserInput;
+};
+export type UserCreateOrConnectWithoutPasswordResetTokensInput = {
+    where: Prisma.UserWhereUniqueInput;
+    create: Prisma.XOR<Prisma.UserCreateWithoutPasswordResetTokensInput, Prisma.UserUncheckedCreateWithoutPasswordResetTokensInput>;
+};
+export type UserUpsertWithoutPasswordResetTokensInput = {
+    update: Prisma.XOR<Prisma.UserUpdateWithoutPasswordResetTokensInput, Prisma.UserUncheckedUpdateWithoutPasswordResetTokensInput>;
+    create: Prisma.XOR<Prisma.UserCreateWithoutPasswordResetTokensInput, Prisma.UserUncheckedCreateWithoutPasswordResetTokensInput>;
+    where?: Prisma.UserWhereInput;
+};
+export type UserUpdateToOneWithWhereWithoutPasswordResetTokensInput = {
+    where?: Prisma.UserWhereInput;
+    data: Prisma.XOR<Prisma.UserUpdateWithoutPasswordResetTokensInput, Prisma.UserUncheckedUpdateWithoutPasswordResetTokensInput>;
+};
+export type UserUpdateWithoutPasswordResetTokensInput = {
+    email?: Prisma.StringFieldUpdateOperationsInput | string;
+    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
+    providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    poolUsers?: Prisma.PoolUserUpdateManyWithoutUserNestedInput;
+    predictions?: Prisma.PredictionUpdateManyWithoutUserNestedInput;
+    pointHistory?: Prisma.PointHistoryUpdateManyWithoutUserNestedInput;
+};
+export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
+    id?: Prisma.IntFieldUpdateOperationsInput | number;
+    email?: Prisma.StringFieldUpdateOperationsInput | string;
+    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
+    providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    poolUsers?: Prisma.PoolUserUncheckedUpdateManyWithoutUserNestedInput;
+    predictions?: Prisma.PredictionUncheckedUpdateManyWithoutUserNestedInput;
+    pointHistory?: Prisma.PointHistoryUncheckedUpdateManyWithoutUserNestedInput;
+};
 export type UserCreateWithoutPoolUsersInput = {
     email: string;
     name: string;
@@ -423,6 +509,7 @@ export type UserCreateWithoutPoolUsersInput = {
     updatedAt?: Date | string;
     predictions?: Prisma.PredictionCreateNestedManyWithoutUserInput;
     pointHistory?: Prisma.PointHistoryCreateNestedManyWithoutUserInput;
+    passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput;
 };
 export type UserUncheckedCreateWithoutPoolUsersInput = {
     id?: number;
@@ -436,6 +523,7 @@ export type UserUncheckedCreateWithoutPoolUsersInput = {
     updatedAt?: Date | string;
     predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutUserInput;
     pointHistory?: Prisma.PointHistoryUncheckedCreateNestedManyWithoutUserInput;
+    passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput;
 };
 export type UserCreateOrConnectWithoutPoolUsersInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -461,6 +549,7 @@ export type UserUpdateWithoutPoolUsersInput = {
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     predictions?: Prisma.PredictionUpdateManyWithoutUserNestedInput;
     pointHistory?: Prisma.PointHistoryUpdateManyWithoutUserNestedInput;
+    passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput;
 };
 export type UserUncheckedUpdateWithoutPoolUsersInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -474,6 +563,7 @@ export type UserUncheckedUpdateWithoutPoolUsersInput = {
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     predictions?: Prisma.PredictionUncheckedUpdateManyWithoutUserNestedInput;
     pointHistory?: Prisma.PointHistoryUncheckedUpdateManyWithoutUserNestedInput;
+    passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput;
 };
 export type UserCreateWithoutPredictionsInput = {
     email: string;
@@ -486,6 +576,7 @@ export type UserCreateWithoutPredictionsInput = {
     updatedAt?: Date | string;
     poolUsers?: Prisma.PoolUserCreateNestedManyWithoutUserInput;
     pointHistory?: Prisma.PointHistoryCreateNestedManyWithoutUserInput;
+    passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput;
 };
 export type UserUncheckedCreateWithoutPredictionsInput = {
     id?: number;
@@ -499,6 +590,7 @@ export type UserUncheckedCreateWithoutPredictionsInput = {
     updatedAt?: Date | string;
     poolUsers?: Prisma.PoolUserUncheckedCreateNestedManyWithoutUserInput;
     pointHistory?: Prisma.PointHistoryUncheckedCreateNestedManyWithoutUserInput;
+    passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput;
 };
 export type UserCreateOrConnectWithoutPredictionsInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -524,6 +616,7 @@ export type UserUpdateWithoutPredictionsInput = {
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     poolUsers?: Prisma.PoolUserUpdateManyWithoutUserNestedInput;
     pointHistory?: Prisma.PointHistoryUpdateManyWithoutUserNestedInput;
+    passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput;
 };
 export type UserUncheckedUpdateWithoutPredictionsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -537,6 +630,7 @@ export type UserUncheckedUpdateWithoutPredictionsInput = {
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     poolUsers?: Prisma.PoolUserUncheckedUpdateManyWithoutUserNestedInput;
     pointHistory?: Prisma.PointHistoryUncheckedUpdateManyWithoutUserNestedInput;
+    passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput;
 };
 export type UserCreateWithoutPointHistoryInput = {
     email: string;
@@ -549,6 +643,7 @@ export type UserCreateWithoutPointHistoryInput = {
     updatedAt?: Date | string;
     poolUsers?: Prisma.PoolUserCreateNestedManyWithoutUserInput;
     predictions?: Prisma.PredictionCreateNestedManyWithoutUserInput;
+    passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput;
 };
 export type UserUncheckedCreateWithoutPointHistoryInput = {
     id?: number;
@@ -562,6 +657,7 @@ export type UserUncheckedCreateWithoutPointHistoryInput = {
     updatedAt?: Date | string;
     poolUsers?: Prisma.PoolUserUncheckedCreateNestedManyWithoutUserInput;
     predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutUserInput;
+    passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput;
 };
 export type UserCreateOrConnectWithoutPointHistoryInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -587,6 +683,7 @@ export type UserUpdateWithoutPointHistoryInput = {
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     poolUsers?: Prisma.PoolUserUpdateManyWithoutUserNestedInput;
     predictions?: Prisma.PredictionUpdateManyWithoutUserNestedInput;
+    passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput;
 };
 export type UserUncheckedUpdateWithoutPointHistoryInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -600,16 +697,19 @@ export type UserUncheckedUpdateWithoutPointHistoryInput = {
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     poolUsers?: Prisma.PoolUserUncheckedUpdateManyWithoutUserNestedInput;
     predictions?: Prisma.PredictionUncheckedUpdateManyWithoutUserNestedInput;
+    passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput;
 };
 export type UserCountOutputType = {
     poolUsers: number;
     predictions: number;
     pointHistory: number;
+    passwordResetTokens: number;
 };
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     poolUsers?: boolean | UserCountOutputTypeCountPoolUsersArgs;
     predictions?: boolean | UserCountOutputTypeCountPredictionsArgs;
     pointHistory?: boolean | UserCountOutputTypeCountPointHistoryArgs;
+    passwordResetTokens?: boolean | UserCountOutputTypeCountPasswordResetTokensArgs;
 };
 export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     select?: Prisma.UserCountOutputTypeSelect<ExtArgs> | null;
@@ -622,6 +722,9 @@ export type UserCountOutputTypeCountPredictionsArgs<ExtArgs extends runtime.Type
 };
 export type UserCountOutputTypeCountPointHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: Prisma.PointHistoryWhereInput;
+};
+export type UserCountOutputTypeCountPasswordResetTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.PasswordResetTokenWhereInput;
 };
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
@@ -636,6 +739,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
     poolUsers?: boolean | Prisma.User$poolUsersArgs<ExtArgs>;
     predictions?: boolean | Prisma.User$predictionsArgs<ExtArgs>;
     pointHistory?: boolean | Prisma.User$pointHistoryArgs<ExtArgs>;
+    passwordResetTokens?: boolean | Prisma.User$passwordResetTokensArgs<ExtArgs>;
     _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["user"]>;
 export type UserSelectScalar = {
@@ -654,6 +758,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
     poolUsers?: boolean | Prisma.User$poolUsersArgs<ExtArgs>;
     predictions?: boolean | Prisma.User$predictionsArgs<ExtArgs>;
     pointHistory?: boolean | Prisma.User$pointHistoryArgs<ExtArgs>;
+    passwordResetTokens?: boolean | Prisma.User$passwordResetTokensArgs<ExtArgs>;
     _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -662,6 +767,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
         poolUsers: Prisma.$PoolUserPayload<ExtArgs>[];
         predictions: Prisma.$PredictionPayload<ExtArgs>[];
         pointHistory: Prisma.$PointHistoryPayload<ExtArgs>[];
+        passwordResetTokens: Prisma.$PasswordResetTokenPayload<ExtArgs>[];
     };
     scalars: runtime.Types.Extensions.GetPayloadResult<{
         id: number;
@@ -726,6 +832,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
     poolUsers<T extends Prisma.User$poolUsersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$poolUsersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PoolUserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     predictions<T extends Prisma.User$predictionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$predictionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PredictionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     pointHistory<T extends Prisma.User$pointHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pointHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PointHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
+    passwordResetTokens<T extends Prisma.User$passwordResetTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$passwordResetTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>;
     catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>;
     finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>;
@@ -858,6 +965,17 @@ export type User$pointHistoryArgs<ExtArgs extends runtime.Types.Extensions.Inter
     take?: number;
     skip?: number;
     distinct?: Prisma.PointHistoryScalarFieldEnum | Prisma.PointHistoryScalarFieldEnum[];
+};
+export type User$passwordResetTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.PasswordResetTokenSelect<ExtArgs> | null;
+    omit?: Prisma.PasswordResetTokenOmit<ExtArgs> | null;
+    include?: Prisma.PasswordResetTokenInclude<ExtArgs> | null;
+    where?: Prisma.PasswordResetTokenWhereInput;
+    orderBy?: Prisma.PasswordResetTokenOrderByWithRelationInput | Prisma.PasswordResetTokenOrderByWithRelationInput[];
+    cursor?: Prisma.PasswordResetTokenWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.PasswordResetTokenScalarFieldEnum | Prisma.PasswordResetTokenScalarFieldEnum[];
 };
 export type UserDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     select?: Prisma.UserSelect<ExtArgs> | null;

@@ -12,6 +12,7 @@ export declare const JsonNull: import("@prisma/client-runtime-utils").JsonNullCl
 export declare const AnyNull: import("@prisma/client-runtime-utils").AnyNullClass;
 export declare const ModelName: {
     readonly User: "User";
+    readonly PasswordResetToken: "PasswordResetToken";
     readonly League: "League";
     readonly Championship: "Championship";
     readonly Team: "Team";
@@ -42,6 +43,15 @@ export declare const UserScalarFieldEnum: {
     readonly updatedAt: "updatedAt";
 };
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum];
+export declare const PasswordResetTokenScalarFieldEnum: {
+    readonly id: "id";
+    readonly userId: "userId";
+    readonly tokenHash: "tokenHash";
+    readonly expiresAt: "expiresAt";
+    readonly usedAt: "usedAt";
+    readonly createdAt: "createdAt";
+};
+export type PasswordResetTokenScalarFieldEnum = (typeof PasswordResetTokenScalarFieldEnum)[keyof typeof PasswordResetTokenScalarFieldEnum];
 export declare const LeagueScalarFieldEnum: {
     readonly id: "id";
     readonly externalId: "externalId";
@@ -169,6 +179,10 @@ export declare const UserOrderByRelevanceFieldEnum: {
     readonly providerId: "providerId";
 };
 export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum];
+export declare const PasswordResetTokenOrderByRelevanceFieldEnum: {
+    readonly tokenHash: "tokenHash";
+};
+export type PasswordResetTokenOrderByRelevanceFieldEnum = (typeof PasswordResetTokenOrderByRelevanceFieldEnum)[keyof typeof PasswordResetTokenOrderByRelevanceFieldEnum];
 export declare const LeagueOrderByRelevanceFieldEnum: {
     readonly name: "name";
     readonly country: "country";

@@ -39,3 +39,10 @@ API: `http://localhost:3001/api/health`
 ## Documentation API Football
 
 URL: https://www.api-football.com/documentation-v3
+
+Credenciais de Teste:
+participante@gmail.com (Participante)
+senha123
+
+atmm.rj@gmail.com (Admin)
+admin123456

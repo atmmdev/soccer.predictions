@@ -289,9 +289,6 @@ export type InvitationUncheckedUpdateManyWithoutPoolNestedInput = {
     updateMany?: Prisma.InvitationUpdateManyWithWhereWithoutPoolInput | Prisma.InvitationUpdateManyWithWhereWithoutPoolInput[];
     deleteMany?: Prisma.InvitationScalarWhereInput | Prisma.InvitationScalarWhereInput[];
 };
-export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null;
-};
 export type InvitationCreateWithoutPoolInput = {
     code: string;
     expiresAt?: Date | string | null;

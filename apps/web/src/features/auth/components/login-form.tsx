@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -19,6 +19,7 @@ import {
 import { Input } from '@/components/ui/input';
 
 import { saveAuthSession } from '../lib/auth-storage';
+import { resolveCallbackUrl } from '../lib/resolve-callback-url';
 import {
   loginSchema,
   type LoginFormData,
@@ -28,6 +29,8 @@ import { SocialAuthButtons } from './social-auth-buttons';
 
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = resolveCallbackUrl(searchParams.get('callbackUrl'));
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<LoginFormData>({
@@ -45,7 +48,7 @@ export function LoginForm() {
       const response = await loginRequest(data);
       saveAuthSession(response.accessToken, response.user);
       toast.success('Login realizado com sucesso!');
-      router.push('/dashboard');
+      router.push(callbackUrl);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : 'Erro ao fazer login',
@@ -96,7 +99,7 @@ export function LoginForm() {
                 <div className='flex items-center justify-between'>
                   <FormLabel>Senha</FormLabel>
                   <Link
-                    href='/help'
+                    href='/forgot-password'
                     className='text-muted-foreground hover:text-primary text-xs transition-colors'
                   >
                     Esqueceu a senha?

@@ -158,6 +158,7 @@ export type FieldRef<Model, FieldType> = runtime.FieldRef<Model, FieldType>;
 type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRef<Model, FieldType>;
 export declare const ModelName: {
     readonly User: "User";
+    readonly PasswordResetToken: "PasswordResetToken";
     readonly League: "League";
     readonly Championship: "Championship";
     readonly Team: "Team";
@@ -179,7 +180,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         omit: GlobalOmitOptions;
     };
     meta: {
-        modelProps: "user" | "league" | "championship" | "team" | "fixture" | "pool" | "poolUser" | "invitation" | "prediction" | "pointHistory";
+        modelProps: "user" | "passwordResetToken" | "league" | "championship" | "team" | "fixture" | "pool" | "poolUser" | "invitation" | "prediction" | "pointHistory";
         txIsolationLevel: TransactionIsolationLevel;
     };
     model: {
@@ -246,6 +247,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
                 count: {
                     args: Prisma.UserCountArgs<ExtArgs>;
                     result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number;
+                };
+            };
+        };
+        PasswordResetToken: {
+            payload: Prisma.$PasswordResetTokenPayload<ExtArgs>;
+            fields: Prisma.PasswordResetTokenFieldRefs;
+            operations: {
+                findUnique: {
+                    args: Prisma.PasswordResetTokenFindUniqueArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PasswordResetTokenPayload> | null;
+                };
+                findUniqueOrThrow: {
+                    args: Prisma.PasswordResetTokenFindUniqueOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PasswordResetTokenPayload>;
+                };
+                findFirst: {
+                    args: Prisma.PasswordResetTokenFindFirstArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PasswordResetTokenPayload> | null;
+                };
+                findFirstOrThrow: {
+                    args: Prisma.PasswordResetTokenFindFirstOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PasswordResetTokenPayload>;
+                };
+                findMany: {
+                    args: Prisma.PasswordResetTokenFindManyArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PasswordResetTokenPayload>[];
+                };
+                create: {
+                    args: Prisma.PasswordResetTokenCreateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PasswordResetTokenPayload>;
+                };
+                createMany: {
+                    args: Prisma.PasswordResetTokenCreateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                delete: {
+                    args: Prisma.PasswordResetTokenDeleteArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PasswordResetTokenPayload>;
+                };
+                update: {
+                    args: Prisma.PasswordResetTokenUpdateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PasswordResetTokenPayload>;
+                };
+                deleteMany: {
+                    args: Prisma.PasswordResetTokenDeleteManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateMany: {
+                    args: Prisma.PasswordResetTokenUpdateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                upsert: {
+                    args: Prisma.PasswordResetTokenUpsertArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$PasswordResetTokenPayload>;
+                };
+                aggregate: {
+                    args: Prisma.PasswordResetTokenAggregateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.AggregatePasswordResetToken>;
+                };
+                groupBy: {
+                    args: Prisma.PasswordResetTokenGroupByArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.PasswordResetTokenGroupByOutputType>[];
+                };
+                count: {
+                    args: Prisma.PasswordResetTokenCountArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.PasswordResetTokenCountAggregateOutputType> | number;
                 };
             };
         };
@@ -886,6 +953,15 @@ export declare const UserScalarFieldEnum: {
     readonly updatedAt: "updatedAt";
 };
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum];
+export declare const PasswordResetTokenScalarFieldEnum: {
+    readonly id: "id";
+    readonly userId: "userId";
+    readonly tokenHash: "tokenHash";
+    readonly expiresAt: "expiresAt";
+    readonly usedAt: "usedAt";
+    readonly createdAt: "createdAt";
+};
+export type PasswordResetTokenScalarFieldEnum = (typeof PasswordResetTokenScalarFieldEnum)[keyof typeof PasswordResetTokenScalarFieldEnum];
 export declare const LeagueScalarFieldEnum: {
     readonly id: "id";
     readonly externalId: "externalId";
@@ -1013,6 +1089,10 @@ export declare const UserOrderByRelevanceFieldEnum: {
     readonly providerId: "providerId";
 };
 export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum];
+export declare const PasswordResetTokenOrderByRelevanceFieldEnum: {
+    readonly tokenHash: "tokenHash";
+};
+export type PasswordResetTokenOrderByRelevanceFieldEnum = (typeof PasswordResetTokenOrderByRelevanceFieldEnum)[keyof typeof PasswordResetTokenOrderByRelevanceFieldEnum];
 export declare const LeagueOrderByRelevanceFieldEnum: {
     readonly name: "name";
     readonly country: "country";
@@ -1093,6 +1173,7 @@ export type PrismaClientOptions = ({
 };
 export type GlobalOmitConfig = {
     user?: Prisma.UserOmit;
+    passwordResetToken?: Prisma.PasswordResetTokenOmit;
     league?: Prisma.LeagueOmit;
     championship?: Prisma.ChampionshipOmit;
     team?: Prisma.TeamOmit;

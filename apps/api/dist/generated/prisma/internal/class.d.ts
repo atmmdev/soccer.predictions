@@ -33,6 +33,9 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
     get user(): Prisma.UserDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;
+    get passwordResetToken(): Prisma.PasswordResetTokenDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
     get league(): Prisma.LeagueDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;

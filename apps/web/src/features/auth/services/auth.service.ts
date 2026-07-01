@@ -71,3 +71,34 @@ export async function fetchMeRequest(accessToken: string): Promise<AuthResponse[
 
   return body.user;
 }
+
+export async function forgotPasswordRequest(email: string): Promise<{ message: string }> {
+  const response = await fetch(`${API_URL}/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+
+  return response.json() as Promise<{ message: string }>;
+}
+
+export async function resetPasswordRequest(payload: {
+  token: string;
+  password: string;
+}): Promise<{ message: string }> {
+  const response = await fetch(`${API_URL}/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+
+  return response.json() as Promise<{ message: string }>;
+}

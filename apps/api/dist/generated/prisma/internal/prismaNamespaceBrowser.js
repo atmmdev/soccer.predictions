@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InvitationOrderByRelevanceFieldEnum = exports.PoolOrderByRelevanceFieldEnum = exports.QueryMode = exports.JsonNullValueFilter = exports.TeamOrderByRelevanceFieldEnum = exports.ChampionshipOrderByRelevanceFieldEnum = exports.LeagueOrderByRelevanceFieldEnum = exports.UserOrderByRelevanceFieldEnum = exports.NullsOrder = exports.NullableJsonNullValueInput = exports.JsonNullValueInput = exports.SortOrder = exports.PointHistoryScalarFieldEnum = exports.PredictionScalarFieldEnum = exports.InvitationScalarFieldEnum = exports.PoolUserScalarFieldEnum = exports.PoolScalarFieldEnum = exports.FixtureScalarFieldEnum = exports.TeamScalarFieldEnum = exports.ChampionshipScalarFieldEnum = exports.LeagueScalarFieldEnum = exports.UserScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.Decimal = void 0;
+exports.InvitationOrderByRelevanceFieldEnum = exports.PoolOrderByRelevanceFieldEnum = exports.QueryMode = exports.JsonNullValueFilter = exports.TeamOrderByRelevanceFieldEnum = exports.ChampionshipOrderByRelevanceFieldEnum = exports.LeagueOrderByRelevanceFieldEnum = exports.PasswordResetTokenOrderByRelevanceFieldEnum = exports.UserOrderByRelevanceFieldEnum = exports.NullsOrder = exports.NullableJsonNullValueInput = exports.JsonNullValueInput = exports.SortOrder = exports.PointHistoryScalarFieldEnum = exports.PredictionScalarFieldEnum = exports.InvitationScalarFieldEnum = exports.PoolUserScalarFieldEnum = exports.PoolScalarFieldEnum = exports.FixtureScalarFieldEnum = exports.TeamScalarFieldEnum = exports.ChampionshipScalarFieldEnum = exports.LeagueScalarFieldEnum = exports.PasswordResetTokenScalarFieldEnum = exports.UserScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.Decimal = void 0;
 const runtime = __importStar(require("@prisma/client/runtime/index-browser"));
 exports.Decimal = runtime.Decimal;
 exports.NullTypes = {
@@ -46,6 +46,7 @@ exports.JsonNull = runtime.JsonNull;
 exports.AnyNull = runtime.AnyNull;
 exports.ModelName = {
     User: 'User',
+    PasswordResetToken: 'PasswordResetToken',
     League: 'League',
     Championship: 'Championship',
     Team: 'Team',
@@ -72,6 +73,14 @@ exports.UserScalarFieldEnum = {
     role: 'role',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
+};
+exports.PasswordResetTokenScalarFieldEnum = {
+    id: 'id',
+    userId: 'userId',
+    tokenHash: 'tokenHash',
+    expiresAt: 'expiresAt',
+    usedAt: 'usedAt',
+    createdAt: 'createdAt'
 };
 exports.LeagueScalarFieldEnum = {
     id: 'id',
@@ -185,6 +194,9 @@ exports.UserOrderByRelevanceFieldEnum = {
     name: 'name',
     password: 'password',
     providerId: 'providerId'
+};
+exports.PasswordResetTokenOrderByRelevanceFieldEnum = {
+    tokenHash: 'tokenHash'
 };
 exports.LeagueOrderByRelevanceFieldEnum = {
     name: 'name',
