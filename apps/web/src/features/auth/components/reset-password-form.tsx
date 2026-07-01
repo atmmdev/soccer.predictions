@@ -17,6 +17,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 
 import {
   resetPasswordSchema,
@@ -90,8 +91,7 @@ function ResetPasswordFormContent({ token }: { token: string }) {
               <FormItem>
                 <FormLabel>Nova senha</FormLabel>
                 <FormControl>
-                  <Input
-                    type='password'
+                  <PasswordInput
                     autoComplete='new-password'
                     className='h-11'
                     {...field}
@@ -109,8 +109,7 @@ function ResetPasswordFormContent({ token }: { token: string }) {
               <FormItem>
                 <FormLabel>Confirmar nova senha</FormLabel>
                 <FormControl>
-                  <Input
-                    type='password'
+                  <PasswordInput
                     autoComplete='new-password'
                     className='h-11'
                     {...field}

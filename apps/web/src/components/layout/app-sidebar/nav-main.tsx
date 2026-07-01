@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 
 import { mainNav, secondaryNav } from '@/config/sidebar';
 import { filterSidebarItems } from '@/features/auth/lib/role-access';
-import { getStoredUser } from '@/features/auth/lib/auth-storage';
+import type { UserRole } from '@/features/auth/types/auth';
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -16,10 +16,14 @@ import { SidebarItem } from '@/types/sidebar';
 const collapsedButtonClass =
   'h-11 group-data-[collapsible=icon]:size-11! group-data-[collapsible=icon]:w-11 group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:[&>span]:hidden';
 
-function NavMenu({ items }: { items: SidebarItem[] }) {
+interface NavMenuProps {
+  items: SidebarItem[];
+  userRole?: UserRole;
+}
+
+function NavMenu({ items, userRole }: NavMenuProps) {
   const pathname = usePathname();
-  const role = getStoredUser()?.role;
-  const visibleItems = filterSidebarItems(items, role);
+  const visibleItems = filterSidebarItems(items, userRole);
 
   return (
     <SidebarMenu className='group-data-[collapsible=icon]:items-center'>
@@ -51,10 +55,10 @@ function NavMenu({ items }: { items: SidebarItem[] }) {
   );
 }
 
-export function MainNav() {
-  return <NavMenu items={mainNav} />;
+export function MainNav({ userRole }: { userRole?: UserRole }) {
+  return <NavMenu items={mainNav} userRole={userRole} />;
 }
 
-export function SecondaryNav() {
-  return <NavMenu items={secondaryNav} />;
+export function SecondaryNav({ userRole }: { userRole?: UserRole }) {
+  return <NavMenu items={secondaryNav} userRole={userRole} />;
 }

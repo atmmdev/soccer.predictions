@@ -17,6 +17,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 
 import { saveAuthSession } from '../lib/auth-storage';
 import { resolveCallbackUrl } from '../lib/resolve-callback-url';
@@ -106,8 +107,7 @@ export function LoginForm() {
                   </Link>
                 </div>
                 <FormControl>
-                  <Input
-                    type='password'
+                  <PasswordInput
                     autoComplete='current-password'
                     className='h-11'
                     {...field}

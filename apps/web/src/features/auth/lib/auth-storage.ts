@@ -1,6 +1,7 @@
 import {
   ACCESS_TOKEN_COOKIE,
   ACCESS_TOKEN_MAX_AGE_SECONDS,
+  USER_NAME_COOKIE,
   USER_ROLE_COOKIE,
 } from '../config/auth';
 import type { AuthUser, UserRole } from '../types/auth';
@@ -15,6 +16,10 @@ function setUserRoleCookie(role: UserRole): void {
   document.cookie = `${USER_ROLE_COOKIE}=${encodeURIComponent(role)}; path=/; max-age=${ACCESS_TOKEN_MAX_AGE_SECONDS}; SameSite=Lax`;
 }
 
+function setUserNameCookie(name: string): void {
+  document.cookie = `${USER_NAME_COOKIE}=${encodeURIComponent(name)}; path=/; max-age=${ACCESS_TOKEN_MAX_AGE_SECONDS}; SameSite=Lax`;
+}
+
 function clearAccessTokenCookie(): void {
   document.cookie = `${ACCESS_TOKEN_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
 }
@@ -23,11 +28,16 @@ function clearUserRoleCookie(): void {
   document.cookie = `${USER_ROLE_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
 }
 
+function clearUserNameCookie(): void {
+  document.cookie = `${USER_NAME_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
+}
+
 export function saveAuthSession(accessToken: string, user: AuthUser): void {
   localStorage.setItem(ACCESS_TOKEN_COOKIE, accessToken);
   localStorage.setItem(USER_KEY, JSON.stringify(user));
   setAccessTokenCookie(accessToken);
   setUserRoleCookie(user.role);
+  setUserNameCookie(user.name);
 }
 
 export function updateStoredUser(user: AuthUser): void {
@@ -45,6 +55,7 @@ export function clearAuthSession(): void {
   localStorage.removeItem(USER_KEY);
   clearAccessTokenCookie();
   clearUserRoleCookie();
+  clearUserNameCookie();
 }
 
 export function getAccessToken(): string | null {

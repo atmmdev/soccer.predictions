@@ -2,6 +2,7 @@ import type { UserRole } from '../types/auth';
 
 export const ACCESS_TOKEN_COOKIE = 'soccer_predictions_access_token';
 export const USER_ROLE_COOKIE = 'soccer_predictions_user_role';
+export const USER_NAME_COOKIE = 'soccer_predictions_user_name';
 export const ACCESS_TOKEN_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
 
 export const PROTECTED_PATH_PREFIXES = [
@@ -56,4 +57,12 @@ export function canAccessPath(pathname: string, role: UserRole | undefined): boo
   }
 
   return isPrivilegedRole(role);
+}
+
+export function parseUserRole(value: string | undefined): UserRole | undefined {
+  if (value === 'SUPER_ADMIN' || value === 'ADMIN' || value === 'PARTICIPANT') {
+    return value;
+  }
+
+  return undefined;
 }

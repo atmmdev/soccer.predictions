@@ -17,6 +17,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 
 import { saveAuthSession } from '../lib/auth-storage';
 import {
@@ -118,8 +119,7 @@ export function RegisterForm() {
               <FormItem>
                 <FormLabel>Senha</FormLabel>
                 <FormControl>
-                  <Input
-                    type='password'
+                  <PasswordInput
                     autoComplete='new-password'
                     className='h-11'
                     {...field}
@@ -137,8 +137,7 @@ export function RegisterForm() {
               <FormItem>
                 <FormLabel>Confirmar senha</FormLabel>
                 <FormControl>
-                  <Input
-                    type='password'
+                  <PasswordInput
                     autoComplete='new-password'
                     className='h-11'
                     {...field}

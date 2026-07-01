@@ -22,3 +22,30 @@ export function filterSidebarItems(
 export function canManagePlatform(role: UserRole | undefined): boolean {
   return isPrivilegedRole(role);
 }
+
+export function getUserRoleLabel(role: UserRole | undefined): string {
+  switch (role) {
+    case 'SUPER_ADMIN':
+      return 'Super Administrador';
+    case 'ADMIN':
+      return 'Administrador';
+    case 'PARTICIPANT':
+      return 'Participante';
+    default:
+      return 'Participante';
+  }
+}
+
+export function getUserInitials(name: string | undefined): string {
+  if (!name?.trim()) {
+    return '?';
+  }
+
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+
+  if (parts.length === 1) {
+    return parts[0]!.slice(0, 2).toUpperCase();
+  }
+
+  return `${parts[0]![0]}${parts[parts.length - 1]![0]}`.toUpperCase();
+}

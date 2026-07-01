@@ -38,9 +38,11 @@ API: `http://localhost:3001/api/health`
 
 ### Credenciais padrão (seed)
 
-| E-mail | Senha | Papel |
-|--------|-------|-------|
-| `admin@admin` | `admin123` | SUPER_ADMIN |
+| E-mail                    | Senha         | Papel       |
+| ------------------------- | ------------- | ----------- |
+| `admin@admin`             | `admin123`    | SUPER_ADMIN |
+| `atmm.rj@gmail.com`       | `admin123456` | ADMIN       |
+| `participante@gmail.com ` | `senha123`    | PARTICIPANT |
 
 Rodar seed: `cd apps/api && npm run prisma:seed`
 
