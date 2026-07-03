@@ -3,13 +3,13 @@ export declare class ChampionshipsController {
     private readonly championshipService;
     constructor(championshipService: ChampionshipService);
     listActive(): import("../../../../../generated/prisma/internal/prismaNamespace.js").PrismaPromise<{
-        name: string;
         id: number;
-        status: import("../../../../../generated/prisma/enums.js").ChampionshipStatus;
+        name: string;
+        country: string;
+        type: import("../../../../../generated/prisma/enums.js").ChampionshipType;
         leagueId: number;
         season: number;
-        country: string;
         flags: string;
-        type: import("../../../../../generated/prisma/enums.js").ChampionshipType;
+        status: import("../../../../../generated/prisma/enums.js").ChampionshipStatus;
     }[]>;
 }

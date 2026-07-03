@@ -115,6 +115,76 @@ export class RankingService {
     });
   }
 
+  async getPoolMemberPositions(
+    poolIds: number[],
+    options?: { syncScores?: boolean },
+  ): Promise<Map<string, number>> {
+    const positions = new Map<string, number>();
+
+    if (poolIds.length === 0) {
+      return positions;
+    }
+
+    if (options?.syncScores !== false) {
+      await this.scoringService.syncPoolsScores(poolIds);
+    }
+
+    for (const poolId of poolIds) {
+      const members = await this.prisma.poolUser.findMany({
+        where: {
+          poolId,
+          status: 'ACTIVE',
+          user: { role: { not: 'SUPER_ADMIN' } },
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      const ranked = await Promise.all(
+        members.map(async member => {
+          const pointHistory = await this.prisma.pointHistory.findMany({
+            where: {
+              poolId,
+              userId: member.userId,
+            },
+            select: {
+              points: true,
+              breakdown: true,
+            },
+          });
+
+          const aggregated = ScoringService.aggregateBreakdown(pointHistory);
+
+          return {
+            userId: member.userId,
+            name: member.user.name,
+            points: aggregated.points,
+          };
+        }),
+      );
+
+      ranked.sort((left, right) => {
+        if (right.points !== left.points) {
+          return right.points - left.points;
+        }
+
+        return left.name.localeCompare(right.name);
+      });
+
+      ranked.forEach((entry, index) => {
+        positions.set(`${poolId}:${entry.userId}`, index + 1);
+      });
+    }
+
+    return positions;
+  }
+
   private async findAccessiblePools(user: AuthUser, poolId?: number) {
     if (poolId !== undefined) {
       const pool = await this.findAccessiblePoolById(poolId, user);

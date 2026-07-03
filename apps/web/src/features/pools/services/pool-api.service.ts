@@ -11,6 +11,7 @@ export interface PoolResponse {
   championshipType: Championship['type'];
   season: number;
   participantsCount: number;
+  predictionsCount: number;
   inviteCode: string;
   status: 'ACTIVE' | 'INACTIVE' | 'CLOSED';
   scoring: PoolScoringConfig;

@@ -10,6 +10,7 @@ export function mapPoolResponse(pool: PoolResponse): Pool {
     championshipType: pool.championshipType,
     season: pool.season,
     participantsCount: pool.participantsCount,
+    predictionsCount: pool.predictionsCount,
     inviteCode: pool.inviteCode,
     status: pool.status === 'CLOSED' ? 'INACTIVE' : pool.status,
     scoring: pool.scoring,

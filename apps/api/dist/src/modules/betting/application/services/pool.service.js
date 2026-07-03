@@ -30,6 +30,7 @@ let PoolService = class PoolService {
                             poolUsers: {
                                 where: { status: 'ACTIVE' },
                             },
+                            predictions: true,
                         },
                     },
                 },
@@ -58,6 +59,7 @@ let PoolService = class PoolService {
                         poolUsers: {
                             where: { status: 'ACTIVE' },
                         },
+                        predictions: true,
                     },
                 },
             },
@@ -205,6 +207,7 @@ let PoolService = class PoolService {
                         poolUsers: {
                             where: { status: 'ACTIVE' },
                         },
+                        predictions: true,
                     },
                 },
             },
@@ -265,6 +268,7 @@ let PoolService = class PoolService {
             championshipType: pool.championship.type,
             season: pool.championship.season,
             participantsCount: pool._count.poolUsers,
+            predictionsCount: pool._count.predictions,
             inviteCode: pool.inviteCode,
             status: pool.status,
             scoring: pool.scoring,

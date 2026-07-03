@@ -25,5 +25,6 @@ export interface PredictionFixtureItem {
   /** Placar oficial; null enquanto o jogo não começou. */
   officialHomeScore: number | null;
   officialAwayScore: number | null;
+  earnedPoints: number | null;
   prediction: UserPrediction | null;
 }

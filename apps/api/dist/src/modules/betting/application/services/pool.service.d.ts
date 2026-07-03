@@ -11,6 +11,7 @@ export interface PoolListItem {
     championshipType: ChampionshipType;
     season: number;
     participantsCount: number;
+    predictionsCount: number;
     inviteCode: string;
     status: Pool['status'];
     scoring: Prisma.JsonValue;

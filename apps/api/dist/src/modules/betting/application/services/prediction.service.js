@@ -14,10 +14,16 @@ const common_1 = require("@nestjs/common");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
 const prediction_window_js_1 = require("../utils/prediction-window.js");
 const pool_participation_js_1 = require("../../../../shared/auth/pool-participation.js");
+const ranking_service_js_1 = require("./ranking.service.js");
+const scoring_service_js_1 = require("./scoring.service.js");
 let PredictionService = class PredictionService {
     prisma;
-    constructor(prisma) {
+    rankingService;
+    scoringService;
+    constructor(prisma, rankingService, scoringService) {
         this.prisma = prisma;
+        this.rankingService = rankingService;
+        this.scoringService = scoringService;
     }
     async listForUser(user) {
         const pools = await this.findAccessiblePools(user);
@@ -26,26 +32,33 @@ let PredictionService = class PredictionService {
         }
         const poolIds = pools.map(pool => pool.id);
         const championshipIds = [...new Set(pools.map(pool => pool.championshipId))];
-        const fixtures = await this.prisma.fixture.findMany({
-            where: {
-                championshipId: { in: championshipIds },
-                status: { in: ['SCHEDULED', 'LIVE', 'FINISHED'] },
-            },
-            include: {
-                homeTeam: true,
-                awayTeam: true,
-                championship: true,
-            },
-            orderBy: { date: 'asc' },
-        });
-        const predictions = await this.prisma.prediction.findMany({
-            where: { poolId: { in: poolIds } },
-        });
+        await this.scoringService.syncPoolsScores(poolIds);
+        const [fixtures, predictions, membersByPoolId, positions, earnedPointsByKey] = await Promise.all([
+            this.prisma.fixture.findMany({
+                where: {
+                    championshipId: { in: championshipIds },
+                    status: { in: ['SCHEDULED', 'LIVE', 'FINISHED'] },
+                },
+                include: {
+                    homeTeam: true,
+                    awayTeam: true,
+                    championship: true,
+                },
+                orderBy: { date: 'asc' },
+            }),
+            this.prisma.prediction.findMany({
+                where: { poolId: { in: poolIds } },
+            }),
+            this.loadActiveMembersByPool(poolIds),
+            this.rankingService.getPoolMemberPositions(poolIds, {
+                syncScores: false,
+            }),
+            this.loadEarnedPointsByKey(poolIds),
+        ]);
         const predictionsByKey = new Map();
         for (const prediction of predictions) {
             predictionsByKey.set(`${prediction.poolId}:${prediction.userId}:${prediction.fixtureId}`, prediction);
         }
-        const membersByPoolId = await this.loadActiveMembersByPool(poolIds);
         const rows = [];
         for (const pool of pools) {
             const poolFixtures = fixtures.filter(fixture => fixture.championshipId === pool.championshipId);
@@ -61,6 +74,8 @@ let PredictionService = class PredictionService {
                             userId: user.id,
                             userRole: user.role,
                             prediction: predictionsByKey.get(`${pool.id}:${member.id}:${fixture.id}`) ?? null,
+                            poolPosition: positions.get(`${pool.id}:${member.id}`) ?? 0,
+                            earnedPoints: earnedPointsByKey.get(`${pool.id}:${member.id}:${fixture.id}`) ?? null,
                         }));
                     }
                 }
@@ -78,6 +93,9 @@ let PredictionService = class PredictionService {
                     userId: user.id,
                     userRole: user.role,
                     prediction: predictionsByKey.get(`${pool.id}:${user.id}:${fixture.id}`) ??
+                        null,
+                    poolPosition: positions.get(`${pool.id}:${user.id}`) ?? 0,
+                    earnedPoints: earnedPointsByKey.get(`${pool.id}:${user.id}:${fixture.id}`) ??
                         null,
                 }));
             }
@@ -132,6 +150,13 @@ let PredictionService = class PredictionService {
                 selectedPlayerId: dto.selectedPlayerId ?? null,
             },
         });
+        await this.scoringService.syncPoolScores(dto.poolId);
+        const [positions, earnedPointsByKey] = await Promise.all([
+            this.rankingService.getPoolMemberPositions([dto.poolId], {
+                syncScores: false,
+            }),
+            this.loadEarnedPointsByKey([dto.poolId]),
+        ]);
         return this.toFixtureRow({
             pool,
             fixture,
@@ -139,6 +164,9 @@ let PredictionService = class PredictionService {
             userId: user.id,
             userRole: user.role,
             prediction,
+            poolPosition: positions.get(`${dto.poolId}:${user.id}`) ?? 0,
+            earnedPoints: earnedPointsByKey.get(`${dto.poolId}:${user.id}:${dto.fixtureId}`) ??
+                null,
         });
     }
     canViewAllPoolPredictions(user, pool) {
@@ -182,13 +210,32 @@ let PredictionService = class PredictionService {
         }
         return membersByPoolId;
     }
+    async loadEarnedPointsByKey(poolIds) {
+        const earnedPointsByKey = new Map();
+        if (poolIds.length === 0) {
+            return earnedPointsByKey;
+        }
+        const rows = await this.prisma.pointHistory.findMany({
+            where: { poolId: { in: poolIds } },
+            select: {
+                poolId: true,
+                userId: true,
+                fixtureId: true,
+                points: true,
+            },
+        });
+        for (const row of rows) {
+            earnedPointsByKey.set(`${row.poolId}:${row.userId}:${row.fixtureId}`, row.points);
+        }
+        return earnedPointsByKey;
+    }
     toFixtureRow(input) {
-        const { pool, fixture, member, userId, userRole, prediction } = input;
+        const { pool, fixture, member, userId, userRole, prediction, poolPosition, earnedPoints, } = input;
         return {
             id: fixture.id,
             poolId: pool.id,
             poolName: pool.name,
-            poolPosition: 0,
+            poolPosition,
             participantId: member.id,
             participantName: member.name,
             isOwnPrediction: userRole !== 'SUPER_ADMIN' && member.id === userId,
@@ -200,6 +247,7 @@ let PredictionService = class PredictionService {
             matchStatus: this.toMatchStatus(fixture.status),
             officialHomeScore: fixture.homeScore,
             officialAwayScore: fixture.awayScore,
+            earnedPoints: fixture.status === 'FINISHED' && prediction ? earnedPoints : null,
             prediction: prediction
                 ? {
                     fixtureId: fixture.id,
@@ -256,6 +304,8 @@ let PredictionService = class PredictionService {
 exports.PredictionService = PredictionService;
 exports.PredictionService = PredictionService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_js_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_js_1.PrismaService,
+        ranking_service_js_1.RankingService,
+        scoring_service_js_1.ScoringService])
 ], PredictionService);
 //# sourceMappingURL=prediction.service.js.map

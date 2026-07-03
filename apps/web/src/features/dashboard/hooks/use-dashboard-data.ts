@@ -1,0 +1,252 @@
+'use client';
+
+import { isToday, isTomorrow, parseISO } from 'date-fns';
+import { Calendar, Target, Trophy, Users } from 'lucide-react';
+import { useMemo } from 'react';
+import { TbPercentage } from 'react-icons/tb';
+
+import { usePredictions } from '@/features/predictions/hooks/use-predictions';
+import { usePools } from '@/features/pools/hooks/use-pools';
+import { useRankings } from '@/features/rankings/hooks/use-rankings';
+import type { RankingEntry } from '@/features/rankings/types/ranking-entry';
+
+import type { StatsItem } from '../stats/types/stats';
+import { mapPredictionToDashboardMatch } from '../utils/map-prediction-to-match';
+import type { Match } from '../matches/types/match';
+import type { RankingUser } from '../rankings/types/ranking';
+
+const TOP_RANKING_LIMIT = 7;
+const ACTIVE_POOLS_LIMIT = 5;
+const MATCHES_LIMIT = 10;
+
+function getPrimaryPoolId(entries: RankingEntry[]): number | null {
+  const currentUserPool = entries.find(entry => entry.isCurrentUser);
+
+  if (currentUserPool) {
+    return currentUserPool.poolId;
+  }
+
+  return entries[0]?.poolId ?? null;
+}
+
+function toRankingUsers(entries: RankingEntry[]): RankingUser[] {
+  return entries.map(entry => ({
+    id: entry.id,
+    name: entry.name,
+    points: entry.points,
+  }));
+}
+
+export function useDashboardData() {
+  const poolsState = usePools();
+  const predictionsState = usePredictions();
+  const rankingsState = useRankings();
+
+  const isLoading =
+    poolsState.isLoading ||
+    predictionsState.isLoading ||
+    rankingsState.isLoading;
+
+  const error =
+    poolsState.error ?? predictionsState.error ?? rankingsState.error;
+
+  const ownFixtures = useMemo(
+    () => predictionsState.fixtures.filter(fixture => fixture.isOwnPrediction),
+    [predictionsState.fixtures],
+  );
+
+  const primaryPoolId = useMemo(
+    () => getPrimaryPoolId(rankingsState.entries),
+    [rankingsState.entries],
+  );
+
+  const topRanking = useMemo(() => {
+    if (primaryPoolId === null) {
+      return [];
+    }
+
+    return toRankingUsers(
+      rankingsState.entries
+        .filter(entry => entry.poolId === primaryPoolId)
+        .sort((left, right) => {
+          if (right.points !== left.points) {
+            return right.points - left.points;
+          }
+
+          return left.name.localeCompare(right.name);
+        })
+        .slice(0, TOP_RANKING_LIMIT),
+    );
+  }, [rankingsState.entries, primaryPoolId]);
+
+  const activePools = useMemo(
+    () =>
+      [...poolsState.pools]
+        .sort((left, right) => {
+          if (right.predictionsCount !== left.predictionsCount) {
+            return right.predictionsCount - left.predictionsCount;
+          }
+
+          return right.participantsCount - left.participantsCount;
+        })
+        .slice(0, ACTIVE_POOLS_LIMIT),
+    [poolsState.pools],
+  );
+
+  const allMatches = useMemo(
+    () =>
+      [...ownFixtures]
+        .sort(
+          (left, right) =>
+            new Date(left.date).getTime() - new Date(right.date).getTime(),
+        )
+        .slice(0, MATCHES_LIMIT)
+        .map(mapPredictionToDashboardMatch),
+    [ownFixtures],
+  );
+
+  const matchCounts = useMemo(() => {
+    const live = ownFixtures.filter(
+      fixture => fixture.matchStatus === 'LIVE',
+    ).length;
+    const today = ownFixtures.filter(fixture =>
+      isToday(parseISO(fixture.date)),
+    ).length;
+    const tomorrow = ownFixtures.filter(fixture =>
+      isTomorrow(parseISO(fixture.date)),
+    ).length;
+
+    return {
+      all: ownFixtures.length,
+      live,
+      today,
+      tomorrow,
+    };
+  }, [ownFixtures]);
+
+  const stats = useMemo((): StatsItem[] => {
+    const activePoolCount = poolsState.pools.filter(
+      pool => pool.status === 'ACTIVE',
+    ).length;
+    const participantsTotal = poolsState.pools.reduce(
+      (total, pool) => total + pool.participantsCount,
+      0,
+    );
+    const gamesToday = ownFixtures.filter(fixture =>
+      isToday(parseISO(fixture.date)),
+    ).length;
+    const liveGames = ownFixtures.filter(
+      fixture => fixture.matchStatus === 'LIVE',
+    ).length;
+    const registeredPredictions = ownFixtures.filter(
+      fixture => fixture.prediction !== null,
+    ).length;
+    const finishedWithPrediction = ownFixtures.filter(
+      fixture =>
+        fixture.matchStatus === 'FINISHED' && fixture.prediction !== null,
+    );
+    const hits = finishedWithPrediction.filter(
+      fixture => (fixture.earnedPoints ?? 0) > 0,
+    ).length;
+    const hitRate =
+      finishedWithPrediction.length > 0
+        ? Math.round((hits / finishedWithPrediction.length) * 100)
+        : 0;
+
+    return [
+      {
+        title: 'Total de Participantes',
+        value: participantsTotal.toLocaleString('pt-BR'),
+        trend: `${poolsState.pools.length} bolão(ões)`,
+        icon: Users,
+        iconBackground: 'bg-emerald-100',
+        iconColor: 'text-emerald-600',
+      },
+      {
+        title: 'Bolões Ativos',
+        value: activePoolCount.toLocaleString('pt-BR'),
+        trend:
+          activePoolCount === poolsState.pools.length
+            ? 'Todos os seus bolões'
+            : `${poolsState.pools.length - activePoolCount} inativo(s)`,
+        icon: Trophy,
+        iconBackground: 'bg-sky-100',
+        iconColor: 'text-sky-600',
+      },
+      {
+        title: 'Jogos Hoje',
+        value: gamesToday.toLocaleString('pt-BR'),
+        trend:
+          liveGames > 0
+            ? `${liveGames} em andamento`
+            : 'Nenhum jogo ao vivo',
+        icon: Calendar,
+        iconBackground: 'bg-amber-100',
+        iconColor: 'text-amber-600',
+      },
+      {
+        title: 'Palpites Registrados',
+        value: registeredPredictions.toLocaleString('pt-BR'),
+        trend: `${ownFixtures.length} jogos nos seus bolões`,
+        trendPositive: registeredPredictions > 0,
+        icon: Target,
+        iconBackground: 'bg-violet-100',
+        iconColor: 'text-violet-600',
+      },
+      {
+        title: 'Média de Acertos',
+        value: `${hitRate}%`,
+        trend:
+          finishedWithPrediction.length > 0
+            ? `${hits} de ${finishedWithPrediction.length} jogos finalizados`
+            : 'Sem jogos finalizados ainda',
+        trendPositive: hitRate >= 50,
+        icon: TbPercentage,
+        iconBackground: 'bg-rose-100',
+        iconColor: 'text-rose-600',
+      },
+    ];
+  }, [ownFixtures, poolsState.pools]);
+
+  const filterMatches = (tab: 'all' | 'live' | 'today' | 'tomorrow'): Match[] => {
+    const filtered = ownFixtures.filter(fixture => {
+      if (tab === 'live') {
+        return fixture.matchStatus === 'LIVE';
+      }
+
+      if (tab === 'today') {
+        return isToday(parseISO(fixture.date));
+      }
+
+      if (tab === 'tomorrow') {
+        return isTomorrow(parseISO(fixture.date));
+      }
+
+      return true;
+    });
+
+    return filtered
+      .sort(
+        (left, right) =>
+          new Date(left.date).getTime() - new Date(right.date).getTime(),
+      )
+      .slice(0, MATCHES_LIMIT)
+      .map(mapPredictionToDashboardMatch);
+  };
+
+  return {
+    isLoading,
+    error,
+    stats,
+    topRanking,
+    activePools,
+    allMatches,
+    matchCounts,
+    filterMatches,
+    reload: () => {
+      void poolsState.reloadPools();
+      void predictionsState.reloadFixtures();
+      void rankingsState.reloadRankings();
+    },
+  };
+}

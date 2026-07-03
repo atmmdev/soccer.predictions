@@ -12,6 +12,7 @@ export interface Pool {
   championshipType: Championship['type'];
   season: number;
   participantsCount: number;
+  predictionsCount: number;
   inviteCode: string;
   status: PoolStatus;
   scoring: PoolScoringConfig;

@@ -42,6 +42,7 @@ export class PoolService {
       championshipType: championship.type,
       season: championship.season,
       participantsCount: 0,
+      predictionsCount: 0,
       inviteCode: generateInviteCode(data.name),
       status: data.active ? 'ACTIVE' : 'INACTIVE',
       scoring: mapFormToScoringConfig(data),

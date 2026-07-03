@@ -25,6 +25,9 @@ export declare class RankingService {
     private readonly scoringService;
     constructor(prisma: PrismaService, scoringService: ScoringService);
     listForUser(user: AuthUser, poolId?: number): Promise<RankingListItem[]>;
+    getPoolMemberPositions(poolIds: number[], options?: {
+        syncScores?: boolean;
+    }): Promise<Map<string, number>>;
     private findAccessiblePools;
     private findAccessiblePoolById;
 }

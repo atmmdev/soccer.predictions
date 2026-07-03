@@ -19,6 +19,7 @@ export interface PoolListItem {
   championshipType: ChampionshipType;
   season: number;
   participantsCount: number;
+  predictionsCount: number;
   inviteCode: string;
   status: Pool['status'];
   scoring: Prisma.JsonValue;
@@ -48,6 +49,7 @@ export class PoolService {
               poolUsers: {
                 where: { status: 'ACTIVE' },
               },
+              predictions: true,
             },
           },
         },
@@ -78,6 +80,7 @@ export class PoolService {
             poolUsers: {
               where: { status: 'ACTIVE' },
             },
+            predictions: true,
           },
         },
       },
@@ -271,6 +274,7 @@ export class PoolService {
             poolUsers: {
               where: { status: 'ACTIVE' },
             },
+            predictions: true,
           },
         },
       },
@@ -342,7 +346,7 @@ export class PoolService {
         type: ChampionshipType;
         season: number;
       };
-      _count: { poolUsers: number };
+      _count: { poolUsers: number; predictions: number };
     },
     userId: number,
     userRole?: AuthUser['role'],
@@ -355,6 +359,7 @@ export class PoolService {
       championshipType: pool.championship.type,
       season: pool.championship.season,
       participantsCount: pool._count.poolUsers,
+      predictionsCount: pool._count.predictions,
       inviteCode: pool.inviteCode,
       status: pool.status,
       scoring: pool.scoring,

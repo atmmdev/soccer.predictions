@@ -10,24 +10,37 @@ const tabTriggerClass = cn(
   'after:bottom-0 after:h-0.5 after:rounded-none after:bg-primary',
 );
 
-export function MatchTabs() {
+interface MatchTabsProps {
+  activeTab: 'all' | 'live' | 'today' | 'tomorrow';
+  onTabChange: (tab: 'all' | 'live' | 'today' | 'tomorrow') => void;
+  counts: {
+    all: number;
+    live: number;
+    today: number;
+    tomorrow: number;
+  };
+}
+
+export function MatchTabs({ activeTab, onTabChange, counts }: MatchTabsProps) {
   return (
-    <Tabs defaultValue='all'>
-      <TabsList
-        variant='line'
-        className='h-auto w-full justify-start gap-4'
-      >
+    <Tabs
+      value={activeTab}
+      onValueChange={value =>
+        onTabChange(value as MatchTabsProps['activeTab'])
+      }
+    >
+      <TabsList variant='line' className='h-auto w-full justify-start gap-4'>
         <TabsTrigger value='all' className={tabTriggerClass}>
-          Todos
+          Todos ({counts.all})
         </TabsTrigger>
         <TabsTrigger value='live' className={tabTriggerClass}>
-          Ao vivo (2)
+          Ao vivo ({counts.live})
         </TabsTrigger>
         <TabsTrigger value='today' className={tabTriggerClass}>
-          Hoje (8)
+          Hoje ({counts.today})
         </TabsTrigger>
         <TabsTrigger value='tomorrow' className={tabTriggerClass}>
-          Amanhã (4)
+          Amanhã ({counts.tomorrow})
         </TabsTrigger>
       </TabsList>
     </Tabs>
