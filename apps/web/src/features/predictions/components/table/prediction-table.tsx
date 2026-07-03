@@ -34,7 +34,7 @@ export function PredictionTable({ rows, onPredict }: PredictionTableProps) {
       <Table className='table-fixed'>
         <TableHeader>
           <TableRow className='hover:bg-transparent'>
-            <TableHead className={predictionTableHeadClass('w-[5.5rem]')}>Data</TableHead>
+            <TableHead className={predictionTableHeadClass('w-[6.5rem]')}>Data</TableHead>
             <TableHead className={predictionTableHeadClass('min-w-[9rem]')}>Jogo</TableHead>
             <TableHead
               className={predictionTableHeadClass(

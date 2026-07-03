@@ -1,7 +1,5 @@
 'use client';
 
-import { format, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { Pencil, Target } from 'lucide-react';
 
 import { StatusBadge } from '@/components/ui/status-badge';
@@ -14,6 +12,10 @@ import { getFixtureLineup } from '../../mocks/fixture-lineups';
 import { findPlayerInLineup } from '../../types/fixture-lineup';
 import type { PredictionFixtureItem } from '../../types/prediction-fixture';
 import { formatOfficialResult } from '../../utils/format-official-result';
+import {
+  formatFixtureDate,
+  formatFixtureTime,
+} from '../../utils/format-fixture-datetime';
 import {
   getPredictionActionLabel,
   getPredictionStatusLabel,
@@ -29,10 +31,6 @@ interface PredictionRowProps {
   now: Date;
   showParticipantColumn: boolean;
   onPredict: (fixture: PredictionFixtureItem) => void;
-}
-
-function formatFixtureDate(date: string) {
-  return format(parseISO(date), 'dd/MM - HH:mm', { locale: ptBR });
 }
 
 function getSelectedPlayerName(fixture: PredictionFixtureItem) {
@@ -68,8 +66,9 @@ export function PredictionRow({
 
   return (
     <TableRow>
-      <TableCell className='text-muted-foreground max-w-[5.5rem] truncate text-xs whitespace-nowrap'>
-        {formatFixtureDate(fixture.date)}
+      <TableCell className='flex flex-col gap-1 text-muted-foreground w-[6.5rem] truncate text-xs whitespace-nowrap'>
+        <span>{formatFixtureDate(fixture.date)}</span>
+        <span>{formatFixtureTime(fixture.date)}</span>
       </TableCell>
       <TableCell className='max-w-[9rem] text-xs whitespace-normal xl:max-w-[10rem] 2xl:max-w-none'>
         <div className='flex flex-col gap-1'>
