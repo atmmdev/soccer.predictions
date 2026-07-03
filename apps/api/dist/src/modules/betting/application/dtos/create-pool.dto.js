@@ -15,6 +15,7 @@ class CreatePoolDto {
     name;
     championshipId;
     scoring;
+    delegateUserId;
 }
 exports.CreatePoolDto = CreatePoolDto;
 __decorate([
@@ -31,4 +32,9 @@ __decorate([
     (0, class_validator_1.IsObject)(),
     __metadata("design:type", Object)
 ], CreatePoolDto.prototype, "scoring", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], CreatePoolDto.prototype, "delegateUserId", void 0);
 //# sourceMappingURL=create-pool.dto.js.map

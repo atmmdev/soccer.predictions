@@ -6,6 +6,8 @@ import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { getFetchErrorMessage } from '@/lib/api-client';
+import { getStoredUser } from '@/features/auth/lib/auth-storage';
+import { canParticipateInPools } from '@/features/auth/lib/role-access';
 
 import { joinPoolRequest } from '../services/pool-api.service';
 
@@ -15,12 +17,13 @@ export function JoinPoolView() {
   const params = useParams<{ code: string }>();
   const router = useRouter();
   const inviteCode = params.code?.trim().toUpperCase() ?? '';
+  const isSuperAdmin = !canParticipateInPools(getStoredUser()?.role);
   const [state, setState] = useState<JoinState>('joining');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
-    if (!inviteCode) {
+    if (!inviteCode || isSuperAdmin) {
       return;
     }
 
@@ -60,7 +63,21 @@ export function JoinPoolView() {
     return () => {
       cancelled = true;
     };
-  }, [inviteCode, router, retryCount]);
+  }, [inviteCode, isSuperAdmin, router, retryCount]);
+
+  if (isSuperAdmin) {
+    return (
+      <div className='flex flex-col items-center justify-center gap-4 py-16 text-center'>
+        <p className='text-muted-foreground max-w-md text-sm'>
+          Super administradores não participam de bolões. Você pode criar um
+          bolão e compartilhar o código de convite com os participantes.
+        </p>
+        <Button type='button' onClick={() => router.push('/pools')}>
+          Ir para bolões
+        </Button>
+      </div>
+    );
+  }
 
   if (!inviteCode) {
     return (

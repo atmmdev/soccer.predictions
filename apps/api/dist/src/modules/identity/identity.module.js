@@ -12,16 +12,19 @@ const config_1 = require("@nestjs/config");
 const jwt_1 = require("@nestjs/jwt");
 const passport_1 = require("@nestjs/passport");
 require("dotenv/config");
+const roles_guard_js_1 = require("../../shared/auth/roles.guard.js");
 const auth_service_js_1 = require("./application/services/auth.service.js");
 const instagram_oauth_service_js_1 = require("./application/services/instagram-oauth.service.js");
 const password_reset_email_service_js_1 = require("./application/services/password-reset-email.service.js");
 const password_reset_service_js_1 = require("./application/services/password-reset.service.js");
+const user_service_js_1 = require("./application/services/user.service.js");
 const auth_controller_js_1 = require("./infrastructure/http/auth.controller.js");
 const google_auth_guard_js_1 = require("./infrastructure/http/google-auth.guard.js");
 const google_strategy_js_1 = require("./infrastructure/http/google.strategy.js");
 const jwt_auth_guard_js_1 = require("./infrastructure/http/jwt-auth.guard.js");
 const jwt_strategy_js_1 = require("./infrastructure/http/jwt.strategy.js");
 const oauth_controller_js_1 = require("./infrastructure/http/oauth.controller.js");
+const users_controller_js_1 = require("./infrastructure/http/users.controller.js");
 const googleOAuthProviders = process.env.GOOGLE_CLIENT_ID
     ? [google_strategy_js_1.GoogleStrategy, google_auth_guard_js_1.GoogleAuthGuard]
     : [];
@@ -44,17 +47,19 @@ exports.IdentityModule = IdentityModule = __decorate([
                 },
             }),
         ],
-        controllers: [auth_controller_js_1.AuthController, oauth_controller_js_1.OAuthController],
+        controllers: [auth_controller_js_1.AuthController, oauth_controller_js_1.OAuthController, users_controller_js_1.UsersController],
         providers: [
             auth_service_js_1.AuthService,
+            user_service_js_1.UserService,
             instagram_oauth_service_js_1.InstagramOAuthService,
             password_reset_service_js_1.PasswordResetService,
             password_reset_email_service_js_1.PasswordResetEmailService,
             jwt_strategy_js_1.JwtStrategy,
             jwt_auth_guard_js_1.JwtAuthGuard,
+            roles_guard_js_1.RolesGuard,
             ...googleOAuthProviders,
         ],
-        exports: [auth_service_js_1.AuthService, jwt_1.JwtModule, passport_1.PassportModule, jwt_auth_guard_js_1.JwtAuthGuard],
+        exports: [auth_service_js_1.AuthService, user_service_js_1.UserService, jwt_1.JwtModule, passport_1.PassportModule, jwt_auth_guard_js_1.JwtAuthGuard],
     })
 ], IdentityModule);
 //# sourceMappingURL=identity.module.js.map

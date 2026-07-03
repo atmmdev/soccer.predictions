@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { updateStoredUser } from '@/features/auth/lib/auth-storage';
+import { getStoredUser, updateStoredUser } from '@/features/auth/lib/auth-storage';
 import { getFetchErrorMessage } from '@/lib/api-client';
 
 import { mapPoolResponse } from '../mappers/pool.mapper';
@@ -44,13 +44,19 @@ export function usePools() {
   const createPool = useCallback(
     async (data: CreatePoolFormData): Promise<boolean> => {
       try {
+        const isSuperAdmin = getStoredUser()?.role === 'SUPER_ADMIN';
         const response = await createPoolRequest({
           name: data.name.trim(),
           championshipId: data.championshipId,
           scoring: mapFormToScoringConfig(data),
+          ...(isSuperAdmin && data.delegateUserId
+            ? { delegateUserId: data.delegateUserId }
+            : {}),
         });
 
-        updateStoredUser(response.user);
+        if (!isSuperAdmin) {
+          updateStoredUser(response.user);
+        }
         setPools(current => [mapPoolResponse(response.pool), ...current]);
         return true;
       } catch (createError) {

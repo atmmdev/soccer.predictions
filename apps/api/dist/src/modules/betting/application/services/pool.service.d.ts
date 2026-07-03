@@ -30,6 +30,7 @@ export declare class PoolService {
     getByIdForUser(poolId: number, user: AuthUser): Promise<PoolListItem>;
     create(dto: CreatePoolDto, user: AuthUser): Promise<CreatePoolResult>;
     join(dto: JoinPoolDto, user: AuthUser): Promise<PoolListItem>;
+    private resolvePoolOwner;
     private loadPoolListItem;
     private findAccessiblePool;
     private createUniqueInviteCode;

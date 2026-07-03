@@ -16,6 +16,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -23,8 +24,10 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
-
+import { getStoredUser } from '@/features/auth/lib/auth-storage';
 import { useActiveChampionships } from '@/features/championships/hooks/use-active-championships';
+import { usePoolDelegates } from '@/features/users/hooks/use-pool-delegates';
+
 import { useCreatePool } from '../../hooks/use-create-pool';
 import { usePoolScoringTemplate } from '../../hooks/use-pool-scoring-template';
 import type { CreatePoolFormData } from '../../schemas/create-pool.schema';
@@ -37,8 +40,13 @@ interface CreatePoolDialogProps {
 
 export function CreatePoolDialog({ onCreate }: CreatePoolDialogProps) {
   const [open, setOpen] = useState(false);
+  const isSuperAdmin = getStoredUser()?.role === 'SUPER_ADMIN';
   const form = useCreatePool();
   const { championships: activeChampionships } = useActiveChampionships();
+  const { delegates, isLoading: isLoadingDelegates } = usePoolDelegates(
+    open && isSuperAdmin,
+  );
+  const hasDelegateCandidates = delegates.length > 0;
   const { championshipType, applyTemplateForChampionship } =
     usePoolScoringTemplate(form);
 
@@ -51,6 +59,13 @@ export function CreatePoolDialog({ onCreate }: CreatePoolDialogProps) {
   }
 
   async function onSubmit(data: CreatePoolFormData) {
+    if (isSuperAdmin && hasDelegateCandidates && !data.delegateUserId) {
+      form.setError('delegateUserId', {
+        message: 'Selecione o administrador do bolão',
+      });
+      return;
+    }
+
     const created = await onCreate(data);
 
     if (!created) {
@@ -123,6 +138,61 @@ export function CreatePoolDialog({ onCreate }: CreatePoolDialogProps) {
                 </FormItem>
               )}
             />
+
+            {isSuperAdmin ? (
+              <FormField
+                control={form.control}
+                name='delegateUserId'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Administrador do bolão
+                      {hasDelegateCandidates ? null : (
+                        <span className='text-muted-foreground font-normal'>
+                          {' '}
+                          (opcional)
+                        </span>
+                      )}
+                    </FormLabel>
+                    {hasDelegateCandidates ? (
+                      <FormControl>
+                        <NativeSelect
+                          value={field.value ? field.value.toString() : ''}
+                          onChange={event => {
+                            const nextId = Number(event.target.value);
+                            field.onChange(nextId > 0 ? nextId : undefined);
+                          }}
+                          disabled={isLoadingDelegates}
+                        >
+                          <option value='' disabled>
+                            {isLoadingDelegates
+                              ? 'Carregando participantes...'
+                              : 'Selecione o responsável'}
+                          </option>
+                          {delegates.map(delegate => (
+                            <option key={delegate.id} value={delegate.id}>
+                              {delegate.name} ({delegate.email})
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      </FormControl>
+                    ) : (
+                      <p className='text-muted-foreground rounded-md border border-dashed px-3 py-2 text-sm'>
+                        {isLoadingDelegates
+                          ? 'Carregando participantes...'
+                          : 'Nenhum participante cadastrado ainda. O bolão será criado sob gestão da plataforma — compartilhe o código de convite e delegue um administrador quando alguém se cadastrar.'}
+                      </p>
+                    )}
+                    <FormDescription>
+                      {hasDelegateCandidates
+                        ? 'Este participante será o dono e administrador do bolão. Depois, outros entram pelo código de convite.'
+                        : 'Sem participantes disponíveis, você pode criar o bolão agora e definir o administrador depois.'}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : null}
 
             <PoolScoringRules
               form={form}

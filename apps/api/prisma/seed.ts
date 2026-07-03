@@ -238,19 +238,11 @@ async function main(): Promise<void> {
     },
   });
 
-  await prisma.poolUser.upsert({
-    where: {
-      poolId_userId: {
-        poolId: demoPool.id,
-        userId: superAdmin.id,
-      },
-    },
-    update: { status: 'ACTIVE' },
-    create: {
-      poolId: demoPool.id,
-      userId: superAdmin.id,
-      status: 'ACTIVE',
-    },
+  await prisma.poolUser.deleteMany({
+    where: { userId: superAdmin.id },
+  });
+  await prisma.prediction.deleteMany({
+    where: { userId: superAdmin.id },
   });
 
   await prisma.poolUser.upsert({
@@ -273,9 +265,6 @@ async function main(): Promise<void> {
   });
   const fixtureFlamengoCorinthians = await prisma.fixture.findUniqueOrThrow({
     where: { externalId: 200104 },
-  });
-  const fixtureFlamengoPalmeiras = await prisma.fixture.findUniqueOrThrow({
-    where: { externalId: 200101 },
   });
 
   await prisma.prediction.upsert({
@@ -320,29 +309,6 @@ async function main(): Promise<void> {
       fixtureId: fixtureFlamengoCorinthians.id,
       predictedHomeScore: 1,
       predictedAwayScore: 1,
-      selectedPlayerId: null,
-    },
-  });
-
-  await prisma.prediction.upsert({
-    where: {
-      poolId_userId_fixtureId: {
-        poolId: demoPool.id,
-        userId: superAdmin.id,
-        fixtureId: fixtureFlamengoPalmeiras.id,
-      },
-    },
-    update: {
-      predictedHomeScore: 3,
-      predictedAwayScore: 2,
-      selectedPlayerId: null,
-    },
-    create: {
-      poolId: demoPool.id,
-      userId: superAdmin.id,
-      fixtureId: fixtureFlamengoPalmeiras.id,
-      predictedHomeScore: 3,
-      predictedAwayScore: 2,
       selectedPlayerId: null,
     },
   });

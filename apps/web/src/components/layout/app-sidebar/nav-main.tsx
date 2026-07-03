@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { mainNav, secondaryNav } from '@/config/sidebar';
-import { filterSidebarItems } from '@/features/auth/lib/role-access';
+import { filterSidebarItems, getSidebarItemTitle } from '@/features/auth/lib/role-access';
 import type { UserRole } from '@/features/auth/types/auth';
 import {
   SidebarMenu,
@@ -32,6 +32,8 @@ function NavMenu({ items, userRole }: NavMenuProps) {
         const isActive =
           pathname === item.url || pathname.startsWith(`${item.url}/`);
 
+        const label = getSidebarItemTitle(item, userRole);
+
         return (
           <SidebarMenuItem
             key={item.url}
@@ -40,12 +42,12 @@ function NavMenu({ items, userRole }: NavMenuProps) {
             <SidebarMenuButton
               asChild
               isActive={isActive}
-              tooltip={item.title}
+              tooltip={label}
               className={collapsedButtonClass}
             >
               <Link href={item.url}>
                 <Icon className='size-5 shrink-0' />
-                <span>{item.title}</span>
+                <span>{label}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

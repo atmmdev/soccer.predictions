@@ -32,6 +32,7 @@ export const createPoolSchema = z.object({
   baseScoring: baseScoringSchema,
   cupPhases: z.array(cupPhaseRuleSchema).nullable(),
   active: z.boolean(),
+  delegateUserId: z.number().optional(),
 });
 
 export type CreatePoolFormData = z.infer<typeof createPoolSchema>;

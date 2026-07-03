@@ -15,6 +15,7 @@ import {
   canEditPrediction,
   getPredictionLockMessage,
 } from '../utils/prediction-window.js';
+import { assertCanParticipateInPools } from '../../../../shared/auth/pool-participation.js';
 
 export interface PredictionFixtureResponse {
   id: number;
@@ -104,6 +105,7 @@ export class PredictionService {
                 fixture,
                 member,
                 userId: user.id,
+                userRole: user.role,
                 prediction:
                   predictionsByKey.get(
                     `${pool.id}:${member.id}:${fixture.id}`,
@@ -129,6 +131,7 @@ export class PredictionService {
             fixture,
             member,
             userId: user.id,
+            userRole: user.role,
             prediction:
               predictionsByKey.get(`${pool.id}:${user.id}:${fixture.id}`) ??
               null,
@@ -157,6 +160,8 @@ export class PredictionService {
     dto: SubmitPredictionDto,
     user: AuthUser,
   ): Promise<PredictionFixtureResponse> {
+    assertCanParticipateInPools(user);
+
     const pool = await this.findAccessiblePoolById(dto.poolId, user);
 
     const fixture = await this.prisma.fixture.findUnique({
@@ -204,6 +209,7 @@ export class PredictionService {
       fixture,
       member: { id: user.id, name: user.name },
       userId: user.id,
+      userRole: user.role,
       prediction,
     });
   }
@@ -230,6 +236,7 @@ export class PredictionService {
           select: {
             id: true,
             name: true,
+            role: true,
           },
         },
       },
@@ -243,6 +250,10 @@ export class PredictionService {
     const membersByPoolId = new Map<number, Array<{ id: number; name: string }>>();
 
     for (const member of members) {
+      if (member.user.role === 'SUPER_ADMIN') {
+        continue;
+      }
+
       const current = membersByPoolId.get(member.poolId) ?? [];
 
       current.push({
@@ -270,9 +281,10 @@ export class PredictionService {
     };
     member: { id: number; name: string };
     userId: number;
+    userRole: AuthUser['role'];
     prediction: Prediction | null;
   }): PredictionFixtureResponse {
-    const { pool, fixture, member, userId, prediction } = input;
+    const { pool, fixture, member, userId, userRole, prediction } = input;
 
     return {
       id: fixture.id,
@@ -281,7 +293,8 @@ export class PredictionService {
       poolPosition: 0,
       participantId: member.id,
       participantName: member.name,
-      isOwnPrediction: member.id === userId,
+      isOwnPrediction:
+        userRole !== 'SUPER_ADMIN' && member.id === userId,
       championshipName: fixture.championship.name,
       round: fixture.round ?? 0,
       homeTeam: fixture.homeTeam.name,

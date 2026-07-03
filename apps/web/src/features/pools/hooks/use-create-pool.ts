@@ -22,6 +22,7 @@ export function useCreatePool() {
       baseScoring: { ...leagueTemplate.base },
       cupPhases: leagueTemplate.cupPhases,
       active: true,
+      delegateUserId: undefined,
     },
   });
 }

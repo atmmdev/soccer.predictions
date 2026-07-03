@@ -23,6 +23,25 @@ export function canManagePlatform(role: UserRole | undefined): boolean {
   return isPrivilegedRole(role);
 }
 
+export function canParticipateInPools(role: UserRole | undefined): boolean {
+  return role !== 'SUPER_ADMIN';
+}
+
+export function getSidebarItemTitle(
+  item: SidebarItem,
+  role: UserRole | undefined,
+): string {
+  if (item.url === '/predictions' && role === 'SUPER_ADMIN') {
+    return 'Palpites';
+  }
+
+  if (item.url === '/pools' && role === 'SUPER_ADMIN') {
+    return 'Bolões';
+  }
+
+  return item.title;
+}
+
 export function getUserRoleLabel(role: UserRole | undefined): string {
   switch (role) {
     case 'SUPER_ADMIN':

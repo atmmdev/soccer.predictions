@@ -13,6 +13,7 @@ exports.PredictionService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
 const prediction_window_js_1 = require("../utils/prediction-window.js");
+const pool_participation_js_1 = require("../../../../shared/auth/pool-participation.js");
 let PredictionService = class PredictionService {
     prisma;
     constructor(prisma) {
@@ -58,6 +59,7 @@ let PredictionService = class PredictionService {
                             fixture,
                             member,
                             userId: user.id,
+                            userRole: user.role,
                             prediction: predictionsByKey.get(`${pool.id}:${member.id}:${fixture.id}`) ?? null,
                         }));
                     }
@@ -74,6 +76,7 @@ let PredictionService = class PredictionService {
                     fixture,
                     member,
                     userId: user.id,
+                    userRole: user.role,
                     prediction: predictionsByKey.get(`${pool.id}:${user.id}:${fixture.id}`) ??
                         null,
                 }));
@@ -91,6 +94,7 @@ let PredictionService = class PredictionService {
         });
     }
     async submit(dto, user) {
+        (0, pool_participation_js_1.assertCanParticipateInPools)(user);
         const pool = await this.findAccessiblePoolById(dto.poolId, user);
         const fixture = await this.prisma.fixture.findUnique({
             where: { id: dto.fixtureId },
@@ -133,6 +137,7 @@ let PredictionService = class PredictionService {
             fixture,
             member: { id: user.id, name: user.name },
             userId: user.id,
+            userRole: user.role,
             prediction,
         });
     }
@@ -153,6 +158,7 @@ let PredictionService = class PredictionService {
                     select: {
                         id: true,
                         name: true,
+                        role: true,
                     },
                 },
             },
@@ -164,6 +170,9 @@ let PredictionService = class PredictionService {
         });
         const membersByPoolId = new Map();
         for (const member of members) {
+            if (member.user.role === 'SUPER_ADMIN') {
+                continue;
+            }
             const current = membersByPoolId.get(member.poolId) ?? [];
             current.push({
                 id: member.user.id,
@@ -174,7 +183,7 @@ let PredictionService = class PredictionService {
         return membersByPoolId;
     }
     toFixtureRow(input) {
-        const { pool, fixture, member, userId, prediction } = input;
+        const { pool, fixture, member, userId, userRole, prediction } = input;
         return {
             id: fixture.id,
             poolId: pool.id,
@@ -182,7 +191,7 @@ let PredictionService = class PredictionService {
             poolPosition: 0,
             participantId: member.id,
             participantName: member.name,
-            isOwnPrediction: member.id === userId,
+            isOwnPrediction: userRole !== 'SUPER_ADMIN' && member.id === userId,
             championshipName: fixture.championship.name,
             round: fixture.round ?? 0,
             homeTeam: fixture.homeTeam.name,

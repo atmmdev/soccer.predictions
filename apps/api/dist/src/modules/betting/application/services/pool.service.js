@@ -13,6 +13,7 @@ exports.PoolService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
 const generate_invite_code_js_1 = require("../utils/generate-invite-code.js");
+const pool_participation_js_1 = require("../../../../shared/auth/pool-participation.js");
 let PoolService = class PoolService {
     prisma;
     constructor(prisma) {
@@ -33,7 +34,7 @@ let PoolService = class PoolService {
                     },
                 },
             });
-            return pools.map(pool => this.toPoolListItem(pool, user.id));
+            return pools.map(pool => this.toPoolListItem(pool, user.id, user.role));
         }
         const pools = await this.prisma.pool.findMany({
             where: {
@@ -61,11 +62,11 @@ let PoolService = class PoolService {
                 },
             },
         });
-        return pools.map(pool => this.toPoolListItem(pool, user.id));
+        return pools.map(pool => this.toPoolListItem(pool, user.id, user.role));
     }
     async getByIdForUser(poolId, user) {
         await this.findAccessiblePool(poolId, user);
-        return this.loadPoolListItem(poolId, user.id);
+        return this.loadPoolListItem(poolId, user.id, user.role);
     }
     async create(dto, user) {
         const championship = await this.prisma.championship.findUnique({
@@ -78,23 +79,34 @@ let PoolService = class PoolService {
             throw new common_1.ConflictException('Este campeonato não permite novos bolões no momento');
         }
         const inviteCode = await this.createUniqueInviteCode();
+        const owner = await this.resolvePoolOwner(user, dto.delegateUserId);
         const result = await this.prisma.$transaction(async (tx) => {
             const pool = await tx.pool.create({
                 data: {
-                    ownerId: user.id,
+                    ownerId: owner.id,
                     championshipId: dto.championshipId,
                     name: dto.name,
                     inviteCode,
                     scoring: dto.scoring,
-                    poolUsers: {
-                        create: {
-                            userId: user.id,
-                            status: 'ACTIVE',
-                        },
-                    },
+                    ...(owner.addAsParticipant
+                        ? {
+                            poolUsers: {
+                                create: {
+                                    userId: owner.id,
+                                    status: 'ACTIVE',
+                                },
+                            },
+                        }
+                        : {}),
                 },
             });
             let nextUser = user;
+            if (owner.promoteToAdmin) {
+                await tx.user.update({
+                    where: { id: owner.id },
+                    data: { role: 'ADMIN' },
+                });
+            }
             if (user.role === 'PARTICIPANT') {
                 const updatedUser = await tx.user.update({
                     where: { id: user.id },
@@ -110,11 +122,12 @@ let PoolService = class PoolService {
             return { pool, user: nextUser };
         });
         return {
-            pool: await this.loadPoolListItem(result.pool.id, result.user.id),
+            pool: await this.loadPoolListItem(result.pool.id, result.user.id, result.user.role),
             user: result.user,
         };
     }
     async join(dto, user) {
+        (0, pool_participation_js_1.assertCanParticipateInPools)(user);
         const pool = await this.prisma.pool.findUnique({
             where: { inviteCode: dto.inviteCode.toUpperCase() },
         });
@@ -133,14 +146,14 @@ let PoolService = class PoolService {
             },
         });
         if (existingMembership?.status === 'ACTIVE') {
-            return this.loadPoolListItem(pool.id, user.id);
+            return this.loadPoolListItem(pool.id, user.id, user.role);
         }
         if (existingMembership) {
             await this.prisma.poolUser.update({
                 where: { id: existingMembership.id },
                 data: { status: 'ACTIVE' },
             });
-            return this.loadPoolListItem(pool.id, user.id);
+            return this.loadPoolListItem(pool.id, user.id, user.role);
         }
         await this.prisma.poolUser.create({
             data: {
@@ -149,9 +162,40 @@ let PoolService = class PoolService {
                 status: 'ACTIVE',
             },
         });
-        return this.loadPoolListItem(pool.id, user.id);
+        return this.loadPoolListItem(pool.id, user.id, user.role);
     }
-    async loadPoolListItem(poolId, userId) {
+    async resolvePoolOwner(user, delegateUserId) {
+        if (user.role !== 'SUPER_ADMIN') {
+            return {
+                id: user.id,
+                addAsParticipant: true,
+                promoteToAdmin: false,
+            };
+        }
+        if (!delegateUserId) {
+            return {
+                id: user.id,
+                addAsParticipant: false,
+                promoteToAdmin: false,
+            };
+        }
+        const delegate = await this.prisma.user.findUnique({
+            where: { id: delegateUserId },
+            select: { id: true, role: true },
+        });
+        if (!delegate) {
+            throw new common_1.NotFoundException('Administrador delegado não encontrado');
+        }
+        if (delegate.role === 'SUPER_ADMIN') {
+            throw new common_1.ConflictException('Super administradores não podem ser delegados como donos de bolão');
+        }
+        return {
+            id: delegate.id,
+            addAsParticipant: true,
+            promoteToAdmin: delegate.role === 'PARTICIPANT',
+        };
+    }
+    async loadPoolListItem(poolId, userId, userRole) {
         const pool = await this.prisma.pool.findUnique({
             where: { id: poolId },
             include: {
@@ -168,7 +212,7 @@ let PoolService = class PoolService {
         if (!pool) {
             throw new common_1.NotFoundException('Bolão não encontrado');
         }
-        return this.toPoolListItem(pool, userId);
+        return this.toPoolListItem(pool, userId, userRole);
     }
     async findAccessiblePool(poolId, user) {
         if (user.role === 'SUPER_ADMIN') {
@@ -212,7 +256,7 @@ let PoolService = class PoolService {
         }
         throw new common_1.ConflictException('Não foi possível gerar código de convite');
     }
-    toPoolListItem(pool, userId) {
+    toPoolListItem(pool, userId, userRole) {
         return {
             id: pool.id,
             name: pool.name,

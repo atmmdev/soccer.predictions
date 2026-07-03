@@ -41,6 +41,7 @@ export async function createPoolRequest(payload: {
   name: string;
   championshipId: number;
   scoring: PoolScoringConfig;
+  delegateUserId?: number;
 }): Promise<CreatePoolResponse> {
   const response = await fetch(`${API_URL}/pools`, {
     method: 'POST',

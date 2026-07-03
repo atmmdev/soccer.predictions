@@ -1,6 +1,7 @@
 import {
   IsInt,
   IsObject,
+  IsOptional,
   IsString,
   MaxLength,
   MinLength,
@@ -17,4 +18,8 @@ export class CreatePoolDto {
 
   @IsObject()
   scoring!: Record<string, unknown>;
+
+  @IsOptional()
+  @IsInt()
+  delegateUserId?: number;
 }

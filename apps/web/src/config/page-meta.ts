@@ -67,5 +67,12 @@ export function getPageMeta(pathname: string, role?: UserRole): PageMeta {
     };
   }
 
+  if (pathname === '/pools' && role === 'SUPER_ADMIN') {
+    return {
+      title: 'Bolões',
+      subtitle: 'Crie e administre bolões na plataforma',
+    };
+  }
+
   return base;
 }
