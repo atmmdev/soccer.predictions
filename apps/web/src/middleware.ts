@@ -40,6 +40,7 @@ export const config = {
     '/dashboard/:path*',
     '/championships/:path*',
     '/pools/:path*',
+    '/join/:path*',
     '/participants/:path*',
     '/matches/:path*',
     '/predictions/:path*',

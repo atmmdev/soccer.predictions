@@ -10,16 +10,18 @@ exports.SportsModule = void 0;
 const common_1 = require("@nestjs/common");
 const identity_module_js_1 = require("../identity/identity.module.js");
 const championship_service_js_1 = require("./application/services/championship.service.js");
+const fixture_service_js_1 = require("./application/services/fixture.service.js");
 const championships_controller_js_1 = require("./infrastructure/http/championships.controller.js");
+const fixtures_controller_js_1 = require("./infrastructure/http/fixtures.controller.js");
 let SportsModule = class SportsModule {
 };
 exports.SportsModule = SportsModule;
 exports.SportsModule = SportsModule = __decorate([
     (0, common_1.Module)({
         imports: [identity_module_js_1.IdentityModule],
-        controllers: [championships_controller_js_1.ChampionshipsController],
-        providers: [championship_service_js_1.ChampionshipService],
-        exports: [championship_service_js_1.ChampionshipService],
+        controllers: [championships_controller_js_1.ChampionshipsController, fixtures_controller_js_1.FixturesController],
+        providers: [championship_service_js_1.ChampionshipService, fixture_service_js_1.FixtureService],
+        exports: [championship_service_js_1.ChampionshipService, fixture_service_js_1.FixtureService],
     })
 ], SportsModule);
 //# sourceMappingURL=sports.module.js.map

@@ -7,11 +7,11 @@ import { MatchFilters } from './filters/match-filters';
 import { MatchTable } from './table/match-table';
 
 export function MatchList() {
-  const { searchFilters } = useMatchList();
+  const { searchFilters, isLoading, error, reloadFixtures } = useMatchList();
 
   return (
-    <Card className='overflow-visible shadow-sm'>
-      <CardContent className='space-y-4 pt-4'>
+    <Card className='min-w-0 overflow-hidden shadow-sm'>
+      <CardContent className='min-w-0 space-y-4 pt-4'>
         <MatchFilters
           search={searchFilters.search}
           onSearchChange={searchFilters.setSearch}
@@ -28,7 +28,24 @@ export function MatchList() {
           hasActiveFilters={searchFilters.hasActiveFilters}
           onClearFilters={searchFilters.clearFilters}
         />
-        <MatchTable rows={searchFilters.filteredFixtures} />
+        {isLoading ? (
+          <div className='flex items-center justify-center py-12'>
+            <p className='text-muted-foreground text-sm'>Carregando jogos...</p>
+          </div>
+        ) : error ? (
+          <div className='flex flex-col items-center justify-center gap-3 py-12'>
+            <p className='text-destructive text-center text-sm'>{error}</p>
+            <button
+              type='button'
+              className='text-primary text-sm underline'
+              onClick={() => void reloadFixtures()}
+            >
+              Tentar novamente
+            </button>
+          </div>
+        ) : (
+          <MatchTable rows={searchFilters.filteredFixtures} />
+        )}
       </CardContent>
     </Card>
   );
