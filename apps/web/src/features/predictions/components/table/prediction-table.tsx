@@ -76,9 +76,9 @@ export function PredictionTable({ rows, onPredict }: PredictionTableProps) {
                 `${predictionTableColumns.result} text-center`,
               )}
             >
-              Resultado
+              Resultado Oficial
             </TableHead>
-            <TableHead className={predictionTableHeadClass('w-[4.5rem] text-center')}>
+            <TableHead className={predictionTableHeadClass('w-[5rem] text-center')}>
               Palpite
             </TableHead>
             <TableHead

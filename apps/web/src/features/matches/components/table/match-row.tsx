@@ -4,10 +4,10 @@ import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 import { MatchStatusBadge } from '@/features/dashboard/matches/components/match-status-badge';
+import { ScoreStack } from '@/components/matches';
 import { TableCell, TableRow } from '@/components/ui/table';
 
 import type { MatchFixtureItem } from '../../types/match-fixture';
-import { formatMatchResult } from '../../utils/format-match-result';
 
 interface MatchRowProps {
   fixture: MatchFixtureItem;
@@ -38,8 +38,13 @@ export function MatchRow({ fixture }: MatchRowProps) {
       <TableCell className='text-center text-xs'>
         {fixture.round}
       </TableCell>
-      <TableCell className='text-center text-xs font-medium'>
-        {formatMatchResult(fixture)}
+      <TableCell className='text-center'>
+        <ScoreStack
+          scores={{
+            home: fixture.officialHomeScore,
+            away: fixture.officialAwayScore,
+          }}
+        />
       </TableCell>
     </TableRow>
   );

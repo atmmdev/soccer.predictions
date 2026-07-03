@@ -4,6 +4,12 @@ import { Pencil, Target } from 'lucide-react';
 
 import { StatusBadge } from '@/components/ui/status-badge';
 import { TableActionBadge } from '@/components/ui/table-action-badge';
+import {
+  ScoreStack,
+  getOfficialScoresFromFixture,
+  getPredictionScoresFromFixture,
+  hasCompleteScore,
+} from '@/components/matches';
 import { PositionBadge } from '@/features/dashboard/rankings/components/position-badge';
 import { TableCell, TableRow } from '@/components/ui/table';
 
@@ -11,7 +17,6 @@ import { PredictionCountdown } from '../prediction-countdown';
 import { getFixtureLineup } from '../../mocks/fixture-lineups';
 import { findPlayerInLineup } from '../../types/fixture-lineup';
 import type { PredictionFixtureItem } from '../../types/prediction-fixture';
-import { formatOfficialResult } from '../../utils/format-official-result';
 import {
   formatFixtureDate,
   formatFixtureTime,
@@ -63,6 +68,11 @@ export function PredictionRow({
     : '—';
   const ActionIcon =
     canEdit && hasPrediction ? Pencil : canEdit ? Target : undefined;
+  const officialScores = getOfficialScoresFromFixture(fixture);
+  const predictionScores = getPredictionScoresFromFixture(fixture.prediction);
+  const hasOfficial = hasCompleteScore(officialScores);
+  const hasPredictionScores =
+    predictionScores !== null && hasCompleteScore(predictionScores);
 
   return (
     <TableRow>
@@ -107,14 +117,24 @@ export function PredictionRow({
         {fixture.round}
       </TableCell>
       <TableCell
-        className={`text-center text-xs font-medium ${predictionTableColumns.result}`}
+        className={`text-center ${predictionTableColumns.result}`}
       >
-        {formatOfficialResult(fixture)}
+        <ScoreStack
+          scores={officialScores}
+          compareWith={hasPredictionScores ? predictionScores : undefined}
+          highlight={hasOfficial && hasPredictionScores}
+        />
       </TableCell>
-      <TableCell className='text-center text-xs font-medium'>
-        {hasPrediction
-          ? `${fixture.prediction!.predictedHomeScore} x ${fixture.prediction!.predictedAwayScore}`
-          : '—'}
+      <TableCell className='text-center'>
+        {hasPredictionScores ? (
+          <ScoreStack
+            scores={predictionScores}
+            compareWith={hasOfficial ? officialScores : undefined}
+            highlight={hasOfficial}
+          />
+        ) : (
+          <span className='text-base font-bold text-muted-foreground'>—</span>
+        )}
       </TableCell>
       <TableCell className={`text-xs ${predictionTableColumns.player}`}>
         {getSelectedPlayerName(fixture)}

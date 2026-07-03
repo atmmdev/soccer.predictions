@@ -1,26 +1,32 @@
+import { ScoreStack, type ScorePair } from '@/components/matches';
+
 import { Match } from '../types/match';
-import { MatchScore } from './match-score';
 
 interface MatchResultProps {
   match: Match;
 }
 
 export function MatchResult({ match }: MatchResultProps) {
+  const officialScores: ScorePair = {
+    home: match.status === 'SCHEDULED' ? null : match.homeScore,
+    away: match.status === 'SCHEDULED' ? null : match.awayScore,
+  };
+
+  const predictionScores: ScorePair = {
+    home: match.predictedHomeScore,
+    away: match.predictedAwayScore,
+  };
+
+  const hasOfficial =
+    match.status !== 'SCHEDULED' &&
+    typeof officialScores.home === 'number' &&
+    typeof officialScores.away === 'number';
+
   return (
-    <div className='flex flex-col gap-0.5'>
-      {match.status === 'SCHEDULED' ? (
-        <span className='font-bold'>—</span>
-      ) : (
-        <MatchScore
-          homeScore={match.homeScore}
-          awayScore={match.awayScore}
-          compareWith={{
-            home: match.predictedHomeScore,
-            away: match.predictedAwayScore,
-          }}
-          highlight
-        />
-      )}
-    </div>
+    <ScoreStack
+      scores={officialScores}
+      compareWith={hasOfficial ? predictionScores : undefined}
+      highlight={hasOfficial}
+    />
   );
 }

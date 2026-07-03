@@ -4,10 +4,14 @@ import { Pencil, Target } from 'lucide-react';
 
 import { StatusBadge } from '@/components/ui/status-badge';
 import { TableActionBadge } from '@/components/ui/table-action-badge';
+import {
+  FixtureScoreComparison,
+  getOfficialScoresFromFixture,
+  getPredictionScoresFromFixture,
+} from '@/components/matches';
 
 import { PredictionCountdown } from './prediction-countdown';
 import type { PredictionFixtureItem } from '../types/prediction-fixture';
-import { formatOfficialResult } from '../utils/format-official-result';
 import {
   formatFixtureDate,
   formatFixtureTime,
@@ -61,6 +65,13 @@ export function PredictionMobileCard({
         </StatusBadge>
       </div>
 
+      <FixtureScoreComparison
+        officialScores={getOfficialScoresFromFixture(fixture)}
+        predictionScores={getPredictionScoresFromFixture(fixture.prediction)}
+        predictionLabel={fixture.isOwnPrediction ? 'Meu Palpite' : 'Palpite'}
+        className='border-border rounded-lg border px-4 py-3'
+      />
+
       <dl className='grid grid-cols-2 gap-x-4 gap-y-2 text-xs'>
         <div>
           <dt className='text-muted-foreground'>Data - Hora</dt>
@@ -80,18 +91,6 @@ export function PredictionMobileCard({
             <dd className='font-medium'>{fixture.participantName}</dd>
           </div>
         ) : null}
-        <div>
-          <dt className='text-muted-foreground'>Resultado</dt>
-          <dd className='font-medium'>{formatOfficialResult(fixture)}</dd>
-        </div>
-        <div>
-          <dt className='text-muted-foreground'>Palpite</dt>
-          <dd className='font-medium'>
-            {hasPrediction
-              ? `${fixture.prediction!.predictedHomeScore} x ${fixture.prediction!.predictedAwayScore}`
-              : '—'}
-          </dd>
-        </div>
         <div>
           <dt className='text-muted-foreground'>Prazo</dt>
           <dd>
