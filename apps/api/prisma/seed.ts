@@ -299,7 +299,7 @@ async function main(): Promise<void> {
       },
     },
     update: {
-      predictedHomeScore: 1,
+      predictedHomeScore: 2,
       predictedAwayScore: 1,
       selectedPlayerId: null,
     },
@@ -307,7 +307,7 @@ async function main(): Promise<void> {
       poolId: demoPool.id,
       userId: participant.id,
       fixtureId: fixtureFlamengoCorinthians.id,
-      predictedHomeScore: 1,
+      predictedHomeScore: 2,
       predictedAwayScore: 1,
       selectedPlayerId: null,
     },

@@ -7,11 +7,12 @@ import { RankingFilters } from './filters/ranking-filters';
 import { RankingTable } from './table/ranking-table';
 
 export function RankingList() {
-  const { searchFilters, tableState } = useRankingList();
+  const { searchFilters, tableState, isLoading, error, reloadRankings } =
+    useRankingList();
 
   return (
-    <Card className='overflow-visible shadow-sm'>
-      <CardContent className='space-y-4 pt-4'>
+    <Card className='min-w-0 overflow-hidden shadow-sm'>
+      <CardContent className='min-w-0 space-y-4 pt-4'>
         <RankingFilters
           search={searchFilters.search}
           onSearchChange={searchFilters.setSearch}
@@ -26,14 +27,33 @@ export function RankingList() {
           hasActiveFilters={searchFilters.hasActiveFilters}
           onClearFilters={searchFilters.clearFilters}
         />
-        <RankingTable
-          rows={tableState.rows}
-          isPoolSelected={searchFilters.isPoolSelected}
-          scoringRule={searchFilters.scoringRule}
-          sortKey={tableState.sortKey}
-          sortDir={tableState.sortDir}
-          onSort={tableState.toggleSort}
-        />
+        {isLoading ? (
+          <div className='flex items-center justify-center py-12'>
+            <p className='text-muted-foreground text-sm'>
+              Carregando ranking...
+            </p>
+          </div>
+        ) : error ? (
+          <div className='flex flex-col items-center justify-center gap-3 py-12'>
+            <p className='text-destructive text-center text-sm'>{error}</p>
+            <button
+              type='button'
+              className='text-primary text-sm underline'
+              onClick={() => void reloadRankings()}
+            >
+              Tentar novamente
+            </button>
+          </div>
+        ) : (
+          <RankingTable
+            rows={tableState.rows}
+            isPoolSelected={searchFilters.isPoolSelected}
+            scoringRule={searchFilters.scoringRule}
+            sortKey={tableState.sortKey}
+            sortDir={tableState.sortDir}
+            onSort={tableState.toggleSort}
+          />
+        )}
       </CardContent>
     </Card>
   );
