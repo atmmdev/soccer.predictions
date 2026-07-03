@@ -1,5 +1,12 @@
 import type { PredictionFixtureItem } from '../types/prediction-fixture';
 
+function localKickoffInMinutes(minutesFromNow: number): string {
+  const kickoff = new Date(Date.now() + minutesFromNow * 60_000);
+  const pad = (value: number) => value.toString().padStart(2, '0');
+
+  return `${kickoff.getFullYear()}-${pad(kickoff.getMonth() + 1)}-${pad(kickoff.getDate())}T${pad(kickoff.getHours())}:${pad(kickoff.getMinutes())}:${pad(kickoff.getSeconds())}`;
+}
+
 export const predictionFixtures: PredictionFixtureItem[] = [
   {
     id: 101,
@@ -80,10 +87,25 @@ export const predictionFixtures: PredictionFixtureItem[] = [
     round: 12,
     homeTeam: 'Grêmio',
     awayTeam: 'Internacional',
-    date: '2026-06-24T09:00:00',
+    date: localKickoffInMinutes(12),
     matchStatus: 'SCHEDULED',
     officialHomeScore: null,
     officialAwayScore: null,
+    prediction: null,
+  },
+  {
+    id: 106,
+    poolId: 1,
+    poolName: 'Bolão Família',
+    poolPosition: 3,
+    championshipName: 'Brasileirão Série A',
+    round: 12,
+    homeTeam: 'Botafogo',
+    awayTeam: 'Vasco',
+    date: localKickoffInMinutes(-30),
+    matchStatus: 'LIVE',
+    officialHomeScore: 1,
+    officialAwayScore: 0,
     prediction: null,
   },
 ];

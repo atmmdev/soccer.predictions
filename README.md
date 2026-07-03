@@ -40,7 +40,7 @@ API: `http://localhost:3001/api/health`
 
 | E-mail                    | Senha         | Papel       |
 | ------------------------- | ------------- | ----------- |
-| `admin@admin`             | `admin123`    | SUPER_ADMIN |
+| `admin@admin.com`         | `admin123`    | SUPER_ADMIN |
 | `atmm.rj@gmail.com`       | `admin123456` | ADMIN       |
 | `participante@gmail.com ` | `senha123`    | PARTICIPANT |
 

@@ -55,7 +55,7 @@ export declare const ScoringAchievementType: {
     readonly WINNER_SCORE: "WINNER_SCORE";
     readonly LOSER_SCORE: "LOSER_SCORE";
     readonly CORRECT_WINNER: "CORRECT_WINNER";
-    readonly CORRECT_DRAW: "CORRECT_DRAW";
+    readonly DRAW_WITHOUT_EXACT_SCORE: "DRAW_WITHOUT_EXACT_SCORE";
     readonly PLAYER_GOAL: "PLAYER_GOAL";
     readonly PLAYER_HAT_TRICK: "PLAYER_HAT_TRICK";
 };

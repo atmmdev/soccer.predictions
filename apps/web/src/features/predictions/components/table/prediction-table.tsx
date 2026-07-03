@@ -7,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useNow } from '@/hooks/use-now';
 
 import type { PredictionFixtureItem } from '../../types/prediction-fixture';
 import { PredictionRow } from './prediction-row';
@@ -17,6 +18,8 @@ interface PredictionTableProps {
 }
 
 export function PredictionTable({ rows, onPredict }: PredictionTableProps) {
+  const now = useNow();
+
   if (rows.length === 0) {
     return (
       <div className='flex items-center justify-center py-12'>
@@ -57,6 +60,9 @@ export function PredictionTable({ rows, onPredict }: PredictionTableProps) {
               Jogador
             </TableHead>
             <TableHead className='text-muted-foreground text-xs'>Status</TableHead>
+            <TableHead className='text-muted-foreground text-center text-xs'>
+              Prazo
+            </TableHead>
             <TableHead className='text-muted-foreground text-right text-xs'>
               Ações
             </TableHead>
@@ -67,6 +73,7 @@ export function PredictionTable({ rows, onPredict }: PredictionTableProps) {
             <PredictionRow
               key={fixture.id}
               fixture={fixture}
+              now={now}
               onPredict={onPredict}
             />
           ))}

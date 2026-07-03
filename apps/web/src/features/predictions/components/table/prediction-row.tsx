@@ -9,6 +9,7 @@ import { TableActionBadge } from '@/components/ui/table-action-badge';
 import { PositionBadge } from '@/features/dashboard/rankings/components/position-badge';
 import { TableCell, TableRow } from '@/components/ui/table';
 
+import { PredictionCountdown } from '../prediction-countdown';
 import { getFixtureLineup } from '../../mocks/fixture-lineups';
 import { findPlayerInLineup } from '../../types/fixture-lineup';
 import type { PredictionFixtureItem } from '../../types/prediction-fixture';
@@ -17,11 +18,14 @@ import {
   getPredictionActionLabel,
   getPredictionStatusLabel,
   getPredictionUiState,
-  predictionUiTone,
+  predictionActionTone,
+  predictionStatusTone,
 } from '../../utils/prediction-ui-state';
+import { canEditPrediction } from '../../utils/prediction-window';
 
 interface PredictionRowProps {
   fixture: PredictionFixtureItem;
+  now: Date;
   onPredict: (fixture: PredictionFixtureItem) => void;
 }
 
@@ -42,13 +46,14 @@ function getSelectedPlayerName(fixture: PredictionFixtureItem) {
   return selected?.player.name ?? '—';
 }
 
-export function PredictionRow({ fixture, onPredict }: PredictionRowProps) {
+export function PredictionRow({ fixture, now, onPredict }: PredictionRowProps) {
   const hasPrediction = fixture.prediction !== null;
-  const uiState = getPredictionUiState(fixture);
-  const isOpen = uiState === 'OPEN';
-  const tone = predictionUiTone[uiState];
+  const uiState = getPredictionUiState(fixture, now);
+  const canEdit = canEditPrediction(fixture, now);
+  const statusTone = predictionStatusTone[uiState];
+  const actionTone = predictionActionTone[uiState];
   const actionLabel = getPredictionActionLabel(uiState, hasPrediction);
-  const ActionIcon = isOpen && hasPrediction ? Pencil : isOpen ? Target : undefined;
+  const ActionIcon = canEdit && hasPrediction ? Pencil : canEdit ? Target : undefined;
 
   return (
     <TableRow>
@@ -87,15 +92,18 @@ export function PredictionRow({ fixture, onPredict }: PredictionRowProps) {
         {getSelectedPlayerName(fixture)}
       </TableCell>
       <TableCell>
-        <StatusBadge tone={tone}>
+        <StatusBadge tone={statusTone}>
           {getPredictionStatusLabel(uiState)}
         </StatusBadge>
       </TableCell>
+      <TableCell className='text-center'>
+        <PredictionCountdown fixture={fixture} now={now} />
+      </TableCell>
       <TableCell className='text-right'>
         <TableActionBadge
-          tone={tone}
+          tone={actionTone}
           icon={ActionIcon}
-          disabled={!isOpen}
+          disabled={!canEdit}
           onClick={() => onPredict(fixture)}
         >
           {actionLabel}
