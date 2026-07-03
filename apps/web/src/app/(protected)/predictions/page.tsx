@@ -2,7 +2,7 @@ import { PredictionList } from '@/features/predictions/components/prediction-lis
 
 export default function PredictionsPage() {
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='flex min-w-0 flex-col gap-4'>
       <PredictionList />
     </div>
   );

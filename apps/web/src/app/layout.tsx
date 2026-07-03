@@ -23,8 +23,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='pt-BR' className={`${inter.variable} h-full antialiased`}>
-      <body className='min-h-dvh flex flex-col font-sans'>{children}</body>
+    <html lang='pt-BR' className={`${inter.variable} h-full overflow-x-hidden antialiased`}>
+      <body className='flex min-h-dvh flex-col overflow-x-hidden font-sans'>
+        {children}
+      </body>
     </html>
   );
 }

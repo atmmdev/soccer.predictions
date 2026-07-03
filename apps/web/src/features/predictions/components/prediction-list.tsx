@@ -10,6 +10,7 @@ import type { PredictionFixtureItem } from '../types/prediction-fixture';
 import { canEditPrediction } from '../utils/prediction-window';
 import { SubmitPredictionDialog } from './dialogs/submit-prediction-dialog';
 import { PredictionFilters } from './filters/prediction-filters';
+import { PredictionMobileList } from './prediction-mobile-list';
 import { PredictionTable } from './table/prediction-table';
 
 export function PredictionList() {
@@ -49,8 +50,8 @@ export function PredictionList() {
 
   return (
     <>
-      <Card className='overflow-visible shadow-sm'>
-        <CardContent className='space-y-4 pt-4'>
+      <Card className='min-w-0 overflow-hidden shadow-sm'>
+        <CardContent className='min-w-0 space-y-4 pt-4'>
           <PredictionFilters
             search={searchFilters.search}
             onSearchChange={searchFilters.setSearch}
@@ -83,11 +84,26 @@ export function PredictionList() {
                 Tentar novamente
               </button>
             </div>
+          ) : searchFilters.filteredFixtures.length === 0 ? (
+            <div className='flex items-center justify-center py-12'>
+              <p className='text-muted-foreground text-sm text-center'>
+                Nenhum jogo encontrado com os filtros selecionados.
+                <br />
+                Tente limpar a busca e usar &quot;Todos&quot; nos filtros de bolão e
+                palpite.
+              </p>
+            </div>
           ) : (
-            <PredictionTable
-              rows={searchFilters.filteredFixtures}
-              onPredict={handlePredict}
-            />
+            <>
+              <PredictionMobileList
+                rows={searchFilters.filteredFixtures}
+                onPredict={handlePredict}
+              />
+              <PredictionTable
+                rows={searchFilters.filteredFixtures}
+                onPredict={handlePredict}
+              />
+            </>
           )}
         </CardContent>
       </Card>

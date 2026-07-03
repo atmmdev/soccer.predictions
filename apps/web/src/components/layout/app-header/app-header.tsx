@@ -13,8 +13,8 @@ interface AppHeaderProps {
 
 export function AppHeader({ userName, userRole }: AppHeaderProps) {
   return (
-    <header className='flex h-auto min-h-16 shrink-0 items-center border-b bg-card px-4 py-3 md:px-6'>
-      <div className='flex w-full items-center gap-3 md:gap-4'>
+    <header className='flex h-auto min-h-16 shrink-0 items-center overflow-x-hidden border-b bg-card px-4 py-3 md:px-6'>
+      <div className='flex w-full min-w-0 items-center gap-3 md:gap-4'>
         <div className='flex min-w-0 items-center gap-2'>
           <SidebarTrigger
             className='size-11 shrink-0'
@@ -25,7 +25,7 @@ export function AppHeader({ userName, userRole }: AppHeaderProps) {
 
         <AppHeaderSearch />
 
-        <div className='ml-auto flex items-center gap-2'>
+        <div className='ml-auto flex shrink-0 items-center gap-2'>
           <NotificationButton />
           <AppHeaderUser userName={userName} userRole={userRole} />
         </div>

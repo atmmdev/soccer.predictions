@@ -11,6 +11,10 @@ import { useNow } from '@/hooks/use-now';
 
 import type { PredictionFixtureItem } from '../../types/prediction-fixture';
 import { PredictionRow } from './prediction-row';
+import {
+  predictionTableColumns,
+  predictionTableHeadClass,
+} from './prediction-table-columns';
 
 interface PredictionTableProps {
   rows: PredictionFixtureItem[];
@@ -22,54 +26,75 @@ export function PredictionTable({ rows, onPredict }: PredictionTableProps) {
   const showParticipantColumn = rows.some(row => !row.isOwnPrediction);
 
   if (rows.length === 0) {
-    return (
-      <div className='flex items-center justify-center py-12'>
-        <p className='text-muted-foreground text-sm text-center'>
-          Nenhum jogo encontrado com os filtros selecionados.
-          <br />
-          Tente limpar a busca e usar &quot;Todos&quot; nos filtros de bolão e
-          palpite.
-        </p>
-      </div>
-    );
+    return null;
   }
 
   return (
-    <div className='overflow-x-auto'>
-      <Table>
+    <div className='hidden min-w-0 overflow-hidden xl:block [&_[data-slot=table-container]]:overflow-x-hidden [&_[data-slot=table-head]]:px-1.5 [&_[data-slot=table-cell]]:px-1.5'>
+      <Table className='table-fixed'>
         <TableHeader>
           <TableRow className='hover:bg-transparent'>
-            <TableHead className='text-muted-foreground text-xs'>Data</TableHead>
-            <TableHead className='text-muted-foreground text-xs'>Jogo</TableHead>
-            <TableHead className='text-muted-foreground text-xs'>
+            <TableHead className={predictionTableHeadClass('w-[5.5rem]')}>Data</TableHead>
+            <TableHead className={predictionTableHeadClass('min-w-[9rem]')}>Jogo</TableHead>
+            <TableHead
+              className={predictionTableHeadClass(
+                predictionTableColumns.championship,
+              )}
+            >
               Campeonato
             </TableHead>
-            <TableHead className='text-muted-foreground text-xs'>Bolão</TableHead>
+            <TableHead
+              className={predictionTableHeadClass(predictionTableColumns.pool)}
+            >
+              Bolão
+            </TableHead>
             {showParticipantColumn ? (
-              <TableHead className='text-muted-foreground text-xs'>
+              <TableHead
+                className={predictionTableHeadClass(
+                  predictionTableColumns.participant,
+                )}
+              >
                 Participante
               </TableHead>
             ) : null}
-            <TableHead className='text-muted-foreground text-center text-xs'>
+            <TableHead
+              className={predictionTableHeadClass(
+                `${predictionTableColumns.position} text-center`,
+              )}
+            >
               Posição
             </TableHead>
-            <TableHead className='text-muted-foreground text-center text-xs'>
+            <TableHead
+              className={predictionTableHeadClass(
+                `${predictionTableColumns.round} text-center`,
+              )}
+            >
               Rodada
             </TableHead>
-            <TableHead className='text-muted-foreground text-center text-xs'>
+            <TableHead
+              className={predictionTableHeadClass(
+                `${predictionTableColumns.result} text-center`,
+              )}
+            >
               Resultado
             </TableHead>
-            <TableHead className='text-muted-foreground text-center text-xs'>
+            <TableHead className={predictionTableHeadClass('w-[4.5rem] text-center')}>
               Palpite
             </TableHead>
-            <TableHead className='text-muted-foreground text-xs'>
+            <TableHead
+              className={predictionTableHeadClass(predictionTableColumns.player)}
+            >
               Jogador
             </TableHead>
-            <TableHead className='text-muted-foreground text-xs'>Status</TableHead>
-            <TableHead className='text-muted-foreground text-center text-xs'>
+            <TableHead className={predictionTableHeadClass('w-[6.5rem]')}>Status</TableHead>
+            <TableHead
+              className={predictionTableHeadClass(
+                `${predictionTableColumns.deadline} w-[5rem] text-center`,
+              )}
+            >
               Prazo
             </TableHead>
-            <TableHead className='text-muted-foreground text-right text-xs'>
+            <TableHead className={predictionTableHeadClass('w-[7rem] text-right')}>
               Ações
             </TableHead>
           </TableRow>

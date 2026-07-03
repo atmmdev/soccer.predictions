@@ -41,8 +41,8 @@ export function PredictionFilters({
 }: PredictionFiltersProps) {
   return (
     <>
-      <div className='flex flex-col gap-3 xl:flex-row xl:flex-wrap xl:items-center'>
-        <div className='relative xl:min-w-[200px] xl:flex-1'>
+      <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 lg:flex lg:flex-wrap lg:items-center'>
+        <div className='relative sm:col-span-2 lg:min-w-0 lg:flex-1'>
           <Search className='text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2' />
           <Input
             placeholder='Buscar por time ou campeonato...'
@@ -55,7 +55,7 @@ export function PredictionFilters({
         <NativeSelect
           value={poolName}
           onChange={event => onPoolNameChange(event.target.value)}
-          className='xl:w-52'
+          className='w-full lg:w-52'
         >
           <option value='ALL'>Todos os bolões</option>
           {poolOptions.map(name => (
@@ -70,7 +70,7 @@ export function PredictionFilters({
           onChange={event =>
             onStatusChange(event.target.value as PredictionFilterStatus)
           }
-          className='xl:w-44'
+          className='w-full lg:w-44'
         >
           <option value='ALL'>Todos</option>
           <option value='PENDING'>Sem palpite</option>
@@ -83,7 +83,7 @@ export function PredictionFilters({
             type='date'
             aria-label='Data do jogo'
             title='Data do jogo'
-            className='h-11 xl:w-40'
+            className='h-11 w-full lg:w-40'
             value={selectedDate}
             onChange={event => onSelectedDateChange(event.target.value)}
           />
@@ -92,10 +92,11 @@ export function PredictionFilters({
         <ClearFiltersButton
           onClick={onClearFilters}
           disabled={!hasActiveFilters}
+          className='w-full sm:w-auto'
         />
       </div>
 
-      <p className='text-muted-foreground px-2 text-xs xl:ml-auto'>
+      <p className='text-muted-foreground px-2 text-xs'>
         <span
           className={resultCount === 0 ? 'text-red-500' : 'text-primary'}
         >

@@ -22,6 +22,7 @@ import {
   predictionStatusTone,
 } from '../../utils/prediction-ui-state';
 import { canEditPrediction } from '../../utils/prediction-window';
+import { predictionTableColumns } from './prediction-table-columns';
 
 interface PredictionRowProps {
   fixture: PredictionFixtureItem;
@@ -67,35 +68,48 @@ export function PredictionRow({
 
   return (
     <TableRow>
-      <TableCell className='text-muted-foreground whitespace-nowrap text-xs'>
+      <TableCell className='text-muted-foreground max-w-[5.5rem] truncate text-xs whitespace-nowrap'>
         {formatFixtureDate(fixture.date)}
       </TableCell>
-      <TableCell className='text-xs'>
+      <TableCell className='max-w-[9rem] text-xs whitespace-normal xl:max-w-[10rem] 2xl:max-w-none'>
         <div className='flex flex-col gap-1'>
           <span className='font-medium'>{fixture.homeTeam}</span>
           <span className='font-medium'>{fixture.awayTeam}</span>
         </div>
       </TableCell>
-      <TableCell className='text-muted-foreground text-xs'>
+      <TableCell
+        className={`text-muted-foreground max-w-[7rem] truncate text-xs ${predictionTableColumns.championship}`}
+        title={fixture.championshipName}
+      >
         {fixture.championshipName}
       </TableCell>
-      <TableCell className='text-muted-foreground text-xs'>
+      <TableCell
+        className={`text-muted-foreground max-w-[6rem] truncate text-xs ${predictionTableColumns.pool}`}
+        title={fixture.poolName}
+      >
         {fixture.poolName}
       </TableCell>
       {showParticipantColumn ? (
-        <TableCell className='text-xs font-medium'>
+        <TableCell
+          className={`max-w-[7rem] truncate text-xs font-medium ${predictionTableColumns.participant}`}
+          title={fixture.participantName}
+        >
           {fixture.participantName}
         </TableCell>
       ) : null}
-      <TableCell className='text-center'>
+      <TableCell className={`text-center ${predictionTableColumns.position}`}>
         <div className='flex justify-center'>
           <PositionBadge position={fixture.poolPosition} />
         </div>
       </TableCell>
-      <TableCell className='text-center text-xs'>
+      <TableCell
+        className={`text-center text-xs ${predictionTableColumns.round}`}
+      >
         {fixture.round}
       </TableCell>
-      <TableCell className='text-center text-xs font-medium'>
+      <TableCell
+        className={`text-center text-xs font-medium ${predictionTableColumns.result}`}
+      >
         {formatOfficialResult(fixture)}
       </TableCell>
       <TableCell className='text-center text-xs font-medium'>
@@ -103,7 +117,7 @@ export function PredictionRow({
           ? `${fixture.prediction!.predictedHomeScore} x ${fixture.prediction!.predictedAwayScore}`
           : '—'}
       </TableCell>
-      <TableCell className='text-xs'>
+      <TableCell className={`text-xs ${predictionTableColumns.player}`}>
         {getSelectedPlayerName(fixture)}
       </TableCell>
       <TableCell>
@@ -111,7 +125,7 @@ export function PredictionRow({
           {getPredictionStatusLabel(uiState)}
         </StatusBadge>
       </TableCell>
-      <TableCell className='text-center'>
+      <TableCell className={`text-center ${predictionTableColumns.deadline}`}>
         <PredictionCountdown fixture={fixture} now={now} />
       </TableCell>
       <TableCell className='text-right'>

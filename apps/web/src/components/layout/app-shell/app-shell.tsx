@@ -18,9 +18,9 @@ export function AppShell({ children, userRole, userName }: AppShellProps) {
     <TooltipProvider>
       <SidebarProvider>
         <AppSidebar userRole={userRole} />
-        <SidebarInset className='bg-background flex min-h-svh flex-col'>
+        <SidebarInset className='bg-background flex min-h-svh min-w-0 flex-col overflow-x-hidden'>
           <AppHeader userName={userName} userRole={userRole} />
-          <main className='flex-1 px-4 py-4 md:px-6 md:py-6'>{children}</main>
+          <main className='min-w-0 flex-1 px-4 py-4 md:px-6 md:py-6'>{children}</main>
           <div className='py-4 md:px-6'>
             <AppFooter />
           </div>
