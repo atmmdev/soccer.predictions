@@ -14,6 +14,7 @@ interface RankingSortableHeadProps {
   className?: string;
   align?: 'left' | 'center' | 'right';
   title?: string;
+  variant?: 'default' | 'standings';
 }
 
 export function RankingSortableHead({
@@ -25,6 +26,7 @@ export function RankingSortableHead({
   className,
   align = 'left',
   title,
+  variant = 'default',
 }: RankingSortableHeadProps) {
   const isActive = sortKey === column;
   const SortIcon = isActive
@@ -40,10 +42,14 @@ export function RankingSortableHead({
         title={title ?? label}
         onClick={() => onSort(column)}
         className={cn(
-          'text-muted-foreground hover:text-foreground inline-flex w-full items-center gap-1 text-xs font-medium whitespace-normal transition-colors',
+          'inline-flex w-full items-center gap-1 text-xs font-medium whitespace-nowrap transition-colors',
+          variant === 'default' &&
+            'text-muted-foreground hover:text-foreground',
+          variant === 'standings' && 'text-slate-500 hover:text-slate-200',
           align === 'center' && 'justify-center text-center',
           align === 'right' && 'justify-end text-right',
-          isActive && 'text-foreground',
+          isActive &&
+            (variant === 'standings' ? 'text-slate-100' : 'text-foreground'),
         )}
       >
         <span>{label}</span>

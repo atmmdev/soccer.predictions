@@ -9,12 +9,13 @@ import {
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 
-import { SCORING_ACHIEVEMENT_COLUMNS } from '../../constants/scoring-rule-filters';
+import { RANKING_STAT_COLUMNS } from '../../constants/ranking-columns';
 import type { RankingSortKey, SortDirection } from '../../hooks/use-ranking-table';
 import type {
   RankingEntry,
   RankingScoringRuleFilter,
 } from '../../types/ranking-entry';
+import { RankingLegend } from '../ranking-legend';
 import { RankingRow } from './ranking-row';
 import { RankingSortableHead } from './ranking-sortable-head';
 
@@ -65,48 +66,65 @@ export function RankingTable({
   }
 
   return (
-    <div className='overflow-x-auto'>
-      <Table>
-        <TableHeader>
-          <TableRow className='hover:bg-transparent'>
-            <TableHead className='text-muted-foreground w-14 text-center text-xs'>
-              Posição
-            </TableHead>
-            <TableHead className='text-muted-foreground min-w-[180px] text-xs'>
-              Participante
-            </TableHead>
-            {SCORING_ACHIEVEMENT_COLUMNS.map(column => (
+    <div className='overflow-hidden'>
+      <div className='overflow-x-auto'>
+        <Table className='min-w-[720px]'>
+          <TableHeader>
+            <TableRow className='hover:bg-transparent'>
+              <TableHead className='text-muted-foreground w-10 px-2 text-center text-xs'>
+                #
+              </TableHead>
+              <TableHead className='text-muted-foreground min-w-[180px] px-3 text-left text-xs'>
+                Participante
+              </TableHead>
+              {RANKING_STAT_COLUMNS.map(column => (
+                <RankingSortableHead
+                  key={column.key}
+                  label={column.sigla}
+                  column={column.key}
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={onSort}
+                  align='center'
+                  className={cn(
+                    'w-11 px-2',
+                    scoringRule === column.key && 'bg-primary/5',
+                    column.key === 'predictionsCount' && 'hidden sm:table-cell',
+                    (column.key === 'loserScore' ||
+                      column.key === 'drawWithoutExactScore' ||
+                      column.key === 'playerGoal' ||
+                      column.key === 'playerHatTrick') &&
+                      'hidden lg:table-cell',
+                  )}
+                  title={column.label}
+                />
+              ))}
               <RankingSortableHead
-                key={column.key}
-                label={column.label}
-                column={column.key}
+                label='Pts'
+                column='points'
                 sortKey={sortKey}
                 sortDir={sortDir}
                 onSort={onSort}
-                align='center'
-                className={cn(
-                  'min-w-[88px]',
-                  scoringRule === column.key && 'bg-primary/5',
-                )}
-                title={column.label}
+                align='right'
+                className='text-muted-foreground w-16 px-3'
+                title='Pontos totais'
+              />
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.map((entry, index) => (
+              <RankingRow
+                key={`${entry.poolId}-${entry.id}`}
+                entry={entry}
+                position={index + 1}
+                totalRows={rows.length}
+                scoringRule={scoringRule}
               />
             ))}
-            <TableHead className='text-muted-foreground text-right text-xs'>
-              Pontos
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {rows.map((entry, index) => (
-            <RankingRow
-              key={entry.id}
-              entry={entry}
-              position={index + 1}
-              scoringRule={scoringRule}
-            />
-          ))}
-        </TableBody>
-      </Table>
+          </TableBody>
+        </Table>
+      </div>
+      <RankingLegend />
     </div>
   );
 }

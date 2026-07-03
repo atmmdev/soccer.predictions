@@ -1,0 +1,29 @@
+import type { ScoringAchievementKey } from '../types/ranking-entry';
+
+export type RankingStatKey = 'predictionsCount' | ScoringAchievementKey;
+
+export interface RankingColumnDefinition {
+  key: RankingStatKey;
+  sigla: string;
+  label: string;
+}
+
+export const RANKING_STAT_COLUMNS: RankingColumnDefinition[] = [
+  { key: 'predictionsCount', sigla: 'PJ', label: 'Palpites jogados' },
+  { key: 'exactScore', sigla: 'PE', label: 'Placar exato' },
+  { key: 'winnerScore', sigla: 'PV', label: 'Gols do time vencedor' },
+  { key: 'loserScore', sigla: 'PP', label: 'Gols do time perdedor' },
+  { key: 'correctWinner', sigla: 'VA', label: 'Vencedor acertado' },
+  {
+    key: 'drawWithoutExactScore',
+    sigla: 'EE',
+    label: 'Empate sem placar exato',
+  },
+  { key: 'playerGoal', sigla: 'JG', label: 'Jogador marcou gol' },
+  { key: 'playerHatTrick', sigla: 'HT', label: 'Hat-trick do jogador' },
+];
+
+export const RANKING_LEGEND_ITEMS: Array<{ sigla: string; label: string }> = [
+  ...RANKING_STAT_COLUMNS,
+  { sigla: 'Pts', label: 'Pontos totais' },
+];

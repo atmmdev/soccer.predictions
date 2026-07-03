@@ -1,18 +1,23 @@
+'use client';
+
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { PositionBadge } from '@/features/dashboard/rankings/components/position-badge';
 import { cn } from '@/lib/utils';
 
-import { SCORING_ACHIEVEMENT_COLUMNS } from '../../constants/scoring-rule-filters';
+import { RANKING_STAT_COLUMNS } from '../../constants/ranking-columns';
 import type {
   RankingEntry,
   RankingScoringRuleFilter,
 } from '../../types/ranking-entry';
-import { getAchievementCount } from '../../utils/ranking-scoring';
+import {
+  getPositionAccentClass,
+  getRankingStatValue,
+} from '../../utils/ranking-stats';
 
 interface RankingRowProps {
   entry: RankingEntry;
   position: number;
+  totalRows: number;
   scoringRule: RankingScoringRuleFilter;
 }
 
@@ -28,43 +33,53 @@ function getInitials(name: string) {
 export function RankingRow({
   entry,
   position,
+  totalRows,
   scoringRule,
 }: RankingRowProps) {
   return (
     <TableRow
-      className={cn(entry.isCurrentUser && 'bg-primary/5 hover:bg-primary/10')}
+      className={cn(
+        entry.isCurrentUser && 'bg-primary/5 hover:bg-primary/10',
+        getPositionAccentClass(position, totalRows),
+      )}
     >
-      <TableCell className='w-14'>
-        <PositionBadge position={position} />
+      <TableCell className='w-10 px-2 text-center text-sm'>
+        {position}
       </TableCell>
-      <TableCell>
+      <TableCell className='min-w-[180px] px-3'>
         <div className='flex items-center gap-2.5'>
           <Avatar className='size-8'>
             <AvatarFallback className='bg-muted text-xs font-medium'>
               {getInitials(entry.name)}
             </AvatarFallback>
           </Avatar>
-          <div className='flex flex-col'>
-            <span className='font-medium'>{entry.name}</span>
+          <div className='min-w-0'>
+            <span className='block truncate font-medium'>{entry.name}</span>
             {entry.isCurrentUser ? (
               <span className='text-primary text-xs font-medium'>Você</span>
             ) : null}
           </div>
         </div>
       </TableCell>
-      {SCORING_ACHIEVEMENT_COLUMNS.map(column => (
+      {RANKING_STAT_COLUMNS.map(column => (
         <TableCell
           key={column.key}
           className={cn(
-            'text-center text-sm font-medium',
+            'px-2 text-center text-sm font-medium tabular-nums',
             scoringRule === column.key && 'bg-primary/5 text-primary',
+            column.key === 'predictionsCount' && 'hidden sm:table-cell',
+            (column.key === 'loserScore' ||
+              column.key === 'drawWithoutExactScore' ||
+              column.key === 'playerGoal' ||
+              column.key === 'playerHatTrick') &&
+              'hidden lg:table-cell',
           )}
         >
-          {getAchievementCount(entry, column.key)}
+          {getRankingStatValue(entry, column.key)}
         </TableCell>
       ))}
-      <TableCell className='text-right'>
-        <span className='font-bold'>
+      <TableCell className='px-3 text-right'>
+        <span className='font-bold tabular-nums'>
           {entry.points.toLocaleString('pt-BR')}
         </span>{' '}
         <span className='text-muted-foreground text-xs'>pts</span>

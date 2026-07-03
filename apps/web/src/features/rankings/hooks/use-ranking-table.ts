@@ -2,10 +2,11 @@
 
 import { useMemo, useState } from 'react';
 
-import type { RankingEntry, ScoringAchievementKey } from '../types/ranking-entry';
-import { getAchievementCount } from '../utils/ranking-scoring';
+import type { RankingEntry } from '../types/ranking-entry';
+import type { RankingStatKey } from '../constants/ranking-columns';
+import { getRankingStatValue } from '../utils/ranking-stats';
 
-export type RankingSortKey = 'name' | 'points' | ScoringAchievementKey;
+export type RankingSortKey = 'name' | 'points' | RankingStatKey;
 
 export type SortDirection = 'asc' | 'desc';
 
@@ -20,9 +21,7 @@ function compareEntries(
     case 'points':
       return a.points - b.points;
     default:
-      return (
-        getAchievementCount(a, sortKey) - getAchievementCount(b, sortKey)
-      );
+      return getRankingStatValue(a, sortKey) - getRankingStatValue(b, sortKey);
   }
 }
 
