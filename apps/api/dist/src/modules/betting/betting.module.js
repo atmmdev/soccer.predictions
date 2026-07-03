@@ -10,16 +10,18 @@ exports.BettingModule = void 0;
 const common_1 = require("@nestjs/common");
 const identity_module_js_1 = require("../identity/identity.module.js");
 const pool_service_js_1 = require("./application/services/pool.service.js");
+const prediction_service_js_1 = require("./application/services/prediction.service.js");
 const pools_controller_js_1 = require("./infrastructure/http/pools.controller.js");
+const predictions_controller_js_1 = require("./infrastructure/http/predictions.controller.js");
 let BettingModule = class BettingModule {
 };
 exports.BettingModule = BettingModule;
 exports.BettingModule = BettingModule = __decorate([
     (0, common_1.Module)({
         imports: [identity_module_js_1.IdentityModule],
-        controllers: [pools_controller_js_1.PoolsController],
-        providers: [pool_service_js_1.PoolService],
-        exports: [pool_service_js_1.PoolService],
+        controllers: [pools_controller_js_1.PoolsController, predictions_controller_js_1.PredictionsController],
+        providers: [pool_service_js_1.PoolService, prediction_service_js_1.PredictionService],
+        exports: [pool_service_js_1.PoolService, prediction_service_js_1.PredictionService],
     })
 ], BettingModule);
 //# sourceMappingURL=betting.module.js.map

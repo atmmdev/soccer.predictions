@@ -16,6 +16,9 @@ interface PredictionFiltersProps {
   poolName: string;
   onPoolNameChange: (value: string) => void;
   poolOptions: string[];
+  showDateFilter: boolean;
+  selectedDate: string;
+  onSelectedDateChange: (value: string) => void;
   resultCount: number;
   hasActiveFilters: boolean;
   onClearFilters: () => void;
@@ -29,6 +32,9 @@ export function PredictionFilters({
   poolName,
   onPoolNameChange,
   poolOptions,
+  showDateFilter,
+  selectedDate,
+  onSelectedDateChange,
   resultCount,
   hasActiveFilters,
   onClearFilters,
@@ -68,8 +74,20 @@ export function PredictionFilters({
         >
           <option value='ALL'>Todos</option>
           <option value='PENDING'>Sem palpite</option>
-          <option value='SUBMITTED'>Com palpite</option>
+          <option value='SUBMITTED'>Palpites feitos</option>
         </NativeSelect>
+
+        {showDateFilter ? (
+          <Input
+            id='prediction-date'
+            type='date'
+            aria-label='Data do jogo'
+            title='Data do jogo'
+            className='h-11 xl:w-40'
+            value={selectedDate}
+            onChange={event => onSelectedDateChange(event.target.value)}
+          />
+        ) : null}
 
         <ClearFiltersButton
           onClick={onClearFilters}

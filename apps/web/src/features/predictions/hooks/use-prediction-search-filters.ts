@@ -3,26 +3,38 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import type { PredictionFixtureItem } from '../types/prediction-fixture';
+import { matchesFixtureDate } from '../utils/matches-fixture-date';
 
 export type PredictionFilterStatus = 'ALL' | 'PENDING' | 'SUBMITTED';
 
 const DEFAULT_STATUS: PredictionFilterStatus = 'ALL';
 const DEFAULT_POOL = 'ALL';
 
-export function usePredictionSearchFilters(fixtures: PredictionFixtureItem[]) {
+interface UsePredictionSearchFiltersOptions {
+  enableDateFilter?: boolean;
+}
+
+export function usePredictionSearchFilters(
+  fixtures: PredictionFixtureItem[],
+  options: UsePredictionSearchFiltersOptions = {},
+) {
+  const { enableDateFilter = false } = options;
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<PredictionFilterStatus>(DEFAULT_STATUS);
   const [poolName, setPoolName] = useState(DEFAULT_POOL);
+  const [selectedDate, setSelectedDate] = useState('');
 
   const hasActiveFilters =
     search.trim().length > 0 ||
     status !== DEFAULT_STATUS ||
-    poolName !== DEFAULT_POOL;
+    poolName !== DEFAULT_POOL ||
+    (enableDateFilter && selectedDate.length > 0);
 
   const clearFilters = useCallback(() => {
     setSearch('');
     setStatus(DEFAULT_STATUS);
     setPoolName(DEFAULT_POOL);
+    setSelectedDate('');
   }, []);
 
   const poolOptions = useMemo(() => {
@@ -49,9 +61,12 @@ export function usePredictionSearchFilters(fixtures: PredictionFixtureItem[]) {
         (status === 'PENDING' && fixture.prediction === null) ||
         (status === 'SUBMITTED' && fixture.prediction !== null);
 
-      return matchesSearch && matchesPool && matchesStatus;
+      const matchesDate =
+        !enableDateFilter || matchesFixtureDate(fixture.date, selectedDate);
+
+      return matchesSearch && matchesPool && matchesStatus && matchesDate;
     });
-  }, [fixtures, poolName, search, status]);
+  }, [enableDateFilter, fixtures, poolName, search, selectedDate, status]);
 
   return {
     search,
@@ -60,6 +75,9 @@ export function usePredictionSearchFilters(fixtures: PredictionFixtureItem[]) {
     setStatus,
     poolName,
     setPoolName,
+    selectedDate,
+    setSelectedDate,
+    enableDateFilter,
     poolOptions,
     filteredFixtures,
     hasActiveFilters,

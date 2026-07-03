@@ -19,6 +19,7 @@ interface PredictionTableProps {
 
 export function PredictionTable({ rows, onPredict }: PredictionTableProps) {
   const now = useNow();
+  const showParticipantColumn = rows.some(row => !row.isOwnPrediction);
 
   if (rows.length === 0) {
     return (
@@ -44,6 +45,11 @@ export function PredictionTable({ rows, onPredict }: PredictionTableProps) {
               Campeonato
             </TableHead>
             <TableHead className='text-muted-foreground text-xs'>Bolão</TableHead>
+            {showParticipantColumn ? (
+              <TableHead className='text-muted-foreground text-xs'>
+                Participante
+              </TableHead>
+            ) : null}
             <TableHead className='text-muted-foreground text-center text-xs'>
               Posição
             </TableHead>
@@ -71,9 +77,10 @@ export function PredictionTable({ rows, onPredict }: PredictionTableProps) {
         <TableBody>
           {rows.map(fixture => (
             <PredictionRow
-              key={fixture.id}
+              key={`${fixture.poolId}-${fixture.id}-${fixture.participantId}`}
               fixture={fixture}
               now={now}
+              showParticipantColumn={showParticipantColumn}
               onPredict={onPredict}
             />
           ))}

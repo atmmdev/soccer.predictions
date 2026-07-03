@@ -15,7 +15,7 @@ interface PoolFiltersProps {
   resultCount: number;
   hasActiveFilters: boolean;
   onClearFilters: () => void;
-  onCreatePool: (data: CreatePoolFormData) => void;
+  onCreatePool: (data: CreatePoolFormData) => boolean | Promise<boolean>;
 }
 
 export function PoolFilters({

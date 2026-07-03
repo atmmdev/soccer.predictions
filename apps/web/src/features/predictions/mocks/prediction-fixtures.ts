@@ -7,8 +7,22 @@ function localKickoffInMinutes(minutesFromNow: number): string {
   return `${kickoff.getFullYear()}-${pad(kickoff.getMonth() + 1)}-${pad(kickoff.getDate())}T${pad(kickoff.getHours())}:${pad(kickoff.getMinutes())}:${pad(kickoff.getSeconds())}`;
 }
 
+function ownParticipant(
+  fixture: Omit<
+    PredictionFixtureItem,
+    'participantId' | 'participantName' | 'isOwnPrediction'
+  >,
+): PredictionFixtureItem {
+  return {
+    ...fixture,
+    participantId: 1,
+    participantName: 'Você',
+    isOwnPrediction: true,
+  };
+}
+
 export const predictionFixtures: PredictionFixtureItem[] = [
-  {
+  ownParticipant({
     id: 101,
     poolId: 1,
     poolName: 'Bolão Família',
@@ -22,8 +36,8 @@ export const predictionFixtures: PredictionFixtureItem[] = [
     officialHomeScore: null,
     officialAwayScore: null,
     prediction: null,
-  },
-  {
+  }),
+  ownParticipant({
     id: 102,
     poolId: 1,
     poolName: 'Bolão Família',
@@ -42,8 +56,8 @@ export const predictionFixtures: PredictionFixtureItem[] = [
       predictedAwayScore: 1,
       selectedPlayerId: 2001,
     },
-  },
-  {
+  }),
+  ownParticipant({
     id: 103,
     poolId: 3,
     poolName: 'Champions Amigos',
@@ -57,8 +71,8 @@ export const predictionFixtures: PredictionFixtureItem[] = [
     officialHomeScore: null,
     officialAwayScore: null,
     prediction: null,
-  },
-  {
+  }),
+  ownParticipant({
     id: 104,
     poolId: 2,
     poolName: 'Bolão do Trabalho',
@@ -77,8 +91,8 @@ export const predictionFixtures: PredictionFixtureItem[] = [
       predictedAwayScore: 1,
       selectedPlayerId: 4003,
     },
-  },
-  {
+  }),
+  ownParticipant({
     id: 105,
     poolId: 2,
     poolName: 'Bolão do Trabalho',
@@ -92,8 +106,8 @@ export const predictionFixtures: PredictionFixtureItem[] = [
     officialHomeScore: null,
     officialAwayScore: null,
     prediction: null,
-  },
-  {
+  }),
+  ownParticipant({
     id: 106,
     poolId: 1,
     poolName: 'Bolão Família',
@@ -107,5 +121,5 @@ export const predictionFixtures: PredictionFixtureItem[] = [
     officialHomeScore: 1,
     officialAwayScore: 0,
     prediction: null,
-  },
+  }),
 ];

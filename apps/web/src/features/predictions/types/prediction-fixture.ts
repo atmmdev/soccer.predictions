@@ -13,6 +13,9 @@ export interface PredictionFixtureItem {
   poolName: string;
   /** Posição atual do participante no ranking do bolão. */
   poolPosition: number;
+  participantId: number;
+  participantName: string;
+  isOwnPrediction: boolean;
   championshipName: string;
   round: number;
   homeTeam: string;

@@ -1,3 +1,5 @@
+import type { UserRole } from '@/features/auth/types/auth';
+
 export interface PageMeta {
   title: string;
   subtitle: string;
@@ -54,3 +56,16 @@ export const defaultPageMeta: PageMeta = {
   title: 'Soccer Predictions',
   subtitle: 'Bolões de futebol',
 };
+
+export function getPageMeta(pathname: string, role?: UserRole): PageMeta {
+  const base = pageMeta[pathname] ?? defaultPageMeta;
+
+  if (pathname === '/predictions' && role === 'SUPER_ADMIN') {
+    return {
+      title: 'Palpites',
+      subtitle: 'Palpites de todos os participantes nos bolões',
+    };
+  }
+
+  return base;
+}

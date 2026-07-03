@@ -12,12 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PrismaService = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
-const adapter_mariadb_1 = require("@prisma/adapter-mariadb");
 const client_js_1 = require("../../../generated/prisma/client.js");
+const create_prisma_adapter_js_1 = require("./create-prisma-adapter.js");
 let PrismaService = class PrismaService extends client_js_1.PrismaClient {
     constructor(config) {
         const databaseUrl = config.getOrThrow('DATABASE_URL');
-        const adapter = new adapter_mariadb_1.PrismaMariaDb(databaseUrl);
+        const adapter = (0, create_prisma_adapter_js_1.createPrismaAdapter)(databaseUrl);
         super({ adapter });
     }
     async onModuleInit() {

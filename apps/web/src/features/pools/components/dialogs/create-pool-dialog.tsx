@@ -24,21 +24,21 @@ import {
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
 
+import { useActiveChampionships } from '@/features/championships/hooks/use-active-championships';
 import { useCreatePool } from '../../hooks/use-create-pool';
 import { usePoolScoringTemplate } from '../../hooks/use-pool-scoring-template';
-import { getActiveChampionships } from '../../services/championship-catalog.service';
 import type { CreatePoolFormData } from '../../schemas/create-pool.schema';
 import { PoolActiveSwitch } from './pool-active-switch';
 import { PoolScoringRules } from './pool-scoring-rules';
 
 interface CreatePoolDialogProps {
-  onCreate: (data: CreatePoolFormData) => void;
+  onCreate: (data: CreatePoolFormData) => boolean | Promise<boolean>;
 }
 
 export function CreatePoolDialog({ onCreate }: CreatePoolDialogProps) {
   const [open, setOpen] = useState(false);
   const form = useCreatePool();
-  const activeChampionships = getActiveChampionships();
+  const { championships: activeChampionships } = useActiveChampionships();
   const { championshipType, applyTemplateForChampionship } =
     usePoolScoringTemplate(form);
 
@@ -50,8 +50,13 @@ export function CreatePoolDialog({ onCreate }: CreatePoolDialogProps) {
     }
   }
 
-  function onSubmit(data: CreatePoolFormData) {
-    onCreate(data);
+  async function onSubmit(data: CreatePoolFormData) {
+    const created = await onCreate(data);
+
+    if (!created) {
+      return;
+    }
+
     toast.success('Bolão criado com sucesso!');
     form.reset();
     setOpen(false);

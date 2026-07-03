@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import type { Pool, Prisma } from '../../../../../generated/prisma/client.js';
+import type { ChampionshipType, Pool, Prisma } from '../../../../../generated/prisma/client.js';
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 import type { AuthUser } from '../../../identity/application/types/auth-user.js';
 import type { CreatePoolDto } from '../dtos/create-pool.dto.js';
@@ -14,6 +14,10 @@ export interface PoolListItem {
   id: number;
   name: string;
   championshipId: number;
+  championshipName: string;
+  championshipType: ChampionshipType;
+  season: number;
+  participantsCount: number;
   inviteCode: string;
   status: Pool['status'];
   scoring: Prisma.JsonValue;
@@ -36,6 +40,16 @@ export class PoolService {
     if (user.role === 'SUPER_ADMIN') {
       const pools = await this.prisma.pool.findMany({
         orderBy: { createdAt: 'desc' },
+        include: {
+          championship: true,
+          _count: {
+            select: {
+              poolUsers: {
+                where: { status: 'ACTIVE' },
+              },
+            },
+          },
+        },
       });
 
       return pools.map(pool => this.toPoolListItem(pool, user.id));
@@ -56,15 +70,25 @@ export class PoolService {
         ],
       },
       orderBy: { createdAt: 'desc' },
+      include: {
+        championship: true,
+        _count: {
+          select: {
+            poolUsers: {
+              where: { status: 'ACTIVE' },
+            },
+          },
+        },
+      },
     });
 
     return pools.map(pool => this.toPoolListItem(pool, user.id));
   }
 
   async getByIdForUser(poolId: number, user: AuthUser): Promise<PoolListItem> {
-    const pool = await this.findAccessiblePool(poolId, user);
+    await this.findAccessiblePool(poolId, user);
 
-    return this.toPoolListItem(pool, user.id);
+    return this.loadPoolListItem(poolId, user.id);
   }
 
   async create(dto: CreatePoolDto, user: AuthUser): Promise<CreatePoolResult> {
@@ -121,7 +145,7 @@ export class PoolService {
     });
 
     return {
-      pool: this.toPoolListItem(result.pool, result.user.id),
+      pool: await this.loadPoolListItem(result.pool.id, result.user.id),
       user: result.user,
     };
   }
@@ -149,7 +173,7 @@ export class PoolService {
     });
 
     if (existingMembership?.status === 'ACTIVE') {
-      return this.toPoolListItem(pool, user.id);
+      return this.loadPoolListItem(pool.id, user.id);
     }
 
     if (existingMembership) {
@@ -158,7 +182,7 @@ export class PoolService {
         data: { status: 'ACTIVE' },
       });
 
-      return this.toPoolListItem(pool, user.id);
+      return this.loadPoolListItem(pool.id, user.id);
     }
 
     await this.prisma.poolUser.create({
@@ -169,7 +193,32 @@ export class PoolService {
       },
     });
 
-    return this.toPoolListItem(pool, user.id);
+    return this.loadPoolListItem(pool.id, user.id);
+  }
+
+  private async loadPoolListItem(
+    poolId: number,
+    userId: number,
+  ): Promise<PoolListItem> {
+    const pool = await this.prisma.pool.findUnique({
+      where: { id: poolId },
+      include: {
+        championship: true,
+        _count: {
+          select: {
+            poolUsers: {
+              where: { status: 'ACTIVE' },
+            },
+          },
+        },
+      },
+    });
+
+    if (!pool) {
+      throw new NotFoundException('Bolão não encontrado');
+    }
+
+    return this.toPoolListItem(pool, userId);
   }
 
   private async findAccessiblePool(poolId: number, user: AuthUser): Promise<Pool> {
@@ -224,11 +273,25 @@ export class PoolService {
     throw new ConflictException('Não foi possível gerar código de convite');
   }
 
-  private toPoolListItem(pool: Pool, userId: number): PoolListItem {
+  private toPoolListItem(
+    pool: Pool & {
+      championship: {
+        name: string;
+        type: ChampionshipType;
+        season: number;
+      };
+      _count: { poolUsers: number };
+    },
+    userId: number,
+  ): PoolListItem {
     return {
       id: pool.id,
       name: pool.name,
       championshipId: pool.championshipId,
+      championshipName: pool.championship.name,
+      championshipType: pool.championship.type,
+      season: pool.championship.season,
+      participantsCount: pool._count.poolUsers,
       inviteCode: pool.inviteCode,
       status: pool.status,
       scoring: pool.scoring,

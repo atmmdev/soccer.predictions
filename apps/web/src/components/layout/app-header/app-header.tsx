@@ -20,7 +20,7 @@ export function AppHeader({ userName, userRole }: AppHeaderProps) {
             className='size-11 shrink-0'
             aria-label='Alternar menu lateral'
           />
-          <AppBreadcrumb />
+          <AppBreadcrumb userRole={userRole} />
         </div>
 
         <AppHeaderSearch />

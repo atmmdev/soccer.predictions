@@ -7,7 +7,8 @@ import { PoolFilters } from './filters/pool-filters';
 import { PoolTable } from './table/pool-table';
 
 export function PoolList() {
-  const { createPool, searchFilters, tableState } = usePoolList();
+  const { isLoading, error, reloadPools, createPool, searchFilters, tableState } =
+    usePoolList();
 
   return (
     <Card className='overflow-visible shadow-sm'>
@@ -22,12 +23,29 @@ export function PoolList() {
           onClearFilters={searchFilters.clearFilters}
           onCreatePool={createPool}
         />
-        <PoolTable
-          rows={tableState.rows}
-          sortKey={tableState.sortKey}
-          sortDir={tableState.sortDir}
-          onSort={tableState.toggleSort}
-        />
+        {isLoading ? (
+          <div className='flex items-center justify-center py-12'>
+            <p className='text-muted-foreground text-sm'>Carregando bolões...</p>
+          </div>
+        ) : error ? (
+          <div className='flex flex-col items-center justify-center gap-3 py-12'>
+            <p className='text-destructive text-sm text-center'>{error}</p>
+            <button
+              type='button'
+              className='text-primary text-sm underline'
+              onClick={() => void reloadPools()}
+            >
+              Tentar novamente
+            </button>
+          </div>
+        ) : (
+          <PoolTable
+            rows={tableState.rows}
+            sortKey={tableState.sortKey}
+            sortDir={tableState.sortDir}
+            onSort={tableState.toggleSort}
+          />
+        )}
       </CardContent>
     </Card>
   );

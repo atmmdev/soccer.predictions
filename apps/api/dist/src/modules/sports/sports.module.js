@@ -8,10 +8,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SportsModule = void 0;
 const common_1 = require("@nestjs/common");
+const identity_module_js_1 = require("../identity/identity.module.js");
+const championship_service_js_1 = require("./application/services/championship.service.js");
+const championships_controller_js_1 = require("./infrastructure/http/championships.controller.js");
 let SportsModule = class SportsModule {
 };
 exports.SportsModule = SportsModule;
 exports.SportsModule = SportsModule = __decorate([
-    (0, common_1.Module)({})
+    (0, common_1.Module)({
+        imports: [identity_module_js_1.IdentityModule],
+        controllers: [championships_controller_js_1.ChampionshipsController],
+        providers: [championship_service_js_1.ChampionshipService],
+        exports: [championship_service_js_1.ChampionshipService],
+    })
 ], SportsModule);
 //# sourceMappingURL=sports.module.js.map

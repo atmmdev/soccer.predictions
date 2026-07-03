@@ -22,6 +22,16 @@ let PoolService = class PoolService {
         if (user.role === 'SUPER_ADMIN') {
             const pools = await this.prisma.pool.findMany({
                 orderBy: { createdAt: 'desc' },
+                include: {
+                    championship: true,
+                    _count: {
+                        select: {
+                            poolUsers: {
+                                where: { status: 'ACTIVE' },
+                            },
+                        },
+                    },
+                },
             });
             return pools.map(pool => this.toPoolListItem(pool, user.id));
         }
@@ -40,12 +50,22 @@ let PoolService = class PoolService {
                 ],
             },
             orderBy: { createdAt: 'desc' },
+            include: {
+                championship: true,
+                _count: {
+                    select: {
+                        poolUsers: {
+                            where: { status: 'ACTIVE' },
+                        },
+                    },
+                },
+            },
         });
         return pools.map(pool => this.toPoolListItem(pool, user.id));
     }
     async getByIdForUser(poolId, user) {
-        const pool = await this.findAccessiblePool(poolId, user);
-        return this.toPoolListItem(pool, user.id);
+        await this.findAccessiblePool(poolId, user);
+        return this.loadPoolListItem(poolId, user.id);
     }
     async create(dto, user) {
         const championship = await this.prisma.championship.findUnique({
@@ -90,7 +110,7 @@ let PoolService = class PoolService {
             return { pool, user: nextUser };
         });
         return {
-            pool: this.toPoolListItem(result.pool, result.user.id),
+            pool: await this.loadPoolListItem(result.pool.id, result.user.id),
             user: result.user,
         };
     }
@@ -113,14 +133,14 @@ let PoolService = class PoolService {
             },
         });
         if (existingMembership?.status === 'ACTIVE') {
-            return this.toPoolListItem(pool, user.id);
+            return this.loadPoolListItem(pool.id, user.id);
         }
         if (existingMembership) {
             await this.prisma.poolUser.update({
                 where: { id: existingMembership.id },
                 data: { status: 'ACTIVE' },
             });
-            return this.toPoolListItem(pool, user.id);
+            return this.loadPoolListItem(pool.id, user.id);
         }
         await this.prisma.poolUser.create({
             data: {
@@ -129,7 +149,26 @@ let PoolService = class PoolService {
                 status: 'ACTIVE',
             },
         });
-        return this.toPoolListItem(pool, user.id);
+        return this.loadPoolListItem(pool.id, user.id);
+    }
+    async loadPoolListItem(poolId, userId) {
+        const pool = await this.prisma.pool.findUnique({
+            where: { id: poolId },
+            include: {
+                championship: true,
+                _count: {
+                    select: {
+                        poolUsers: {
+                            where: { status: 'ACTIVE' },
+                        },
+                    },
+                },
+            },
+        });
+        if (!pool) {
+            throw new common_1.NotFoundException('Bolão não encontrado');
+        }
+        return this.toPoolListItem(pool, userId);
     }
     async findAccessiblePool(poolId, user) {
         if (user.role === 'SUPER_ADMIN') {
@@ -178,6 +217,10 @@ let PoolService = class PoolService {
             id: pool.id,
             name: pool.name,
             championshipId: pool.championshipId,
+            championshipName: pool.championship.name,
+            championshipType: pool.championship.type,
+            season: pool.championship.season,
+            participantsCount: pool._count.poolUsers,
             inviteCode: pool.inviteCode,
             status: pool.status,
             scoring: pool.scoring,

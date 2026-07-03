@@ -35,7 +35,10 @@ interface SubmitPredictionDialogProps {
   fixture: PredictionFixtureItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (fixtureId: number, data: SubmitPredictionFormData) => boolean;
+  onSubmit: (
+    fixtureId: number,
+    data: SubmitPredictionFormData,
+  ) => boolean | Promise<boolean>;
 }
 
 export function SubmitPredictionDialog({
@@ -59,12 +62,12 @@ export function SubmitPredictionDialog({
     }
   }, [fixture, form, open]);
 
-  function handleSubmit(data: SubmitPredictionFormData) {
+  async function handleSubmit(data: SubmitPredictionFormData) {
     if (!fixture) {
       return;
     }
 
-    const saved = onSubmit(fixture.id, data);
+    const saved = await onSubmit(fixture.id, data);
 
     if (!saved) {
       return;

@@ -26,6 +26,7 @@ import { canEditPrediction } from '../../utils/prediction-window';
 interface PredictionRowProps {
   fixture: PredictionFixtureItem;
   now: Date;
+  showParticipantColumn: boolean;
   onPredict: (fixture: PredictionFixtureItem) => void;
 }
 
@@ -46,14 +47,23 @@ function getSelectedPlayerName(fixture: PredictionFixtureItem) {
   return selected?.player.name ?? '—';
 }
 
-export function PredictionRow({ fixture, now, onPredict }: PredictionRowProps) {
+export function PredictionRow({
+  fixture,
+  now,
+  showParticipantColumn,
+  onPredict,
+}: PredictionRowProps) {
   const hasPrediction = fixture.prediction !== null;
   const uiState = getPredictionUiState(fixture, now);
-  const canEdit = canEditPrediction(fixture, now);
+  const canEdit =
+    fixture.isOwnPrediction && canEditPrediction(fixture, now);
   const statusTone = predictionStatusTone[uiState];
   const actionTone = predictionActionTone[uiState];
-  const actionLabel = getPredictionActionLabel(uiState, hasPrediction);
-  const ActionIcon = canEdit && hasPrediction ? Pencil : canEdit ? Target : undefined;
+  const actionLabel = fixture.isOwnPrediction
+    ? getPredictionActionLabel(uiState, hasPrediction)
+    : '—';
+  const ActionIcon =
+    canEdit && hasPrediction ? Pencil : canEdit ? Target : undefined;
 
   return (
     <TableRow>
@@ -72,6 +82,11 @@ export function PredictionRow({ fixture, now, onPredict }: PredictionRowProps) {
       <TableCell className='text-muted-foreground text-xs'>
         {fixture.poolName}
       </TableCell>
+      {showParticipantColumn ? (
+        <TableCell className='text-xs font-medium'>
+          {fixture.participantName}
+        </TableCell>
+      ) : null}
       <TableCell className='text-center'>
         <div className='flex justify-center'>
           <PositionBadge position={fixture.poolPosition} />
@@ -100,14 +115,18 @@ export function PredictionRow({ fixture, now, onPredict }: PredictionRowProps) {
         <PredictionCountdown fixture={fixture} now={now} />
       </TableCell>
       <TableCell className='text-right'>
-        <TableActionBadge
-          tone={actionTone}
-          icon={ActionIcon}
-          disabled={!canEdit}
-          onClick={() => onPredict(fixture)}
-        >
-          {actionLabel}
-        </TableActionBadge>
+        {fixture.isOwnPrediction ? (
+          <TableActionBadge
+            tone={actionTone}
+            icon={ActionIcon}
+            disabled={!canEdit}
+            onClick={() => onPredict(fixture)}
+          >
+            {actionLabel}
+          </TableActionBadge>
+        ) : (
+          <span className='text-muted-foreground text-xs'>—</span>
+        )}
       </TableCell>
     </TableRow>
   );

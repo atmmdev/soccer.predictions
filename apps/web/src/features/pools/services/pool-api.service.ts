@@ -1,15 +1,16 @@
+import { API_URL, authHeaders, parseApiError } from '@/lib/api-client';
 import type { AuthUser } from '@/features/auth/types/auth';
 import type { PoolScoringConfig } from '@/features/pools/types/scoring-rules';
-
-import { getAccessToken } from '@/features/auth/lib/auth-storage';
-
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api';
+import type { Championship } from '@/features/championships/types/championship';
 
 export interface PoolResponse {
   id: number;
   name: string;
   championshipId: number;
+  championshipName: string;
+  championshipType: Championship['type'];
+  season: number;
+  participantsCount: number;
   inviteCode: string;
   status: 'ACTIVE' | 'INACTIVE' | 'CLOSED';
   scoring: PoolScoringConfig;
@@ -24,44 +25,13 @@ export interface CreatePoolResponse {
   user: AuthUser;
 }
 
-async function parseError(response: Response): Promise<string> {
-  try {
-    const body = (await response.json()) as { message?: string | string[] };
-
-    if (Array.isArray(body.message)) {
-      return body.message[0] ?? 'Não foi possível concluir a operação';
-    }
-
-    if (body.message) {
-      return body.message;
-    }
-  } catch {
-    // ignore parse errors
-  }
-
-  return 'Não foi possível concluir a operação';
-}
-
-function authHeaders(): HeadersInit {
-  const token = getAccessToken();
-
-  if (!token) {
-    throw new Error('Sessão expirada. Faça login novamente.');
-  }
-
-  return {
-    Authorization: `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  };
-}
-
 export async function fetchPoolsRequest(): Promise<PoolResponse[]> {
   const response = await fetch(`${API_URL}/pools`, {
     headers: authHeaders(),
   });
 
   if (!response.ok) {
-    throw new Error(await parseError(response));
+    throw new Error(await parseApiError(response));
   }
 
   return response.json() as Promise<PoolResponse[]>;
@@ -79,7 +49,7 @@ export async function createPoolRequest(payload: {
   });
 
   if (!response.ok) {
-    throw new Error(await parseError(response));
+    throw new Error(await parseApiError(response));
   }
 
   return response.json() as Promise<CreatePoolResponse>;
@@ -93,7 +63,7 @@ export async function joinPoolRequest(inviteCode: string): Promise<PoolResponse>
   });
 
   if (!response.ok) {
-    throw new Error(await parseError(response));
+    throw new Error(await parseApiError(response));
   }
 
   return response.json() as Promise<PoolResponse>;

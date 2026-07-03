@@ -2,11 +2,16 @@
 
 import { usePathname } from 'next/navigation';
 
-import { defaultPageMeta, pageMeta } from '@/config/page-meta';
+import { getPageMeta } from '@/config/page-meta';
+import type { UserRole } from '@/features/auth/types/auth';
 
-export function AppBreadcrumb() {
+interface AppBreadcrumbProps {
+  userRole?: UserRole;
+}
+
+export function AppBreadcrumb({ userRole }: AppBreadcrumbProps) {
   const pathname = usePathname();
-  const meta = pageMeta[pathname] ?? defaultPageMeta;
+  const meta = getPageMeta(pathname, userRole);
 
   return (
     <div className='flex min-w-0 flex-col gap-0.5'>
