@@ -15,6 +15,7 @@ export function usePredictionList() {
   const isSuperAdmin = getStoredUser()?.role === 'SUPER_ADMIN';
   const searchFilters = usePredictionSearchFilters(fixtures, {
     enableDateFilter: isSuperAdmin,
+    enableParticipantFilter: isSuperAdmin,
   });
 
   return {

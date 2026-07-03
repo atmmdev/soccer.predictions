@@ -12,29 +12,33 @@ const DEFAULT_POOL = 'ALL';
 
 interface UsePredictionSearchFiltersOptions {
   enableDateFilter?: boolean;
+  enableParticipantFilter?: boolean;
 }
 
 export function usePredictionSearchFilters(
   fixtures: PredictionFixtureItem[],
   options: UsePredictionSearchFiltersOptions = {},
 ) {
-  const { enableDateFilter = false } = options;
+  const { enableDateFilter = false, enableParticipantFilter = false } = options;
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<PredictionFilterStatus>(DEFAULT_STATUS);
   const [poolName, setPoolName] = useState(DEFAULT_POOL);
   const [selectedDate, setSelectedDate] = useState('');
+  const [participantSearch, setParticipantSearch] = useState('');
 
   const hasActiveFilters =
     search.trim().length > 0 ||
     status !== DEFAULT_STATUS ||
     poolName !== DEFAULT_POOL ||
-    (enableDateFilter && selectedDate.length > 0);
+    (enableDateFilter && selectedDate.length > 0) ||
+    (enableParticipantFilter && participantSearch.trim().length > 0);
 
   const clearFilters = useCallback(() => {
     setSearch('');
     setStatus(DEFAULT_STATUS);
     setPoolName(DEFAULT_POOL);
     setSelectedDate('');
+    setParticipantSearch('');
   }, []);
 
   const poolOptions = useMemo(() => {
@@ -45,6 +49,7 @@ export function usePredictionSearchFilters(
 
   const filteredFixtures = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
+    const normalizedParticipant = participantSearch.trim().toLowerCase();
 
     return fixtures.filter(fixture => {
       const matchesSearch =
@@ -52,6 +57,11 @@ export function usePredictionSearchFilters(
         fixture.homeTeam.toLowerCase().includes(normalizedSearch) ||
         fixture.awayTeam.toLowerCase().includes(normalizedSearch) ||
         fixture.championshipName.toLowerCase().includes(normalizedSearch);
+
+      const matchesParticipant =
+        !enableParticipantFilter ||
+        normalizedParticipant.length === 0 ||
+        fixture.participantName.toLowerCase().includes(normalizedParticipant);
 
       const matchesPool =
         poolName === DEFAULT_POOL || fixture.poolName === poolName;
@@ -64,9 +74,24 @@ export function usePredictionSearchFilters(
       const matchesDate =
         !enableDateFilter || matchesFixtureDate(fixture.date, selectedDate);
 
-      return matchesSearch && matchesPool && matchesStatus && matchesDate;
+      return (
+        matchesSearch &&
+        matchesParticipant &&
+        matchesPool &&
+        matchesStatus &&
+        matchesDate
+      );
     });
-  }, [enableDateFilter, fixtures, poolName, search, selectedDate, status]);
+  }, [
+    enableDateFilter,
+    enableParticipantFilter,
+    fixtures,
+    participantSearch,
+    poolName,
+    search,
+    selectedDate,
+    status,
+  ]);
 
   return {
     search,
@@ -77,7 +102,10 @@ export function usePredictionSearchFilters(
     setPoolName,
     selectedDate,
     setSelectedDate,
+    participantSearch,
+    setParticipantSearch,
     enableDateFilter,
+    enableParticipantFilter,
     poolOptions,
     filteredFixtures,
     hasActiveFilters,

@@ -63,6 +63,9 @@ export function PredictionList() {
             showDateFilter={searchFilters.enableDateFilter}
             selectedDate={searchFilters.selectedDate}
             onSelectedDateChange={searchFilters.setSelectedDate}
+            showParticipantFilter={searchFilters.enableParticipantFilter}
+            participantSearch={searchFilters.participantSearch}
+            onParticipantSearchChange={searchFilters.setParticipantSearch}
             resultCount={searchFilters.filteredFixtures.length}
             hasActiveFilters={searchFilters.hasActiveFilters}
             onClearFilters={searchFilters.clearFilters}

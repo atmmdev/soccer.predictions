@@ -1,6 +1,6 @@
 'use client';
 
-import { Search } from 'lucide-react';
+import { Search, User } from 'lucide-react';
 
 import { ClearFiltersButton } from '@/components/ui/clear-filters-button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,9 @@ interface PredictionFiltersProps {
   showDateFilter: boolean;
   selectedDate: string;
   onSelectedDateChange: (value: string) => void;
+  showParticipantFilter: boolean;
+  participantSearch: string;
+  onParticipantSearchChange: (value: string) => void;
   resultCount: number;
   hasActiveFilters: boolean;
   onClearFilters: () => void;
@@ -35,6 +38,9 @@ export function PredictionFilters({
   showDateFilter,
   selectedDate,
   onSelectedDateChange,
+  showParticipantFilter,
+  participantSearch,
+  onParticipantSearchChange,
   resultCount,
   hasActiveFilters,
   onClearFilters,
@@ -51,6 +57,20 @@ export function PredictionFilters({
             onChange={event => onSearchChange(event.target.value)}
           />
         </div>
+
+        {showParticipantFilter ? (
+          <div className='relative w-full lg:w-52'>
+            <User className='text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2' />
+            <Input
+              type='search'
+              placeholder='Participante...'
+              aria-label='Buscar por participante'
+              className='h-11 pl-9'
+              value={participantSearch}
+              onChange={event => onParticipantSearchChange(event.target.value)}
+            />
+          </div>
+        ) : null}
 
         <NativeSelect
           value={poolName}
