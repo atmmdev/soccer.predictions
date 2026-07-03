@@ -101,7 +101,7 @@ export const SCORING_RULES = [
   },
   {
     key: 'correctWinner',
-    label: 'Vencedor sem placar exato',
+    label: 'Vitória vencedor',
     points: defaultBaseScoringRules.correctWinner,
     description:
       'Acertou quem venceu, mas errou os gols de ambos os lados.',
@@ -182,7 +182,7 @@ export const SCORING_EXAMPLES = [
     title: 'Vencedor correto',
     result: 'Liverpool 3 × 0 Man City',
     prediction: '1 × 0',
-    breakdown: ['Vencedor sem placar exato: 3 pts'],
+    breakdown: ['Vitória vencedor: 3 pts'],
     total: 3,
     note: 'Acertou que o Liverpool venceria, mas errou a quantidade de gols.',
   },

@@ -11,7 +11,7 @@ export const SCORING_RULE_FILTER_OPTIONS: Array<{
   { value: 'exactScore', label: 'Placar exato' },
   { value: 'winnerScore', label: 'Placar do vencedor' },
   { value: 'loserScore', label: 'Placar do perdedor' },
-  { value: 'correctWinner', label: 'Vencedor sem placar exato' },
+  { value: 'correctWinner', label: 'Vitória vencedor' },
   { value: 'drawWithoutExactScore', label: 'Empate sem placar exato' },
   { value: 'playerGoal', label: 'Jogador marcou gol' },
   { value: 'playerHatTrick', label: 'Hat-trick do jogador' },

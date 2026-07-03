@@ -13,7 +13,7 @@ export const RANKING_STAT_COLUMNS: RankingColumnDefinition[] = [
   { key: 'exactScore', sigla: 'PE', label: 'Placar exato' },
   { key: 'winnerScore', sigla: 'PV', label: 'Gols do time vencedor' },
   { key: 'loserScore', sigla: 'PP', label: 'Gols do time perdedor' },
-  { key: 'correctWinner', sigla: 'VA', label: 'Vencedor acertado' },
+  { key: 'correctWinner', sigla: 'VV', label: 'Vitória vencedor' },
   {
     key: 'drawWithoutExactScore',
     sigla: 'EE',
