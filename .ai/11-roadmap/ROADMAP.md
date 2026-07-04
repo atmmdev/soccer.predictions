@@ -6,62 +6,72 @@
 
 **Ritmo:** 15–20h/semana | **Modo:** guiado (autor implementa, agente revisa)
 
+**Progresso atual (4 jul):** ~**60%** — backend core e fluxo principal com seed; falta camada de dados reais e deploy.
+
 ---
 
-## Fase 0 — Fundação ✅ (em curso)
+## Fase 0 — Fundação ✅
 
 - [x] AppShell, sidebar config-driven, Shadcn
-- [x] Dashboard (widgets mock)
+- [x] Dashboard (widgets via API)
 - [x] Championships: tabela, filtros, dialog parcial
 - [x] Documentação `.ai/`
+- [x] Tema emerald + sidebar escura (`globals.css`)
 
-## Fase 1 — Championships completo (Semana 1)
+## Fase 1 — Championships completo — ~65%
 
-- [~] Dialog import: país → liga → temporada (mocks)
-- [ ] UX baseline + polish Championships
+- [~] Dialog import: país → liga → temporada (UI parcial; dados mock)
+- [~] UX baseline + polish Championships (footer/header OK; empty states e layout.png pendentes)
+- [ ] Conectar listagem admin à API (substituir `useChampionships` mock)
 
-## Fase 2 — Pools + Backend (Semana 2)
+## Fase 2 — Pools + Backend ✅ ~90%
 
-- [ ] NestJS + MySQL + Prisma + Redis
-- [ ] Auth JWT
-- [~] Pools CRUD + scoring rules (UI mock: lista + criar com `PoolScoringConfig`)
-- [~] Frontend Pools
+- [x] NestJS + MySQL + Prisma + Redis + Docker Compose
+- [x] Auth JWT (+ forgot/reset, OAuth scaffold)
+- [x] Pools: criar, listar, join por código, `PoolScoringConfig`
+- [x] Frontend Pools conectado à API
+- [x] Seed demo (Brasileirão, fixtures, bolão, palpites)
 
-## Fase 3 — Dados reais + Palpites (Semana 3)
+## Fase 3 — Dados reais + Palpites — ~30% 🔴
 
-- [ ] API Football sync
-- [ ] Matches + Predictions
-- [ ] Auth middleware frontend
+- [ ] API Football sync (`ApiFootballClient`, import, cron)
+- [x] Matches + Predictions (UI + API; dados do seed)
+- [x] Auth middleware frontend
+- [ ] Lineups reais para palpite de jogador
+- [ ] Scoring completo (jogador, hat-trick, fases de copa)
 
-## Fase 4 — Ranking + Go-live (Semana 4)
+## Fase 4 — Ranking + Go-live — ~50%
 
-- [ ] Scoring Engine + PointHistory
-- [ ] Rankings derivados
-- [ ] Convites por link
+- [~] Scoring Engine + `PointHistory` (regras base; extensões pendentes)
+- [x] Rankings derivados
+- [x] Convites por link (`/join/:code`)
 - [ ] PWA + deploy
 
 ---
 
 ## Pós-MVP (V2)
 
-| Item | Prioridade |
-|------|------------|
-| Perfil, Estatísticas, Ajuda | Média |
-| CTA Import no Dashboard | Baixa |
-| Múltiplos jogadores por palpite | Média |
-| WebSocket / notificações | Média |
-| PWA offline (fila palpites) | Média |
-| Standings dedicado | Média |
-| DDD avançado (events, CQRS) | Baixa |
-| Layout polish + animações | Baixa |
+| Item | Prioridade | Status |
+|------|------------|--------|
+| Perfil, Estatísticas, Configurações, Participantes, Notificações | Média | Rotas no menu; páginas ausentes |
+| Ajuda | Média | ✅ Página implementada |
+| CTA Import no Dashboard | Baixa | Pendente |
+| Múltiplos jogadores por palpite | Média | Pendente |
+| WebSocket / notificações | Média | Pendente |
+| PWA offline (fila palpites) | Média | Pendente |
+| Standings dedicado | Média | Pendente |
+| DDD avançado (events, CQRS) | Baixa | Pendente |
+| Layout polish + animações | Baixa | Pendente |
+| TanStack Query nos hooks | Baixa | Pendente |
 
 ---
 
 ## Prioridade de features (ordem acordada)
 
 ```text
-Pools → Matches → Predictions → Rankings → Notifications
-→ Profile → Settings → Backend refinado → WebSocket → PWA avançado
+✅ Pools → ✅ Matches → ✅ Predictions → ✅ Rankings
+→ 🔴 API Football + Import → 🔴 Scoring completo → Deploy
+→ Notifications → Profile → Settings → WebSocket → PWA avançado
 ```
 
 ---
@@ -84,9 +94,20 @@ Pools → Matches → Predictions → Rankings → Notifications
 ## Cronograma visual
 
 ```text
-Jun 23 ─── Semana 1: Championships + React/TS
-Jun 30 ─── Semana 2: Pools + Backend scaffold
-Jul 07 ─── Semana 3: API Football + Palpites
-Jul 14 ─── Semana 4: Ranking + Deploy
+Jun 23 ─── Semana 1: Championships + React/TS     ✅
+Jun 30 ─── Semana 2: Pools + Backend scaffold     ✅ ~85%
+Jul 07 ─── Semana 3: API Football + Palpites      🔴 em andamento
+Jul 14 ─── Semana 4: Ranking + Deploy             ~50%
 Jul 21 ─── 🎯 MVP com amigos
 ```
+
+---
+
+## O que falta para o MVP fechar
+
+1. **ApiFootballClient** — import de campeonato e sync de resultados
+2. **Cron** — atualização automática (06h, LIVE, 23:59)
+3. **Lineups** — endpoint + UI sem mock
+4. **Scoring** — jogador marcador, hat-trick, multiplicadores de copa
+5. **Championships admin** — sair dos mocks locais
+6. **Deploy** — Vercel (web) + Railway/Render (api) + PWA básico

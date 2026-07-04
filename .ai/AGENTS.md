@@ -17,10 +17,10 @@
 soccer.predictions/
 ├── .ai/                    # Esta documentação
 ├── apps/
-│   ├── web/                # Next.js 16 + React 19 — EXISTE
-│   └── api/                # NestJS — a criar (Semana 2)
+│   ├── web/                # Next.js 16 + React 19
+│   └── api/                # NestJS + Prisma 7 + MySQL 8
 ├── docs/decisions.md       # Decisões de layout
-└── docker-compose.yml      # MySQL + Redis (Semana 2)
+└── docker-compose.yml      # MySQL + Redis
 ```
 
 ## Bounded Contexts
@@ -29,9 +29,9 @@ soccer.predictions/
 |----------|----------|---------|
 | Sports | `features/championships`, `features/matches` | `modules/sports/` |
 | Betting | `features/pools`, `predictions`, `rankings` | `modules/betting/` |
-| Identity | auth (a criar) | `modules/identity/` |
+| Identity | `features/auth` | `modules/identity/` |
 
-## Backend (apps/api) — planejado
+## Backend (apps/api)
 
 ### Módulos
 
@@ -51,15 +51,25 @@ Não existem engines de EV/mercados neste projeto.
 
 ```text
 src/
-├── app/(protected)/        # dashboard, championships
-├── components/layout/      # AppShell, sidebar, header
+├── app/
+│   ├── (auth)/             # login, register, forgot/reset, logout, oauth callback
+│   └── (protected)/        # dashboard, championships, pools, matches,
+│                           # predictions, rankings, join, help
+├── components/layout/      # AppShell, sidebar, header, footer
 ├── components/ui/          # Shadcn
 ├── config/                 # sidebar, breadcrumbs
 ├── features/
-│   ├── championships/      # REFERÊNCIA para novas features
-│   └── dashboard/
-├── hooks/
-└── lib/
+│   ├── auth/               # sessão, guards, forms
+│   ├── championships/      # REFERÊNCIA — lista ainda usa mocks locais
+│   ├── pools/              # conectado à API
+│   ├── matches/            # conectado à API
+│   ├── predictions/        # conectado à API (lineups mock)
+│   ├── rankings/           # conectado à API
+│   ├── dashboard/          # conectado à API
+│   ├── help/               # conteúdo estático (V2 no PRD)
+│   └── users/              # delegates para super admin
+├── middleware.ts           # auth + roles
+└── lib/                    # api-client
 ```
 
 ### Padrão Championships (replicar)
