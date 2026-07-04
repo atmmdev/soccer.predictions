@@ -8,7 +8,7 @@
 - `[ ]` Pendente
 - `[~]` Em andamento / parcial
 
-## Progresso MVP estimado: **~60%**
+## Progresso MVP estimado: **~72%**
 
 Fluxo funcional com **seed** (login → bolão → palpite → ranking). Bloqueadores: API Football, import real, cron sync, scoring de jogador/copa, deploy.
 
@@ -58,16 +58,17 @@ Fluxo funcional com **seed** (login → bolão → palpite → ranking). Bloquea
 
 ---
 
-## Semana 3 — Sync + Dados reais (7–13 jul) 🔴 Prioridade atual
+## Semana 3 — Sync + Dados reais (7–13 jul) 🔴 Em andamento ~70%
 
-- [ ] Módulo `sports/integrations/` + `ApiFootballClient`
-- [ ] Endpoints proxy: countries, leagues, seasons
-- [ ] `ImportChampionshipUseCase` — fixtures temporada inteira
-- [ ] Cron sync (`@nestjs/schedule`: 06h, LIVE, 23:59)
-- [ ] `GET /fixtures/:id/lineup` — escalações reais
+- [x] Módulo `sports/integrations/` + `ApiFootballClient`
+- [x] Endpoints proxy: countries, leagues (+ seasons na resposta)
+- [x] `ImportChampionshipService` — fixtures temporada inteira
+- [x] Cron sync (`@nestjs/schedule`: 06h, LIVE a cada 5min, 23:59)
+- [x] `GET /fixtures/:id/lineup` — escalações reais
 - [x] `middleware.ts` auth Next.js (cookies + roles)
-- [ ] Migrar `/championships` de mocks (`useChampionships`) para API
+- [x] Migrar `/championships` de mocks para API (list + import + sync)
 - [x] Features `matches/`, `predictions/` com cards mobile-friendly
+- [x] Palpites: `PlayerGoalPicker` via API (dialog)
 - [ ] Pontuação de jogador + hat-trick no `ScoringService`
 - [ ] Multiplicadores de copa (`cupPhases`) no `scoring-calculator`
 

@@ -21,6 +21,7 @@ interface ChampionshipTableProps {
   sortKey: ChampionshipSortKey;
   sortDir: SortDirection;
   onSort: (key: ChampionshipSortKey) => void;
+  onSync: (championshipId: number) => Promise<boolean>;
 }
 
 export function ChampionshipTable({
@@ -28,6 +29,7 @@ export function ChampionshipTable({
   sortKey,
   sortDir,
   onSort,
+  onSync,
 }: ChampionshipTableProps) {
   if (rows.length === 0) {
     return (
@@ -82,7 +84,11 @@ export function ChampionshipTable({
         </TableHeader>
         <TableBody>
           {rows.map(championship => (
-            <ChampionshipRow key={championship.id} championship={championship} />
+            <ChampionshipRow
+              key={championship.id}
+              championship={championship}
+              onSync={onSync}
+            />
           ))}
         </TableBody>
       </Table>

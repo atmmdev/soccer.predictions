@@ -22,5 +22,7 @@ export interface ChampionshipFiltersProps
   resultCount: number;
   hasActiveFilters: boolean;
   onClearFilters: () => void;
-  onCreateChampionship: (data: CreateChampionshipFormData) => void;
+  onCreateChampionship: (
+    data: CreateChampionshipFormData,
+  ) => boolean | Promise<boolean>;
 }

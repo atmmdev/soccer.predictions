@@ -1,15 +1,18 @@
+import type { ChampionshipType } from '../../../../../generated/prisma/client.js';
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
+export interface ChampionshipListItem {
+    id: number;
+    leagueId: number;
+    season: number;
+    name: string;
+    country: string;
+    flags: string;
+    type: ChampionshipType;
+    status: 'ACTIVE' | 'INACTIVE';
+}
 export declare class ChampionshipService {
     private readonly prisma;
     constructor(prisma: PrismaService);
-    listActive(): import("../../../../../generated/prisma/internal/prismaNamespace.js").PrismaPromise<{
-        name: string;
-        id: number;
-        status: import("../../../../../generated/prisma/enums.js").ChampionshipStatus;
-        leagueId: number;
-        season: number;
-        country: string;
-        flags: string;
-        type: import("../../../../../generated/prisma/enums.js").ChampionshipType;
-    }[]>;
+    listAll(): Promise<ChampionshipListItem[]>;
+    listActive(): Promise<ChampionshipListItem[]>;
 }

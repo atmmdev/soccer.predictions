@@ -166,18 +166,6 @@ export const SCORING_EXAMPLES = [
     note: 'Errou o vencedor e o placar, mas acertou que o Barcelona marcaria 1 gol.',
   },
   {
-    id: 'partial-both',
-    title: 'Vencedor e perdedor parciais',
-    result: 'São Paulo 2 × 1 Corinthians',
-    prediction: '2 × 0',
-    breakdown: [
-      'Placar do vencedor (São Paulo 2 gols): 6 pts',
-      'Placar do perdedor (Corinthians 0 gols): 4 pts',
-    ],
-    total: 10,
-    note: 'Não foi placar exato, mas acertou os gols de cada lado separadamente.',
-  },
-  {
     id: 'correct-winner',
     title: 'Vencedor correto',
     result: 'Liverpool 3 × 0 Man City',
@@ -208,7 +196,7 @@ export const SCORING_EXAMPLES = [
     id: 'player-goal',
     title: 'Bônus de jogador',
     result: 'Brasil 1 × 1 Argentina',
-    prediction: '1 × 0 + Vinícius Jr. marcou',
+    prediction: '2 × 2 + Vinícius Jr. marcou',
     breakdown: [
       'Empate sem placar exato: 3 pts',
       'Jogador marcou gol: 10 pts',

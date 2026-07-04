@@ -6,7 +6,7 @@
 
 **Ritmo:** 15–20h/semana | **Modo:** guiado (autor implementa, agente revisa)
 
-**Progresso atual (4 jul):** ~**60%** — backend core e fluxo principal com seed; falta camada de dados reais e deploy.
+**Progresso atual (4 jul):** ~**72%** — API Football integrada; falta scoring jogador/copa e deploy.
 
 ---
 
@@ -32,12 +32,12 @@
 - [x] Frontend Pools conectado à API
 - [x] Seed demo (Brasileirão, fixtures, bolão, palpites)
 
-## Fase 3 — Dados reais + Palpites — ~30% 🔴
+## Fase 3 — Dados reais + Palpites — ~70%
 
-- [ ] API Football sync (`ApiFootballClient`, import, cron)
-- [x] Matches + Predictions (UI + API; dados do seed)
+- [x] API Football sync (`ApiFootballClient`, import, cron)
+- [x] Matches + Predictions (UI + API)
 - [x] Auth middleware frontend
-- [ ] Lineups reais para palpite de jogador
+- [x] Lineups reais para palpite de jogador
 - [ ] Scoring completo (jogador, hat-trick, fases de copa)
 
 ## Fase 4 — Ranking + Go-live — ~50%

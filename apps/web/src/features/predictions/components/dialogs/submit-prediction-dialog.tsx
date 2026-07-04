@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -20,10 +20,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { getFetchErrorMessage } from '@/lib/api-client';
+import { fetchFixtureLineupRequest } from '@/features/matches/services/match-api.service';
 
-import { getFixtureLineup } from '../../mocks/fixture-lineups';
 import { useSubmitPredictionForm } from '../../hooks/use-submit-prediction';
 import type { SubmitPredictionFormData } from '../../schemas/submit-prediction.schema';
+import type { FixtureLineup } from '../../types/fixture-lineup';
 import type { PredictionFixtureItem } from '../../types/prediction-fixture';
 import {
   canEditPrediction,
@@ -48,7 +50,9 @@ export function SubmitPredictionDialog({
   onSubmit,
 }: SubmitPredictionDialogProps) {
   const form = useSubmitPredictionForm(fixture?.prediction);
-  const lineup = fixture ? getFixtureLineup(fixture.id) : null;
+  const [lineup, setLineup] = useState<FixtureLineup | null>(null);
+  const [lineupError, setLineupError] = useState<string | null>(null);
+  const [isLoadingLineup, setIsLoadingLineup] = useState(false);
   const isEditable = fixture ? canEditPrediction(fixture) : false;
   const lockMessage = fixture ? getPredictionLockMessage(fixture) : null;
 
@@ -61,6 +65,50 @@ export function SubmitPredictionDialog({
       });
     }
   }, [fixture, form, open]);
+
+  useEffect(() => {
+    if (!open || !fixture) {
+      setLineup(null);
+      setLineupError(null);
+      return;
+    }
+
+    const fixtureId = fixture.id;
+    let cancelled = false;
+
+    async function loadLineup() {
+      setIsLoadingLineup(true);
+      setLineupError(null);
+
+      try {
+        const response = await fetchFixtureLineupRequest(fixtureId);
+
+        if (!cancelled) {
+          setLineup(response);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setLineup(null);
+          setLineupError(
+            getFetchErrorMessage(
+              error,
+              'Escalação indisponível para este jogo.',
+            ),
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoadingLineup(false);
+        }
+      }
+    }
+
+    void loadLineup();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fixture, open]);
 
   async function handleSubmit(data: SubmitPredictionFormData) {
     if (!fixture) {
@@ -163,7 +211,15 @@ export function SubmitPredictionDialog({
               />
             </div>
 
-            {lineup ? (
+            {isLoadingLineup ? (
+              <p className='text-muted-foreground text-sm'>
+                Carregando escalação...
+              </p>
+            ) : lineupError ? (
+              <Alert>
+                <AlertDescription>{lineupError}</AlertDescription>
+              </Alert>
+            ) : lineup ? (
               <FormField
                 control={form.control}
                 name='selectedPlayerId'

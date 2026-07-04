@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { ActionButton } from '@/components/ui/action-button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -25,22 +26,29 @@ import { NativeSelect } from '@/components/ui/native-select';
 
 import { useCreateChampionship } from '../../hooks/use-create-championship';
 import { useImportChampionshipCascade } from '../../hooks/use-import-championship-cascade';
-import { countries } from '../../mocks/countries';
-import { CURRENT_SEASON } from '../../mocks/seasons';
 import type { CreateChampionshipFormData } from '../../schemas/create-championship.schema';
 import { ChampionshipActiveSwitch } from './championship-active-switch';
 
 interface CreateChampionshipDialogProps {
-  onCreate: (data: CreateChampionshipFormData) => void;
+  onCreate: (data: CreateChampionshipFormData) => boolean | Promise<boolean>;
 }
 
 export function CreateChampionshipDialog({
   onCreate,
 }: CreateChampionshipDialogProps) {
   const [open, setOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useCreateChampionship();
-  const { selectedCountry, filteredLeagues, resetLeagueCascade } =
-    useImportChampionshipCascade(form);
+  const {
+    countries,
+    selectedCountry,
+    filteredLeagues,
+    availableSeasons,
+    isLoadingCountries,
+    isLoadingLeagues,
+    catalogError,
+    resetLeagueCascade,
+  } = useImportChampionshipCascade(form, open);
 
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen);
@@ -50,11 +58,20 @@ export function CreateChampionshipDialog({
     }
   }
 
-  function onSubmit(data: CreateChampionshipFormData) {
-    onCreate(data);
-    toast.success('Campeonato importado com sucesso!');
-    form.reset();
-    setOpen(false);
+  async function onSubmit(data: CreateChampionshipFormData) {
+    setIsSubmitting(true);
+
+    try {
+      const success = await onCreate(data);
+
+      if (success) {
+        toast.success('Campeonato importado com sucesso!');
+        form.reset();
+        setOpen(false);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -68,6 +85,12 @@ export function CreateChampionshipDialog({
           <DialogTitle>Importar Campeonato</DialogTitle>
         </DialogHeader>
 
+        {catalogError ? (
+          <Alert variant='destructive'>
+            <AlertDescription>{catalogError}</AlertDescription>
+          </Alert>
+        ) : null}
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
             <FormField
@@ -80,13 +103,15 @@ export function CreateChampionshipDialog({
                     <NativeSelect
                       value={field.value}
                       onChange={event => {
-                        const value = event.target.value;
-                        field.onChange(value);
+                        field.onChange(event.target.value);
                         resetLeagueCascade();
                       }}
+                      disabled={isLoadingCountries}
                     >
                       <option value='' disabled>
-                        Selecione o país
+                        {isLoadingCountries
+                          ? 'Carregando países...'
+                          : 'Selecione o país'}
                       </option>
                       {countries.map(country => (
                         <option key={country.name} value={country.name}>
@@ -112,15 +137,17 @@ export function CreateChampionshipDialog({
                       onChange={event =>
                         field.onChange(Number(event.target.value))
                       }
-                      disabled={!selectedCountry}
+                      disabled={!selectedCountry || isLoadingLeagues}
                     >
                       <option value='' disabled>
-                        {selectedCountry
-                          ? 'Selecione o campeonato'
-                          : 'Selecione um país primeiro'}
+                        {!selectedCountry
+                          ? 'Selecione um país primeiro'
+                          : isLoadingLeagues
+                            ? 'Carregando campeonatos...'
+                            : 'Selecione o campeonato'}
                       </option>
                       {filteredLeagues.map(league => (
-                        <option key={league.id} value={league.id}>
+                        <option key={league.leagueId} value={league.leagueId}>
                           {league.name}
                         </option>
                       ))}
@@ -143,9 +170,13 @@ export function CreateChampionshipDialog({
                       onChange={event =>
                         field.onChange(Number(event.target.value))
                       }
-                      disabled={!selectedCountry}
+                      disabled={!selectedCountry || isLoadingLeagues}
                     >
-                      <option value={CURRENT_SEASON}>{CURRENT_SEASON}</option>
+                      {availableSeasons.map(season => (
+                        <option key={season} value={season}>
+                          {season}
+                        </option>
+                      ))}
                     </NativeSelect>
                   </FormControl>
                   <FormMessage />
@@ -172,7 +203,9 @@ export function CreateChampionshipDialog({
               >
                 Cancelar
               </Button>
-              <Button type='submit'>Importar</Button>
+              <Button type='submit' disabled={isSubmitting}>
+                {isSubmitting ? 'Importando...' : 'Importar'}
+              </Button>
             </div>
           </form>
         </Form>

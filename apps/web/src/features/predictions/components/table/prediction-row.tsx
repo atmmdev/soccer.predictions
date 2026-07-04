@@ -14,8 +14,6 @@ import { PositionBadge } from '@/features/dashboard/rankings/components/position
 import { TableCell, TableRow } from '@/components/ui/table';
 
 import { PredictionCountdown } from '../prediction-countdown';
-import { getFixtureLineup } from '../../mocks/fixture-lineups';
-import { findPlayerInLineup } from '../../types/fixture-lineup';
 import type { PredictionFixtureItem } from '../../types/prediction-fixture';
 import {
   formatFixtureDate,
@@ -43,12 +41,7 @@ function getSelectedPlayerName(fixture: PredictionFixtureItem) {
     return '—';
   }
 
-  const lineup = getFixtureLineup(fixture.id);
-  const selected = lineup
-    ? findPlayerInLineup(lineup, fixture.prediction.selectedPlayerId)
-    : null;
-
-  return selected?.player.name ?? '—';
+  return `Jogador #${fixture.prediction.selectedPlayerId}`;
 }
 
 export function PredictionRow({

@@ -7,7 +7,14 @@ import { useChampionshipTable } from './use-championship-table';
 import { useChampionships } from './use-championships';
 
 export function useChampionshipList() {
-  const { championships, createChampionship } = useChampionships();
+  const {
+    championships,
+    isLoading,
+    error,
+    reloadChampionships,
+    createChampionship,
+    syncChampionship,
+  } = useChampionships();
   const searchFilters = useChampionshipSearchFilters(championships);
   const tableState = useChampionshipTable(searchFilters.filteredChampionships);
 
@@ -20,7 +27,12 @@ export function useChampionshipList() {
   }, [searchFilters, tableState]);
 
   return {
+    championships,
+    isLoading,
+    error,
+    reloadChampionships,
     createChampionship,
+    syncChampionship,
     searchFilters,
     tableState,
     hasActiveFilters,

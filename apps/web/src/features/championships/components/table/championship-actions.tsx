@@ -15,10 +15,12 @@ import type { Championship } from '../../types/championship';
 
 interface ChampionshipActionsProps {
   championship: Championship;
+  onSync: (championshipId: number) => Promise<boolean>;
 }
 
 export function ChampionshipActions({
   championship,
+  onSync,
 }: ChampionshipActionsProps) {
   return (
     <DropdownMenu>
@@ -29,20 +31,14 @@ export function ChampionshipActions({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align='end'>
-        <DropdownMenuItem>
-          <a href={`/championships/${championship.id}/sync`}>Sincronizar</a>
+        <DropdownMenuItem onClick={() => void onSync(championship.id)}>
+          Sincronizar jogos
         </DropdownMenuItem>
 
         {championship.status === 'ACTIVE' ? (
-          <DropdownMenuItem>
-            <a href={`/championships/${championship.id}/deactivate`}>
-              Desativar
-            </a>
-          </DropdownMenuItem>
+          <DropdownMenuItem disabled>Desativar (em breve)</DropdownMenuItem>
         ) : (
-          <DropdownMenuItem>
-            <a href={`/championships/${championship.id}/activate`}>Ativar</a>
-          </DropdownMenuItem>
+          <DropdownMenuItem disabled>Ativar (em breve)</DropdownMenuItem>
         )}
       </DropdownMenuContent>
     </DropdownMenu>

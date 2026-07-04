@@ -17,8 +17,26 @@ let ChampionshipService = class ChampionshipService {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    listAll() {
+        return this.prisma.championship
+            .findMany({
+            orderBy: [{ season: 'desc' }, { name: 'asc' }],
+            select: {
+                id: true,
+                leagueId: true,
+                season: true,
+                name: true,
+                country: true,
+                flags: true,
+                type: true,
+                status: true,
+            },
+        })
+            .then(rows => rows.map(row => ({ ...row })));
+    }
     listActive() {
-        return this.prisma.championship.findMany({
+        return this.prisma.championship
+            .findMany({
             where: {
                 status: 'ACTIVE',
                 allowNewPools: true,
@@ -27,14 +45,15 @@ let ChampionshipService = class ChampionshipService {
             select: {
                 id: true,
                 leagueId: true,
+                season: true,
                 name: true,
                 country: true,
                 flags: true,
                 type: true,
-                season: true,
                 status: true,
             },
-        });
+        })
+            .then(rows => rows.map(row => ({ ...row })));
     }
 };
 exports.ChampionshipService = ChampionshipService;

@@ -1,9 +1,8 @@
-"use client";
+'use client';
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-import { CURRENT_SEASON } from '../mocks/seasons';
 import {
   createChampionshipSchema,
   CreateChampionshipFormData,
@@ -16,7 +15,7 @@ export function useCreateChampionship() {
     reValidateMode: 'onSubmit',
 
     defaultValues: {
-      season: CURRENT_SEASON,
+      season: new Date().getFullYear(),
       country: '',
       leagueId: 0,
       active: true,

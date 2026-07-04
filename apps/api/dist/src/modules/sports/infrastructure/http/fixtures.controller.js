@@ -17,13 +17,19 @@ const common_1 = require("@nestjs/common");
 const current_user_decorator_js_1 = require("../../../identity/infrastructure/http/current-user.decorator.js");
 const jwt_auth_guard_js_1 = require("../../../identity/infrastructure/http/jwt-auth.guard.js");
 const fixture_service_js_1 = require("../../application/services/fixture.service.js");
+const lineup_service_js_1 = require("../../application/services/lineup.service.js");
 let FixturesController = class FixturesController {
     fixtureService;
-    constructor(fixtureService) {
+    lineupService;
+    constructor(fixtureService, lineupService) {
         this.fixtureService = fixtureService;
+        this.lineupService = lineupService;
     }
     list(user) {
         return this.fixtureService.listForUser(user);
+    }
+    getLineup(id) {
+        return this.lineupService.getFixtureLineup(id);
     }
 };
 exports.FixturesController = FixturesController;
@@ -34,9 +40,17 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], FixturesController.prototype, "list", null);
+__decorate([
+    (0, common_1.Get)(':id/lineup'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], FixturesController.prototype, "getLineup", null);
 exports.FixturesController = FixturesController = __decorate([
     (0, common_1.Controller)('fixtures'),
     (0, common_1.UseGuards)(jwt_auth_guard_js_1.JwtAuthGuard),
-    __metadata("design:paramtypes", [fixture_service_js_1.FixtureService])
+    __metadata("design:paramtypes", [fixture_service_js_1.FixtureService,
+        lineup_service_js_1.LineupService])
 ], FixturesController);
 //# sourceMappingURL=fixtures.controller.js.map

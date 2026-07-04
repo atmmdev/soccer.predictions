@@ -5,9 +5,10 @@ import { ChampionshipActions } from './championship-actions';
 
 interface ChampionshipRowProps {
   championship: Championship;
+  onSync: (championshipId: number) => Promise<boolean>;
 }
 
-export function ChampionshipRow({ championship }: ChampionshipRowProps) {
+export function ChampionshipRow({ championship, onSync }: ChampionshipRowProps) {
   // TODO: Adicionar link para uma pagina (Tabela de Classificação).
   return (
     <TableRow>
@@ -26,7 +27,7 @@ export function ChampionshipRow({ championship }: ChampionshipRowProps) {
         Classificação
       </TableCell>
       <TableCell className='text-right'>
-        <ChampionshipActions championship={championship} />
+        <ChampionshipActions championship={championship} onSync={onSync} />
       </TableCell>
     </TableRow>
   );

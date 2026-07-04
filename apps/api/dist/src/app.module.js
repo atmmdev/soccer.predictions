@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
+const schedule_1 = require("@nestjs/schedule");
 const betting_module_js_1 = require("./modules/betting/betting.module.js");
 const health_module_js_1 = require("./modules/health/health.module.js");
 const identity_module_js_1 = require("./modules/identity/identity.module.js");
@@ -21,6 +22,7 @@ exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
             config_1.ConfigModule.forRoot({ isGlobal: true }),
+            schedule_1.ScheduleModule.forRoot(),
             prisma_module_js_1.PrismaModule,
             health_module_js_1.HealthModule,
             identity_module_js_1.IdentityModule,

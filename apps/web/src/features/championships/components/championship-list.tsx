@@ -7,8 +7,17 @@ import { ChampionshipFilters } from './filters/championship-filters';
 import { ChampionshipTable } from './table/championship-table';
 
 export function ChampionshipList() {
-  const { createChampionship, searchFilters, tableState, hasActiveFilters, clearFilters } =
-    useChampionshipList();
+  const {
+    isLoading,
+    error,
+    reloadChampionships,
+    createChampionship,
+    syncChampionship,
+    searchFilters,
+    tableState,
+    hasActiveFilters,
+    clearFilters,
+  } = useChampionshipList();
 
   return (
     <Card className='overflow-visible shadow-sm'>
@@ -29,12 +38,32 @@ export function ChampionshipList() {
           onClearFilters={clearFilters}
           onCreateChampionship={createChampionship}
         />
-        <ChampionshipTable
-          rows={tableState.rows}
-          sortKey={tableState.sortKey}
-          sortDir={tableState.sortDir}
-          onSort={tableState.toggleSort}
-        />
+        {isLoading ? (
+          <div className='flex items-center justify-center py-12'>
+            <p className='text-muted-foreground text-sm'>
+              Carregando campeonatos...
+            </p>
+          </div>
+        ) : error ? (
+          <div className='flex flex-col items-center justify-center gap-3 py-12'>
+            <p className='text-destructive text-center text-sm'>{error}</p>
+            <button
+              type='button'
+              className='text-primary text-sm underline'
+              onClick={() => void reloadChampionships()}
+            >
+              Tentar novamente
+            </button>
+          </div>
+        ) : (
+          <ChampionshipTable
+            rows={tableState.rows}
+            sortKey={tableState.sortKey}
+            sortDir={tableState.sortDir}
+            onSort={tableState.toggleSort}
+            onSync={syncChampionship}
+          />
+        )}
       </CardContent>
     </Card>
   );
