@@ -1,4 +1,4 @@
-import { API_URL, authHeaders, parseApiError } from '@/lib/api-client';
+import { API_URL, authFetch, parseApiError } from '@/lib/api-client';
 
 export interface PoolDelegateCandidate {
   id: number;
@@ -10,9 +10,7 @@ export interface PoolDelegateCandidate {
 export async function fetchPoolDelegatesRequest(): Promise<
   PoolDelegateCandidate[]
 > {
-  const response = await fetch(`${API_URL}/users/pool-delegates`, {
-    headers: authHeaders(),
-  });
+  const response = await authFetch(`${API_URL}/users/pool-delegates`);
 
   if (!response.ok) {
     throw new Error(await parseApiError(response));

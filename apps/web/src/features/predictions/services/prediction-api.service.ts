@@ -1,12 +1,10 @@
-import { API_URL, authHeaders, parseApiError } from '@/lib/api-client';
+import { API_URL, authFetch, parseApiError } from '@/lib/api-client';
 
 import type { SubmitPredictionFormData } from '../schemas/submit-prediction.schema';
 import type { PredictionFixtureItem } from '../types/prediction-fixture';
 
 export async function fetchPredictionsRequest(): Promise<PredictionFixtureItem[]> {
-  const response = await fetch(`${API_URL}/predictions`, {
-    headers: authHeaders(),
-  });
+  const response = await authFetch(`${API_URL}/predictions`);
 
   if (!response.ok) {
     throw new Error(await parseApiError(response));
@@ -20,9 +18,8 @@ export async function submitPredictionRequest(
   fixtureId: number,
   data: SubmitPredictionFormData,
 ): Promise<PredictionFixtureItem> {
-  const response = await fetch(`${API_URL}/predictions`, {
+  const response = await authFetch(`${API_URL}/predictions`, {
     method: 'POST',
-    headers: authHeaders(),
     body: JSON.stringify({
       poolId,
       fixtureId,

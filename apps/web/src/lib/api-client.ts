@@ -1,3 +1,4 @@
+import { expireAuthSessionAndRedirect } from '@/features/auth/lib/expire-auth-session';
 import { getAccessToken } from '@/features/auth/lib/auth-storage';
 
 export const API_URL =
@@ -25,13 +26,32 @@ export function authHeaders(): HeadersInit {
   const token = getAccessToken();
 
   if (!token) {
-    throw new Error('Sessão expirada. Faça login novamente.');
+    expireAuthSessionAndRedirect();
   }
 
   return {
     Authorization: `Bearer ${token}`,
     'Content-Type': 'application/json',
   };
+}
+
+export async function authFetch(
+  input: RequestInfo | URL,
+  init?: RequestInit,
+): Promise<Response> {
+  const response = await fetch(input, {
+    ...init,
+    headers: {
+      ...authHeaders(),
+      ...init?.headers,
+    },
+  });
+
+  if (response.status === 401) {
+    expireAuthSessionAndRedirect();
+  }
+
+  return response;
 }
 
 export function getFetchErrorMessage(

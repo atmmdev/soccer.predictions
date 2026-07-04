@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 
 import { AppShell } from '@/components/layout/app-shell/app-shell';
 import { Toaster } from '@/components/ui/sonner';
+import { SessionGuard } from '@/features/auth/components/session-guard';
 import { parseUserRole, USER_NAME_COOKIE, USER_ROLE_COOKIE } from '@/features/auth/config/auth';
 
 interface ProtectedLayoutProps {
@@ -17,6 +18,7 @@ export default async function Layout({ children }: ProtectedLayoutProps) {
 
   return (
     <>
+      <SessionGuard />
       <AppShell userRole={userRole} userName={userName}>
         {children}
       </AppShell>
