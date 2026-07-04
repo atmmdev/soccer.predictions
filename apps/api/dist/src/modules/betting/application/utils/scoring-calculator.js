@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.calculateMatchScore = calculateMatchScore;
+exports.calculatePlayerGoalBonus = calculatePlayerGoalBonus;
+exports.getCupPhaseMultiplier = getCupPhaseMultiplier;
+exports.calculatePredictionScore = calculatePredictionScore;
 exports.mergeAchievements = mergeAchievements;
 exports.parsePoolScoringConfig = parsePoolScoringConfig;
 function emptyAchievements() {
@@ -74,6 +77,50 @@ function calculateMatchScore(predictedHome, predictedAway, actualHome, actualAwa
         }
     }
     return { points, achievements };
+}
+function calculatePlayerGoalBonus(selectedPlayerId, playerGoalCount, base) {
+    if (selectedPlayerId === null || playerGoalCount <= 0) {
+        return {
+            points: 0,
+            playerGoal: 0,
+            playerHatTrick: 0,
+        };
+    }
+    if (playerGoalCount >= 3) {
+        return {
+            points: base.playerGoal * base.playerHatTrickMultiplier,
+            playerGoal: 0,
+            playerHatTrick: 1,
+        };
+    }
+    return {
+        points: base.playerGoal,
+        playerGoal: 1,
+        playerHatTrick: 0,
+    };
+}
+function getCupPhaseMultiplier(championshipType, fixturePhase, cupPhases) {
+    if (championshipType !== 'CUP' || !cupPhases?.length) {
+        return 1;
+    }
+    const phase = fixturePhase ?? 'GROUP';
+    const rule = cupPhases.find(entry => entry.phase === phase);
+    return rule?.multiplier ?? 1;
+}
+function calculatePredictionScore(input) {
+    const matchResult = calculateMatchScore(input.predictedHome, input.predictedAway, input.actualHome, input.actualAway, input.scoring.base);
+    const playerResult = calculatePlayerGoalBonus(input.selectedPlayerId, input.playerGoalCount, input.scoring.base);
+    const subtotal = matchResult.points + playerResult.points;
+    const multiplier = getCupPhaseMultiplier(input.championshipType, input.fixturePhase, input.scoring.cupPhases);
+    const totalPoints = subtotal * multiplier;
+    return {
+        points: totalPoints,
+        achievements: {
+            ...matchResult.achievements,
+            playerGoal: playerResult.playerGoal,
+            playerHatTrick: playerResult.playerHatTrick,
+        },
+    };
 }
 function mergeAchievements(left, right) {
     return {

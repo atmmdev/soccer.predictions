@@ -99,6 +99,7 @@ export declare const FixtureScalarFieldEnum: {
     readonly awayScore: "awayScore";
     readonly round: "round";
     readonly phase: "phase";
+    readonly goalScorers: "goalScorers";
     readonly createdAt: "createdAt";
     readonly updatedAt: "updatedAt";
 };
@@ -159,15 +160,15 @@ export declare const SortOrder: {
     readonly desc: "desc";
 };
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder];
-export declare const JsonNullValueInput: {
-    readonly JsonNull: import("@prisma/client-runtime-utils").JsonNullClass;
-};
-export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput];
 export declare const NullableJsonNullValueInput: {
     readonly DbNull: import("@prisma/client-runtime-utils").DbNullClass;
     readonly JsonNull: import("@prisma/client-runtime-utils").JsonNullClass;
 };
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput];
+export declare const JsonNullValueInput: {
+    readonly JsonNull: import("@prisma/client-runtime-utils").JsonNullClass;
+};
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput];
 export declare const NullsOrder: {
     readonly first: "first";
     readonly last: "last";

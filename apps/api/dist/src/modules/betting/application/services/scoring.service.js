@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ScoringService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
+const fixture_goal_scorers_js_1 = require("../../../sports/application/utils/fixture-goal-scorers.js");
 const scoring_calculator_js_1 = require("../utils/scoring-calculator.js");
 let ScoringService = class ScoringService {
     prisma;
@@ -21,26 +22,35 @@ let ScoringService = class ScoringService {
     async syncPoolScores(poolId) {
         const pool = await this.prisma.pool.findUnique({
             where: { id: poolId },
-            select: { id: true, scoring: true, championshipId: true },
+            select: {
+                id: true,
+                scoring: true,
+                championship: {
+                    select: { id: true, type: true },
+                },
+            },
         });
         if (!pool) {
             return;
         }
         const fixtures = await this.prisma.fixture.findMany({
             where: {
-                championshipId: pool.championshipId,
+                championshipId: pool.championship.id,
                 status: 'FINISHED',
                 homeScore: { not: null },
                 awayScore: { not: null },
             },
-            select: { id: true, homeScore: true, awayScore: true },
+            select: {
+                id: true,
+                homeScore: true,
+                awayScore: true,
+                phase: true,
+                goalScorers: true,
+            },
         });
         const scoring = (0, scoring_calculator_js_1.parsePoolScoringConfig)(pool.scoring);
         for (const fixture of fixtures) {
-            await this.scoreFixture(poolId, fixture.id, scoring, {
-                homeScore: fixture.homeScore,
-                awayScore: fixture.awayScore,
-            });
+            await this.scoreFixture(poolId, fixture, pool.championship.type, scoring);
         }
     }
     async syncPoolsScores(poolIds) {
@@ -48,26 +58,37 @@ let ScoringService = class ScoringService {
             await this.syncPoolScores(poolId);
         }
     }
-    async scoreFixture(poolId, fixtureId, scoring, actual) {
+    async scoreFixture(poolId, fixture, championshipType, scoring) {
         const predictions = await this.prisma.prediction.findMany({
-            where: { poolId, fixtureId },
+            where: { poolId, fixtureId: fixture.id },
         });
         if (predictions.length === 0) {
             return;
         }
         await this.prisma.pointHistory.deleteMany({
-            where: { poolId, fixtureId },
+            where: { poolId, fixtureId: fixture.id },
         });
+        const goalScorers = (0, fixture_goal_scorers_js_1.parseGoalScorers)(fixture.goalScorers);
         const rows = [];
         for (const prediction of predictions) {
-            const result = (0, scoring_calculator_js_1.calculateMatchScore)(prediction.predictedHomeScore, prediction.predictedAwayScore, actual.homeScore, actual.awayScore, scoring.base);
+            const result = (0, scoring_calculator_js_1.calculatePredictionScore)({
+                predictedHome: prediction.predictedHomeScore,
+                predictedAway: prediction.predictedAwayScore,
+                actualHome: fixture.homeScore,
+                actualAway: fixture.awayScore,
+                selectedPlayerId: prediction.selectedPlayerId,
+                playerGoalCount: (0, fixture_goal_scorers_js_1.getPlayerGoalCount)(goalScorers, prediction.selectedPlayerId),
+                championshipType,
+                fixturePhase: fixture.phase,
+                scoring,
+            });
             if (result.points === 0) {
                 continue;
             }
             rows.push({
                 poolId,
                 userId: prediction.userId,
-                fixtureId,
+                fixtureId: fixture.id,
                 points: result.points,
                 achievementType: this.resolvePrimaryAchievement(result.achievements),
                 breakdown: result.achievements,

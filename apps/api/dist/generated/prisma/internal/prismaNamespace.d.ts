@@ -1009,6 +1009,7 @@ export declare const FixtureScalarFieldEnum: {
     readonly awayScore: "awayScore";
     readonly round: "round";
     readonly phase: "phase";
+    readonly goalScorers: "goalScorers";
     readonly createdAt: "createdAt";
     readonly updatedAt: "updatedAt";
 };
@@ -1069,15 +1070,15 @@ export declare const SortOrder: {
     readonly desc: "desc";
 };
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder];
-export declare const JsonNullValueInput: {
-    readonly JsonNull: runtime.JsonNullClass;
-};
-export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput];
 export declare const NullableJsonNullValueInput: {
     readonly DbNull: runtime.DbNullClass;
     readonly JsonNull: runtime.JsonNullClass;
 };
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput];
+export declare const JsonNullValueInput: {
+    readonly JsonNull: runtime.JsonNullClass;
+};
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput];
 export declare const NullsOrder: {
     readonly first: "first";
     readonly last: "last";
@@ -1142,9 +1143,9 @@ export type EnumChampionshipStatusFieldRefInput<$PrismaModel> = FieldRefInputTyp
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>;
 export type EnumFixtureStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FixtureStatus'>;
 export type EnumCupPhaseFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CupPhase'>;
-export type EnumPoolStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PoolStatus'>;
 export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>;
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>;
+export type EnumPoolStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PoolStatus'>;
 export type EnumPoolUserStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PoolUserStatus'>;
 export type EnumScoringAchievementTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ScoringAchievementType'>;
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>;

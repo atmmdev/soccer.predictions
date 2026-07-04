@@ -8,4 +8,5 @@ export declare class SyncFixturesService {
     syncChampionship(championshipId: number): Promise<number>;
     syncActiveChampionships(mode?: 'all' | 'live'): Promise<void>;
     private syncLiveFixtures;
+    private resolveGoalScorers;
 }

@@ -1,8 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
-import { mapApiFootballFixtureStatus } from '../utils/fixture-status.mapper.js';
 import { ApiFootballClient } from '../../infrastructure/integrations/api-football.client.js';
+import { mapEventsToGoalScorers } from '../utils/fixture-goal-scorers.js';
+import {
+  buildFixtureUpdateData,
+  isFinishedFixtureStatus,
+} from '../utils/fixture-sync.mapper.js';
 
 @Injectable()
 export class SyncFixturesService {
@@ -18,9 +22,6 @@ export class SyncFixturesService {
       where: { id: championshipId },
       include: {
         league: true,
-        fixtures: {
-          select: { id: true, externalId: true },
-        },
       },
     });
 
@@ -36,14 +37,11 @@ export class SyncFixturesService {
     let updated = 0;
 
     for (const remote of remoteFixtures) {
+      const goalScorers = await this.resolveGoalScorers(remote);
+
       const result = await this.prisma.fixture.updateMany({
         where: { externalId: remote.fixture.id },
-        data: {
-          date: new Date(remote.fixture.date),
-          status: mapApiFootballFixtureStatus(remote.fixture.status.short),
-          homeScore: remote.goals.home,
-          awayScore: remote.goals.away,
-        },
+        data: buildFixtureUpdateData(remote, goalScorers),
       });
 
       updated += result.count;
@@ -94,15 +92,35 @@ export class SyncFixturesService {
     );
 
     for (const remote of remoteFixtures) {
+      const goalScorers = await this.resolveGoalScorers(remote);
+
       await this.prisma.fixture.updateMany({
         where: { externalId: remote.fixture.id },
-        data: {
-          date: new Date(remote.fixture.date),
-          status: mapApiFootballFixtureStatus(remote.fixture.status.short),
-          homeScore: remote.goals.home,
-          awayScore: remote.goals.away,
-        },
+        data: buildFixtureUpdateData(remote, goalScorers),
       });
+    }
+  }
+
+  private async resolveGoalScorers(
+    remote: Parameters<typeof buildFixtureUpdateData>[0],
+  ) {
+    if (!isFinishedFixtureStatus(remote.fixture.status.short)) {
+      return undefined;
+    }
+
+    try {
+      const events = await this.apiFootballClient.getFixtureEvents(
+        remote.fixture.id,
+      );
+
+      return mapEventsToGoalScorers(events);
+    } catch (error) {
+      this.logger.warn(
+        `Não foi possível carregar gols do fixture ${remote.fixture.id}`,
+        error,
+      );
+
+      return undefined;
     }
   }
 }

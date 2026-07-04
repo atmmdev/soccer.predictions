@@ -8,7 +8,7 @@
 - `[ ]` Pendente
 - `[~]` Em andamento / parcial
 
-## Progresso MVP estimado: **~72%**
+## Progresso MVP estimado: **~78%**
 
 Fluxo funcional com **seed** (login → bolão → palpite → ranking). Bloqueadores: API Football, import real, cron sync, scoring de jogador/copa, deploy.
 
@@ -58,7 +58,7 @@ Fluxo funcional com **seed** (login → bolão → palpite → ranking). Bloquea
 
 ---
 
-## Semana 3 — Sync + Dados reais (7–13 jul) 🔴 Em andamento ~70%
+## Semana 3 — Sync + Dados reais (7–13 jul) ✅ ~95%
 
 - [x] Módulo `sports/integrations/` + `ApiFootballClient`
 - [x] Endpoints proxy: countries, leagues (+ seasons na resposta)
@@ -69,8 +69,8 @@ Fluxo funcional com **seed** (login → bolão → palpite → ranking). Bloquea
 - [x] Migrar `/championships` de mocks para API (list + import + sync)
 - [x] Features `matches/`, `predictions/` com cards mobile-friendly
 - [x] Palpites: `PlayerGoalPicker` via API (dialog)
-- [ ] Pontuação de jogador + hat-trick no `ScoringService`
-- [ ] Multiplicadores de copa (`cupPhases`) no `scoring-calculator`
+- [x] Pontuação de jogador + hat-trick no `ScoringService`
+- [x] Multiplicadores de copa (`cupPhases`) no `scoring-calculator`
 
 ---
 

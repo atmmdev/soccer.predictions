@@ -75,6 +75,12 @@ let ApiFootballClient = class ApiFootballClient {
         });
         return response.response;
     }
+    async getFixtureEvents(fixtureExternalId) {
+        const response = await this.request('/fixtures/events', {
+            fixture: fixtureExternalId.toString(),
+        });
+        return response.response;
+    }
     async getCached(key, loader) {
         const cached = this.cache.get(key);
         if (cached && cached.expiresAt > Date.now()) {

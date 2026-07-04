@@ -70,3 +70,10 @@ export interface ApiFootballLineupItem {
     startXI: ApiFootballLineupPlayer[];
     substitutes: ApiFootballLineupPlayer[];
 }
+export interface ApiFootballFixtureEvent {
+    type: string;
+    player: {
+        id: number;
+        name: string;
+    } | null;
+}

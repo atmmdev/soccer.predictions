@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 
 import type {
   ApiFootballCountry,
+  ApiFootballFixtureEvent,
   ApiFootballFixtureItem,
   ApiFootballLeagueItem,
   ApiFootballLineupItem,
@@ -116,6 +117,19 @@ export class ApiFootballClient {
   async getLineups(fixtureExternalId: number): Promise<ApiFootballLineupItem[]> {
     const response = await this.request<ApiFootballLineupItem>(
       '/fixtures/lineups',
+      {
+        fixture: fixtureExternalId.toString(),
+      },
+    );
+
+    return response.response;
+  }
+
+  async getFixtureEvents(
+    fixtureExternalId: number,
+  ): Promise<ApiFootballFixtureEvent[]> {
+    const response = await this.request<ApiFootballFixtureEvent>(
+      '/fixtures/events',
       {
         fixture: fixtureExternalId.toString(),
       },

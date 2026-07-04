@@ -13,8 +13,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SyncFixturesService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
-const fixture_status_mapper_js_1 = require("../utils/fixture-status.mapper.js");
 const api_football_client_js_1 = require("../../infrastructure/integrations/api-football.client.js");
+const fixture_goal_scorers_js_1 = require("../utils/fixture-goal-scorers.js");
+const fixture_sync_mapper_js_1 = require("../utils/fixture-sync.mapper.js");
 let SyncFixturesService = SyncFixturesService_1 = class SyncFixturesService {
     prisma;
     apiFootballClient;
@@ -28,9 +29,6 @@ let SyncFixturesService = SyncFixturesService_1 = class SyncFixturesService {
             where: { id: championshipId },
             include: {
                 league: true,
-                fixtures: {
-                    select: { id: true, externalId: true },
-                },
             },
         });
         if (!championship) {
@@ -39,14 +37,10 @@ let SyncFixturesService = SyncFixturesService_1 = class SyncFixturesService {
         const remoteFixtures = await this.apiFootballClient.getFixtures(championship.league.externalId, championship.season);
         let updated = 0;
         for (const remote of remoteFixtures) {
+            const goalScorers = await this.resolveGoalScorers(remote);
             const result = await this.prisma.fixture.updateMany({
                 where: { externalId: remote.fixture.id },
-                data: {
-                    date: new Date(remote.fixture.date),
-                    status: (0, fixture_status_mapper_js_1.mapApiFootballFixtureStatus)(remote.fixture.status.short),
-                    homeScore: remote.goals.home,
-                    awayScore: remote.goals.away,
-                },
+                data: (0, fixture_sync_mapper_js_1.buildFixtureUpdateData)(remote, goalScorers),
             });
             updated += result.count;
         }
@@ -86,15 +80,24 @@ let SyncFixturesService = SyncFixturesService_1 = class SyncFixturesService {
         }
         const remoteFixtures = await this.apiFootballClient.getFixturesByIds(liveFixtures.map(fixture => fixture.externalId));
         for (const remote of remoteFixtures) {
+            const goalScorers = await this.resolveGoalScorers(remote);
             await this.prisma.fixture.updateMany({
                 where: { externalId: remote.fixture.id },
-                data: {
-                    date: new Date(remote.fixture.date),
-                    status: (0, fixture_status_mapper_js_1.mapApiFootballFixtureStatus)(remote.fixture.status.short),
-                    homeScore: remote.goals.home,
-                    awayScore: remote.goals.away,
-                },
+                data: (0, fixture_sync_mapper_js_1.buildFixtureUpdateData)(remote, goalScorers),
             });
+        }
+    }
+    async resolveGoalScorers(remote) {
+        if (!(0, fixture_sync_mapper_js_1.isFinishedFixtureStatus)(remote.fixture.status.short)) {
+            return undefined;
+        }
+        try {
+            const events = await this.apiFootballClient.getFixtureEvents(remote.fixture.id);
+            return (0, fixture_goal_scorers_js_1.mapEventsToGoalScorers)(events);
+        }
+        catch (error) {
+            this.logger.warn(`Não foi possível carregar gols do fixture ${remote.fixture.id}`, error);
+            return undefined;
         }
     }
 };

@@ -1,3 +1,5 @@
+import type { ChampionshipType, CupPhase } from '../../../../../generated/prisma/client.js';
+
 export interface BaseScoringRules {
   exactScore: number;
   winnerScore: number;
@@ -8,9 +10,15 @@ export interface BaseScoringRules {
   playerHatTrickMultiplier: number;
 }
 
+export interface CupPhaseRule {
+  phase: CupPhase;
+  label: string;
+  multiplier: number;
+}
+
 export interface PoolScoringConfig {
   base: BaseScoringRules;
-  cupPhases: unknown[] | null;
+  cupPhases: CupPhaseRule[] | null;
 }
 
 export interface ScoringAchievementCounts {
@@ -26,6 +34,18 @@ export interface ScoringAchievementCounts {
 export interface MatchScoreResult {
   points: number;
   achievements: ScoringAchievementCounts;
+}
+
+export interface PredictionScoreInput {
+  predictedHome: number;
+  predictedAway: number;
+  actualHome: number;
+  actualAway: number;
+  selectedPlayerId: number | null;
+  playerGoalCount: number;
+  championshipType: ChampionshipType;
+  fixturePhase: CupPhase | null;
+  scoring: PoolScoringConfig;
 }
 
 type MatchOutcome = 'HOME' | 'AWAY' | 'DRAW';
@@ -123,6 +143,86 @@ export function calculateMatchScore(
   }
 
   return { points, achievements };
+}
+
+export function calculatePlayerGoalBonus(
+  selectedPlayerId: number | null,
+  playerGoalCount: number,
+  base: BaseScoringRules,
+): Pick<ScoringAchievementCounts, 'playerGoal' | 'playerHatTrick'> & {
+  points: number;
+} {
+  if (selectedPlayerId === null || playerGoalCount <= 0) {
+    return {
+      points: 0,
+      playerGoal: 0,
+      playerHatTrick: 0,
+    };
+  }
+
+  if (playerGoalCount >= 3) {
+    return {
+      points: base.playerGoal * base.playerHatTrickMultiplier,
+      playerGoal: 0,
+      playerHatTrick: 1,
+    };
+  }
+
+  return {
+    points: base.playerGoal,
+    playerGoal: 1,
+    playerHatTrick: 0,
+  };
+}
+
+export function getCupPhaseMultiplier(
+  championshipType: ChampionshipType,
+  fixturePhase: CupPhase | null,
+  cupPhases: CupPhaseRule[] | null,
+): number {
+  if (championshipType !== 'CUP' || !cupPhases?.length) {
+    return 1;
+  }
+
+  const phase = fixturePhase ?? 'GROUP';
+  const rule = cupPhases.find(entry => entry.phase === phase);
+
+  return rule?.multiplier ?? 1;
+}
+
+export function calculatePredictionScore(
+  input: PredictionScoreInput,
+): MatchScoreResult {
+  const matchResult = calculateMatchScore(
+    input.predictedHome,
+    input.predictedAway,
+    input.actualHome,
+    input.actualAway,
+    input.scoring.base,
+  );
+
+  const playerResult = calculatePlayerGoalBonus(
+    input.selectedPlayerId,
+    input.playerGoalCount,
+    input.scoring.base,
+  );
+
+  const subtotal = matchResult.points + playerResult.points;
+  const multiplier = getCupPhaseMultiplier(
+    input.championshipType,
+    input.fixturePhase,
+    input.scoring.cupPhases,
+  );
+  const totalPoints = subtotal * multiplier;
+
+  return {
+    points: totalPoints,
+    achievements: {
+      ...matchResult.achievements,
+      playerGoal: playerResult.playerGoal,
+      playerHatTrick: playerResult.playerHatTrick,
+    },
+  };
 }
 
 export function mergeAchievements(

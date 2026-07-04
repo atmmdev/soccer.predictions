@@ -1,5 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import type { ApiFootballCountry, ApiFootballFixtureItem, ApiFootballLeagueItem, ApiFootballLineupItem } from './api-football.types.js';
+import type { ApiFootballCountry, ApiFootballFixtureEvent, ApiFootballFixtureItem, ApiFootballLeagueItem, ApiFootballLineupItem } from './api-football.types.js';
 export declare class ApiFootballClient {
     private readonly configService;
     private readonly apiKey;
@@ -13,6 +13,7 @@ export declare class ApiFootballClient {
     getFixtures(leagueId: number, season: number): Promise<ApiFootballFixtureItem[]>;
     getFixturesByIds(fixtureIds: number[]): Promise<ApiFootballFixtureItem[]>;
     getLineups(fixtureExternalId: number): Promise<ApiFootballLineupItem[]>;
+    getFixtureEvents(fixtureExternalId: number): Promise<ApiFootballFixtureEvent[]>;
     private getCached;
     private fetchAllPages;
     private request;

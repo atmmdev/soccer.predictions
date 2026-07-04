@@ -71,6 +71,7 @@ export type FixtureCountAggregateOutputType = {
     awayScore: number;
     round: number;
     phase: number;
+    goalScorers: number;
     createdAt: number;
     updatedAt: number;
     _all: number;
@@ -137,6 +138,7 @@ export type FixtureCountAggregateInputType = {
     awayScore?: true;
     round?: true;
     phase?: true;
+    goalScorers?: true;
     createdAt?: true;
     updatedAt?: true;
     _all?: true;
@@ -181,6 +183,7 @@ export type FixtureGroupByOutputType = {
     awayScore: number | null;
     round: number | null;
     phase: $Enums.CupPhase | null;
+    goalScorers: runtime.JsonValue | null;
     createdAt: Date;
     updatedAt: Date;
     _count: FixtureCountAggregateOutputType | null;
@@ -207,6 +210,7 @@ export type FixtureWhereInput = {
     awayScore?: Prisma.IntNullableFilter<"Fixture"> | number | null;
     round?: Prisma.IntNullableFilter<"Fixture"> | number | null;
     phase?: Prisma.EnumCupPhaseNullableFilter<"Fixture"> | $Enums.CupPhase | null;
+    goalScorers?: Prisma.JsonNullableFilter<"Fixture">;
     createdAt?: Prisma.DateTimeFilter<"Fixture"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"Fixture"> | Date | string;
     championship?: Prisma.XOR<Prisma.ChampionshipScalarRelationFilter, Prisma.ChampionshipWhereInput>;
@@ -227,6 +231,7 @@ export type FixtureOrderByWithRelationInput = {
     awayScore?: Prisma.SortOrderInput | Prisma.SortOrder;
     round?: Prisma.SortOrderInput | Prisma.SortOrder;
     phase?: Prisma.SortOrderInput | Prisma.SortOrder;
+    goalScorers?: Prisma.SortOrderInput | Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
     championship?: Prisma.ChampionshipOrderByWithRelationInput;
@@ -250,6 +255,7 @@ export type FixtureWhereUniqueInput = Prisma.AtLeast<{
     awayScore?: Prisma.IntNullableFilter<"Fixture"> | number | null;
     round?: Prisma.IntNullableFilter<"Fixture"> | number | null;
     phase?: Prisma.EnumCupPhaseNullableFilter<"Fixture"> | $Enums.CupPhase | null;
+    goalScorers?: Prisma.JsonNullableFilter<"Fixture">;
     createdAt?: Prisma.DateTimeFilter<"Fixture"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"Fixture"> | Date | string;
     championship?: Prisma.XOR<Prisma.ChampionshipScalarRelationFilter, Prisma.ChampionshipWhereInput>;
@@ -270,6 +276,7 @@ export type FixtureOrderByWithAggregationInput = {
     awayScore?: Prisma.SortOrderInput | Prisma.SortOrder;
     round?: Prisma.SortOrderInput | Prisma.SortOrder;
     phase?: Prisma.SortOrderInput | Prisma.SortOrder;
+    goalScorers?: Prisma.SortOrderInput | Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
     _count?: Prisma.FixtureCountOrderByAggregateInput;
@@ -293,6 +300,7 @@ export type FixtureScalarWhereWithAggregatesInput = {
     awayScore?: Prisma.IntNullableWithAggregatesFilter<"Fixture"> | number | null;
     round?: Prisma.IntNullableWithAggregatesFilter<"Fixture"> | number | null;
     phase?: Prisma.EnumCupPhaseNullableWithAggregatesFilter<"Fixture"> | $Enums.CupPhase | null;
+    goalScorers?: Prisma.JsonNullableWithAggregatesFilter<"Fixture">;
     createdAt?: Prisma.DateTimeWithAggregatesFilter<"Fixture"> | Date | string;
     updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Fixture"> | Date | string;
 };
@@ -304,6 +312,7 @@ export type FixtureCreateInput = {
     awayScore?: number | null;
     round?: number | null;
     phase?: $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     championship: Prisma.ChampionshipCreateNestedOneWithoutFixturesInput;
@@ -324,6 +333,7 @@ export type FixtureUncheckedCreateInput = {
     awayScore?: number | null;
     round?: number | null;
     phase?: $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutFixtureInput;
@@ -337,6 +347,7 @@ export type FixtureUpdateInput = {
     awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     round?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     phase?: Prisma.NullableEnumCupPhaseFieldUpdateOperationsInput | $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     championship?: Prisma.ChampionshipUpdateOneRequiredWithoutFixturesNestedInput;
@@ -357,6 +368,7 @@ export type FixtureUncheckedUpdateInput = {
     awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     round?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     phase?: Prisma.NullableEnumCupPhaseFieldUpdateOperationsInput | $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     predictions?: Prisma.PredictionUncheckedUpdateManyWithoutFixtureNestedInput;
@@ -374,6 +386,7 @@ export type FixtureCreateManyInput = {
     awayScore?: number | null;
     round?: number | null;
     phase?: $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
@@ -385,6 +398,7 @@ export type FixtureUpdateManyMutationInput = {
     awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     round?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     phase?: Prisma.NullableEnumCupPhaseFieldUpdateOperationsInput | $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -400,6 +414,7 @@ export type FixtureUncheckedUpdateManyInput = {
     awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     round?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     phase?: Prisma.NullableEnumCupPhaseFieldUpdateOperationsInput | $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -423,6 +438,7 @@ export type FixtureCountOrderByAggregateInput = {
     awayScore?: Prisma.SortOrder;
     round?: Prisma.SortOrder;
     phase?: Prisma.SortOrder;
+    goalScorers?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
 };
@@ -639,6 +655,7 @@ export type FixtureCreateWithoutChampionshipInput = {
     awayScore?: number | null;
     round?: number | null;
     phase?: $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     homeTeam: Prisma.TeamCreateNestedOneWithoutHomeFixturesInput;
@@ -657,6 +674,7 @@ export type FixtureUncheckedCreateWithoutChampionshipInput = {
     awayScore?: number | null;
     round?: number | null;
     phase?: $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutFixtureInput;
@@ -698,6 +716,7 @@ export type FixtureScalarWhereInput = {
     awayScore?: Prisma.IntNullableFilter<"Fixture"> | number | null;
     round?: Prisma.IntNullableFilter<"Fixture"> | number | null;
     phase?: Prisma.EnumCupPhaseNullableFilter<"Fixture"> | $Enums.CupPhase | null;
+    goalScorers?: Prisma.JsonNullableFilter<"Fixture">;
     createdAt?: Prisma.DateTimeFilter<"Fixture"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"Fixture"> | Date | string;
 };
@@ -709,6 +728,7 @@ export type FixtureCreateWithoutHomeTeamInput = {
     awayScore?: number | null;
     round?: number | null;
     phase?: $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     championship: Prisma.ChampionshipCreateNestedOneWithoutFixturesInput;
@@ -727,6 +747,7 @@ export type FixtureUncheckedCreateWithoutHomeTeamInput = {
     awayScore?: number | null;
     round?: number | null;
     phase?: $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutFixtureInput;
@@ -748,6 +769,7 @@ export type FixtureCreateWithoutAwayTeamInput = {
     awayScore?: number | null;
     round?: number | null;
     phase?: $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     championship: Prisma.ChampionshipCreateNestedOneWithoutFixturesInput;
@@ -766,6 +788,7 @@ export type FixtureUncheckedCreateWithoutAwayTeamInput = {
     awayScore?: number | null;
     round?: number | null;
     phase?: $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutFixtureInput;
@@ -813,6 +836,7 @@ export type FixtureCreateWithoutPredictionsInput = {
     awayScore?: number | null;
     round?: number | null;
     phase?: $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     championship: Prisma.ChampionshipCreateNestedOneWithoutFixturesInput;
@@ -832,6 +856,7 @@ export type FixtureUncheckedCreateWithoutPredictionsInput = {
     awayScore?: number | null;
     round?: number | null;
     phase?: $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     pointHistory?: Prisma.PointHistoryUncheckedCreateNestedManyWithoutFixtureInput;
@@ -857,6 +882,7 @@ export type FixtureUpdateWithoutPredictionsInput = {
     awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     round?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     phase?: Prisma.NullableEnumCupPhaseFieldUpdateOperationsInput | $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     championship?: Prisma.ChampionshipUpdateOneRequiredWithoutFixturesNestedInput;
@@ -876,6 +902,7 @@ export type FixtureUncheckedUpdateWithoutPredictionsInput = {
     awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     round?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     phase?: Prisma.NullableEnumCupPhaseFieldUpdateOperationsInput | $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     pointHistory?: Prisma.PointHistoryUncheckedUpdateManyWithoutFixtureNestedInput;
@@ -888,6 +915,7 @@ export type FixtureCreateWithoutPointHistoryInput = {
     awayScore?: number | null;
     round?: number | null;
     phase?: $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     championship: Prisma.ChampionshipCreateNestedOneWithoutFixturesInput;
@@ -907,6 +935,7 @@ export type FixtureUncheckedCreateWithoutPointHistoryInput = {
     awayScore?: number | null;
     round?: number | null;
     phase?: $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutFixtureInput;
@@ -932,6 +961,7 @@ export type FixtureUpdateWithoutPointHistoryInput = {
     awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     round?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     phase?: Prisma.NullableEnumCupPhaseFieldUpdateOperationsInput | $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     championship?: Prisma.ChampionshipUpdateOneRequiredWithoutFixturesNestedInput;
@@ -951,6 +981,7 @@ export type FixtureUncheckedUpdateWithoutPointHistoryInput = {
     awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     round?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     phase?: Prisma.NullableEnumCupPhaseFieldUpdateOperationsInput | $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     predictions?: Prisma.PredictionUncheckedUpdateManyWithoutFixtureNestedInput;
@@ -966,6 +997,7 @@ export type FixtureCreateManyChampionshipInput = {
     awayScore?: number | null;
     round?: number | null;
     phase?: $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
@@ -977,6 +1009,7 @@ export type FixtureUpdateWithoutChampionshipInput = {
     awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     round?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     phase?: Prisma.NullableEnumCupPhaseFieldUpdateOperationsInput | $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     homeTeam?: Prisma.TeamUpdateOneRequiredWithoutHomeFixturesNestedInput;
@@ -995,6 +1028,7 @@ export type FixtureUncheckedUpdateWithoutChampionshipInput = {
     awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     round?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     phase?: Prisma.NullableEnumCupPhaseFieldUpdateOperationsInput | $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     predictions?: Prisma.PredictionUncheckedUpdateManyWithoutFixtureNestedInput;
@@ -1011,6 +1045,7 @@ export type FixtureUncheckedUpdateManyWithoutChampionshipInput = {
     awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     round?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     phase?: Prisma.NullableEnumCupPhaseFieldUpdateOperationsInput | $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -1025,6 +1060,7 @@ export type FixtureCreateManyHomeTeamInput = {
     awayScore?: number | null;
     round?: number | null;
     phase?: $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
@@ -1039,6 +1075,7 @@ export type FixtureCreateManyAwayTeamInput = {
     awayScore?: number | null;
     round?: number | null;
     phase?: $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
@@ -1050,6 +1087,7 @@ export type FixtureUpdateWithoutHomeTeamInput = {
     awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     round?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     phase?: Prisma.NullableEnumCupPhaseFieldUpdateOperationsInput | $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     championship?: Prisma.ChampionshipUpdateOneRequiredWithoutFixturesNestedInput;
@@ -1068,6 +1106,7 @@ export type FixtureUncheckedUpdateWithoutHomeTeamInput = {
     awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     round?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     phase?: Prisma.NullableEnumCupPhaseFieldUpdateOperationsInput | $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     predictions?: Prisma.PredictionUncheckedUpdateManyWithoutFixtureNestedInput;
@@ -1084,6 +1123,7 @@ export type FixtureUncheckedUpdateManyWithoutHomeTeamInput = {
     awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     round?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     phase?: Prisma.NullableEnumCupPhaseFieldUpdateOperationsInput | $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -1095,6 +1135,7 @@ export type FixtureUpdateWithoutAwayTeamInput = {
     awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     round?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     phase?: Prisma.NullableEnumCupPhaseFieldUpdateOperationsInput | $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     championship?: Prisma.ChampionshipUpdateOneRequiredWithoutFixturesNestedInput;
@@ -1113,6 +1154,7 @@ export type FixtureUncheckedUpdateWithoutAwayTeamInput = {
     awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     round?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     phase?: Prisma.NullableEnumCupPhaseFieldUpdateOperationsInput | $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     predictions?: Prisma.PredictionUncheckedUpdateManyWithoutFixtureNestedInput;
@@ -1129,6 +1171,7 @@ export type FixtureUncheckedUpdateManyWithoutAwayTeamInput = {
     awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     round?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
     phase?: Prisma.NullableEnumCupPhaseFieldUpdateOperationsInput | $Enums.CupPhase | null;
+    goalScorers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -1161,6 +1204,7 @@ export type FixtureSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     awayScore?: boolean;
     round?: boolean;
     phase?: boolean;
+    goalScorers?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     championship?: boolean | Prisma.ChampionshipDefaultArgs<ExtArgs>;
@@ -1182,10 +1226,11 @@ export type FixtureSelectScalar = {
     awayScore?: boolean;
     round?: boolean;
     phase?: boolean;
+    goalScorers?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
 };
-export type FixtureOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "externalId" | "championshipId" | "homeTeamId" | "awayTeamId" | "date" | "status" | "homeScore" | "awayScore" | "round" | "phase" | "createdAt" | "updatedAt", ExtArgs["result"]["fixture"]>;
+export type FixtureOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "externalId" | "championshipId" | "homeTeamId" | "awayTeamId" | "date" | "status" | "homeScore" | "awayScore" | "round" | "phase" | "goalScorers" | "createdAt" | "updatedAt", ExtArgs["result"]["fixture"]>;
 export type FixtureInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     championship?: boolean | Prisma.ChampionshipDefaultArgs<ExtArgs>;
     homeTeam?: boolean | Prisma.TeamDefaultArgs<ExtArgs>;
@@ -1215,6 +1260,7 @@ export type $FixturePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
         awayScore: number | null;
         round: number | null;
         phase: $Enums.CupPhase | null;
+        goalScorers: runtime.JsonValue | null;
         createdAt: Date;
         updatedAt: Date;
     }, ExtArgs["result"]["fixture"]>;
@@ -1288,6 +1334,7 @@ export interface FixtureFieldRefs {
     readonly awayScore: Prisma.FieldRef<"Fixture", 'Int'>;
     readonly round: Prisma.FieldRef<"Fixture", 'Int'>;
     readonly phase: Prisma.FieldRef<"Fixture", 'CupPhase'>;
+    readonly goalScorers: Prisma.FieldRef<"Fixture", 'Json'>;
     readonly createdAt: Prisma.FieldRef<"Fixture", 'DateTime'>;
     readonly updatedAt: Prisma.FieldRef<"Fixture", 'DateTime'>;
 }

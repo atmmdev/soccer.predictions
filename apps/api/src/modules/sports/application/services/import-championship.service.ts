@@ -12,6 +12,7 @@ import {
   mapApiFootballFixtureStatus,
   parseFixtureRound,
 } from '../utils/fixture-status.mapper.js';
+import { mapRoundToCupPhase } from '../utils/cup-phase.mapper.js';
 import type { ImportChampionshipDto } from '../dtos/import-championship.dto.js';
 import { ApiFootballClient } from '../../infrastructure/integrations/api-football.client.js';
 import type { ApiFootballFixtureItem } from '../../infrastructure/integrations/api-football.types.js';
@@ -159,6 +160,7 @@ export class ImportChampionshipService {
           homeScore: item.goals.home,
           awayScore: item.goals.away,
           round: parseFixtureRound(item.league.round),
+          phase: mapRoundToCupPhase(item.league.round),
         },
         create: {
           externalId: item.fixture.id,
@@ -170,6 +172,7 @@ export class ImportChampionshipService {
           homeScore: item.goals.home,
           awayScore: item.goals.away,
           round: parseFixtureRound(item.league.round),
+          phase: mapRoundToCupPhase(item.league.round),
         },
       });
     }

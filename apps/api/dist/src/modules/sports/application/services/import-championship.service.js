@@ -13,6 +13,7 @@ exports.ImportChampionshipService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
 const fixture_status_mapper_js_1 = require("../utils/fixture-status.mapper.js");
+const cup_phase_mapper_js_1 = require("../utils/cup-phase.mapper.js");
 const api_football_client_js_1 = require("../../infrastructure/integrations/api-football.client.js");
 let ImportChampionshipService = class ImportChampionshipService {
     prisma;
@@ -116,6 +117,7 @@ let ImportChampionshipService = class ImportChampionshipService {
                     homeScore: item.goals.home,
                     awayScore: item.goals.away,
                     round: (0, fixture_status_mapper_js_1.parseFixtureRound)(item.league.round),
+                    phase: (0, cup_phase_mapper_js_1.mapRoundToCupPhase)(item.league.round),
                 },
                 create: {
                     externalId: item.fixture.id,
@@ -127,6 +129,7 @@ let ImportChampionshipService = class ImportChampionshipService {
                     homeScore: item.goals.home,
                     awayScore: item.goals.away,
                     round: (0, fixture_status_mapper_js_1.parseFixtureRound)(item.league.round),
+                    phase: (0, cup_phase_mapper_js_1.mapRoundToCupPhase)(item.league.round),
                 },
             });
         }
