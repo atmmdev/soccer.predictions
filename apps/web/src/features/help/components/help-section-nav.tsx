@@ -1,5 +1,13 @@
 'use client';
 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+
 import { HELP_SECTIONS } from '../constants/help-content';
 
 function scrollToSection(id: string) {
@@ -15,20 +23,28 @@ function scrollToSection(id: string) {
 
 export function HelpSectionNav() {
   return (
-    <nav className='bg-muted/40 flex flex-wrap gap-2 rounded-xl p-4 ring-1 ring-foreground/10'>
-      {HELP_SECTIONS.map(section => (
-        <a
-          key={section.id}
-          href={`#${section.id}`}
-          onClick={event => {
-            event.preventDefault();
-            scrollToSection(section.id);
-          }}
-          className='bg-background hover:bg-accent rounded-md px-3 py-1.5 text-xs font-medium transition-colors ring-1 ring-foreground/10'
-        >
-          {section.label}
-        </a>
-      ))}
-    </nav>
+    <Card>
+      <CardHeader>
+        <CardTitle>Navegação rápida</CardTitle>
+        <CardDescription>Ir direto para o tópico desejado.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <nav className='flex flex-wrap gap-2'>
+          {HELP_SECTIONS.map(section => (
+            <a
+              key={section.id}
+              href={`#${section.id}`}
+              onClick={event => {
+                event.preventDefault();
+                scrollToSection(section.id);
+              }}
+              className='bg-muted/50 hover:bg-accent rounded-md px-3 py-1.5 text-xs font-medium transition-colors ring-1 ring-foreground/10'
+            >
+              {section.label}
+            </a>
+          ))}
+        </nav>
+      </CardContent>
+    </Card>
   );
 }

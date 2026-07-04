@@ -29,12 +29,39 @@ import { HelpFaq } from './help-faq';
 import { HelpSection } from './help-section';
 import { HelpSectionNav } from './help-section-nav';
 
+const OVERVIEW_ITEMS = [
+  {
+    title: 'Campeonatos',
+    text: 'Jogos reais importados de campeonatos de liga ou copa.',
+  },
+  {
+    title: 'Bolões',
+    text: 'Grupos privados com regras e ranking próprios.',
+  },
+  {
+    title: 'Palpites',
+    text: 'Placar + jogador artilheiro opcional por partida.',
+  },
+  {
+    title: 'Pontuação',
+    text: 'Calculada automaticamente ao final de cada jogo.',
+  },
+  {
+    title: 'Ranking',
+    text: 'Classificação por total de pontos no bolão.',
+  },
+  {
+    title: 'Personalização',
+    text: 'Admin define valores de pontuação ao criar o bolão.',
+  },
+] as const;
+
 export function HelpPage() {
   return (
-    <div className='flex flex-col gap-8 pb-8'>
+    <div className='flex flex-col gap-6 pb-8'>
       <Card>
         <CardHeader>
-          <CardTitle>{HOW_IT_WORKS.title}</CardTitle>
+          <CardTitle className='text-xl'>{HOW_IT_WORKS.title}</CardTitle>
           <CardDescription>
             Guia completo para participantes e administradores de bolões.
           </CardDescription>
@@ -59,32 +86,7 @@ export function HelpPage() {
         description='Entenda o fluxo principal da plataforma.'
       >
         <div className='grid gap-3 sm:grid-cols-2 lg:grid-cols-3'>
-          {[
-            {
-              title: 'Campeonatos',
-              text: 'Jogos reais importados de campeonatos de liga ou copa.',
-            },
-            {
-              title: 'Bolões',
-              text: 'Grupos privados com regras e ranking próprios.',
-            },
-            {
-              title: 'Palpites',
-              text: 'Placar + jogador artilheiro opcional por partida.',
-            },
-            {
-              title: 'Pontuação',
-              text: 'Calculada automaticamente ao final de cada jogo.',
-            },
-            {
-              title: 'Ranking',
-              text: 'Classificação por total de pontos no bolão.',
-            },
-            {
-              title: 'Personalização',
-              text: 'Admin define valores de pontuação ao criar o bolão.',
-            },
-          ].map(item => (
+          {OVERVIEW_ITEMS.map(item => (
             <Card key={item.title} size='sm'>
               <CardHeader>
                 <CardTitle>{item.title}</CardTitle>
@@ -102,19 +104,20 @@ export function HelpPage() {
       >
         <ol className='grid gap-3 sm:grid-cols-2 lg:grid-cols-3'>
           {WORKFLOW_STEPS.map(step => (
-            <li
-              key={step.step}
-              className='bg-card flex gap-3 rounded-xl p-4 ring-1 ring-foreground/10'
-            >
-              <span className='bg-primary text-primary-foreground flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold'>
-                {step.step}
-              </span>
-              <div className='space-y-1'>
-                <p className='font-medium'>{step.title}</p>
-                <p className='text-muted-foreground text-sm leading-relaxed'>
-                  {step.description}
-                </p>
-              </div>
+            <li key={step.step}>
+              <Card size='sm' className='h-full'>
+                <CardContent className='flex gap-3'>
+                  <span className='bg-primary text-primary-foreground flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold'>
+                    {step.step}
+                  </span>
+                  <div className='space-y-1'>
+                    <p className='font-medium'>{step.title}</p>
+                    <p className='text-muted-foreground text-sm leading-relaxed'>
+                      {step.description}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
             </li>
           ))}
         </ol>
@@ -144,30 +147,32 @@ export function HelpPage() {
         title='Regras de pontuação'
         description='Valores padrão do sistema. O administrador do bolão pode personalizá-los. Então abaixo segue exemplo de como funciona a pontuação.'
       >
-        <div className='overflow-x-auto rounded-xl ring-1 ring-foreground/10'>
-          <Table>
-            <TableHeader>
-              <TableRow className='hover:bg-transparent'>
-                <TableHead>Regra</TableHead>
-                <TableHead className='w-24 text-center'>Pontos</TableHead>
-                <TableHead>Descrição</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {SCORING_RULES.map(rule => (
-                <TableRow key={rule.key}>
-                  <TableCell className='font-medium'>{rule.label}</TableCell>
-                  <TableCell className='text-center'>
-                    <Badge variant='secondary'>{rule.points}</Badge>
-                  </TableCell>
-                  <TableCell className='text-muted-foreground'>
-                    {rule.description}
-                  </TableCell>
+        <Card size='sm'>
+          <CardContent className='overflow-x-auto p-0'>
+            <Table>
+              <TableHeader>
+                <TableRow className='hover:bg-transparent'>
+                  <TableHead>Regra</TableHead>
+                  <TableHead className='w-24 text-center'>Pontos</TableHead>
+                  <TableHead>Descrição</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {SCORING_RULES.map(rule => (
+                  <TableRow key={rule.key}>
+                    <TableCell className='font-medium'>{rule.label}</TableCell>
+                    <TableCell className='text-center'>
+                      <Badge variant='secondary'>{rule.points}</Badge>
+                    </TableCell>
+                    <TableCell className='text-muted-foreground'>
+                      {rule.description}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </HelpSection>
 
       <HelpSection
@@ -175,9 +180,9 @@ export function HelpPage() {
         title='Exemplos práticos'
         description='Veja como a pontuação é calculada em situações reais (valores padrão).'
       >
-        <div className='space-y-4'>
+        <div className='grid gap-4 lg:grid-cols-2'>
           {SCORING_EXAMPLES.map(example => (
-            <Card key={example.id} size='sm'>
+            <Card key={example.id} size='sm' className='h-full'>
               <CardHeader>
                 <div className='flex flex-wrap items-start justify-between gap-2'>
                   <CardTitle>{example.title}</CardTitle>
@@ -194,18 +199,26 @@ export function HelpPage() {
               </CardHeader>
               <CardContent className='space-y-3'>
                 <div className='grid gap-3 sm:grid-cols-2'>
-                  <div className='bg-muted/50 rounded-lg p-3'>
-                    <p className='text-muted-foreground mb-1 text-xs font-medium uppercase tracking-wide'>
-                      Resultado real
-                    </p>
-                    <p className='font-medium'>{example.result}</p>
-                  </div>
-                  <div className='bg-muted/50 rounded-lg p-3'>
-                    <p className='text-muted-foreground mb-1 text-xs font-medium uppercase tracking-wide'>
-                      Seu palpite
-                    </p>
-                    <p className='font-medium'>{example.prediction}</p>
-                  </div>
+                  <Card size='sm' className='bg-muted/30 shadow-none'>
+                    <CardHeader className='pb-2'>
+                      <CardDescription className='text-xs font-medium uppercase tracking-wide'>
+                        Resultado real
+                      </CardDescription>
+                      <CardTitle className='text-base font-medium'>
+                        {example.result}
+                      </CardTitle>
+                    </CardHeader>
+                  </Card>
+                  <Card size='sm' className='bg-muted/30 shadow-none'>
+                    <CardHeader className='pb-2'>
+                      <CardDescription className='text-xs font-medium uppercase tracking-wide'>
+                        Seu palpite
+                      </CardDescription>
+                      <CardTitle className='text-base font-medium'>
+                        {example.prediction}
+                      </CardTitle>
+                    </CardHeader>
+                  </Card>
                 </div>
                 <ul className='text-muted-foreground space-y-1 text-sm'>
                   {example.breakdown.map(item => (
@@ -229,33 +242,42 @@ export function HelpPage() {
         title='Campeonatos mata-mata (copas)'
         description='Em copas, fases eliminatórias multiplicam o total de pontos da partida.'
       >
-        <div className='overflow-x-auto rounded-xl ring-1 ring-foreground/10'>
-          <Table>
-            <TableHeader>
-              <TableRow className='hover:bg-transparent'>
-                <TableHead>Fase</TableHead>
-                <TableHead className='w-32 text-center'>
-                  Multiplicador
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {CUP_PHASE_MULTIPLIERS.map(phase => (
-                <TableRow key={phase.phase}>
-                  <TableCell>{phase.phase}</TableCell>
-                  <TableCell className='text-center'>
-                    <Badge variant='secondary'>×{phase.multiplier}</Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <div className='space-y-4'>
+          <Card size='sm'>
+            <CardContent className='overflow-x-auto p-0'>
+              <Table>
+                <TableHeader>
+                  <TableRow className='hover:bg-transparent'>
+                    <TableHead>Fase</TableHead>
+                    <TableHead className='w-32 text-center'>
+                      Multiplicador
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {CUP_PHASE_MULTIPLIERS.map(phase => (
+                    <TableRow key={phase.phase}>
+                      <TableCell>{phase.phase}</TableCell>
+                      <TableCell className='text-center'>
+                        <Badge variant='secondary'>×{phase.multiplier}</Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+          <Card size='sm' className='bg-muted/30'>
+            <CardContent>
+              <p className='text-muted-foreground text-sm leading-relaxed'>
+                Exemplo: placar exato (10 pts) na semi-final (×5) ={' '}
+                <strong className='text-foreground'>50 pts</strong>. A fase de
+                grupos usa multiplicador ×1, ou seja, mesmas regras de uma
+                liga.
+              </p>
+            </CardContent>
+          </Card>
         </div>
-        <p className='text-muted-foreground text-sm leading-relaxed'>
-          Exemplo: placar exato (10 pts) na semi-final (×5) ={' '}
-          <strong className='text-foreground'>50 pts</strong>. A fase de grupos
-          usa multiplicador ×1, ou seja, mesmas regras de uma liga.
-        </p>
       </HelpSection>
 
       <HelpSection

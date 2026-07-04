@@ -1,5 +1,13 @@
 import { ReactNode } from 'react';
 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+
 interface HelpSectionProps {
   id: string;
   title: string;
@@ -14,16 +22,18 @@ export function HelpSection({
   children,
 }: HelpSectionProps) {
   return (
-    <section id={id} className='scroll-mt-24 space-y-4'>
-      <div className='space-y-1'>
-        <h2 className='text-lg font-semibold tracking-tight'>{title}</h2>
-        {description ? (
-          <p className='text-muted-foreground text-sm leading-relaxed'>
-            {description}
-          </p>
-        ) : null}
-      </div>
-      {children}
+    <section id={id} className='scroll-mt-24'>
+      <Card>
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+          {description ? (
+            <CardDescription className='leading-relaxed'>
+              {description}
+            </CardDescription>
+          ) : null}
+        </CardHeader>
+        <CardContent>{children}</CardContent>
+      </Card>
     </section>
   );
 }
