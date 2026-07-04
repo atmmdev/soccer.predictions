@@ -1,0 +1,139 @@
+'use client';
+
+import Link from 'next/link';
+
+import { Badge } from '@/components/ui/badge';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { getStoredUser } from '@/features/auth/lib/auth-storage';
+import { defaultBaseScoringRules } from '@/features/pools/mocks/scoring-templates';
+
+const PREDICTION_CUTOFF_MINUTES = 10;
+
+export function SettingsPage() {
+  const user = getStoredUser();
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
+
+  return (
+    <div className='grid gap-4 lg:grid-cols-2'>
+      <Card>
+        <CardHeader>
+          <CardTitle className='text-base'>Regras padrão de pontuação</CardTitle>
+          <CardDescription>
+            Valores sugeridos ao criar um bolão. Cada admin pode personalizar no
+            momento da criação.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className='space-y-2 text-sm'>
+          <div className='flex items-center justify-between gap-4'>
+            <span>Placar exato</span>
+            <Badge variant='secondary'>{defaultBaseScoringRules.exactScore} pts</Badge>
+          </div>
+          <div className='flex items-center justify-between gap-4'>
+            <span>Gols do vencedor</span>
+            <Badge variant='secondary'>{defaultBaseScoringRules.winnerScore} pts</Badge>
+          </div>
+          <div className='flex items-center justify-between gap-4'>
+            <span>Gols do perdedor</span>
+            <Badge variant='secondary'>{defaultBaseScoringRules.loserScore} pts</Badge>
+          </div>
+          <div className='flex items-center justify-between gap-4'>
+            <span>Vencedor sem placar exato</span>
+            <Badge variant='secondary'>{defaultBaseScoringRules.correctWinner} pts</Badge>
+          </div>
+          <div className='flex items-center justify-between gap-4'>
+            <span>Empate sem placar exato</span>
+            <Badge variant='secondary'>
+              {defaultBaseScoringRules.drawWithoutExactScore} pts
+            </Badge>
+          </div>
+          <div className='flex items-center justify-between gap-4'>
+            <span>Jogador marcou gol</span>
+            <Badge variant='secondary'>{defaultBaseScoringRules.playerGoal} pts</Badge>
+          </div>
+          <div className='flex items-center justify-between gap-4'>
+            <span>Hat-trick do jogador</span>
+            <Badge variant='secondary'>
+              ×{defaultBaseScoringRules.playerHatTrickMultiplier}
+            </Badge>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className='text-base'>Prazo de palpite</CardTitle>
+          <CardDescription>
+            Regra global aplicada a todos os bolões.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className='text-sm'>
+            Palpites podem ser enviados ou editados até{' '}
+            <strong>{PREDICTION_CUTOFF_MINUTES} minutos</strong> antes do início
+            da partida.
+          </p>
+          <p className='text-muted-foreground mt-2 text-sm'>
+            Depois desse prazo, o palpite fica bloqueado. Sem palpite registrado,
+            o participante não pontua na partida.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className='text-base'>Convites</CardTitle>
+          <CardDescription>
+            Como novos participantes entram nos bolões.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className='space-y-2 text-sm'>
+          <p>
+            Compartilhe o link{' '}
+            <code className='bg-muted rounded px-1 py-0.5 text-xs'>
+              /join/CODIGO
+            </code>{' '}
+            ou o código de convite gerado na criação do bolão.
+          </p>
+          <p className='text-muted-foreground'>
+            Gerencie participantes em{' '}
+            <Link href='/participants' className='text-primary underline'>
+              Participantes
+            </Link>
+            .
+          </p>
+        </CardContent>
+      </Card>
+
+      {isSuperAdmin ? (
+        <Card>
+          <CardHeader>
+            <CardTitle className='text-base'>Plataforma</CardTitle>
+            <CardDescription>Configurações de super administrador.</CardDescription>
+          </CardHeader>
+          <CardContent className='space-y-2 text-sm'>
+            <p>
+              Importação de campeonatos e sincronização de jogos dependem da chave{' '}
+              <code className='bg-muted rounded px-1 py-0.5 text-xs'>
+                API_FOOTBALL_KEY
+              </code>{' '}
+              no backend.
+            </p>
+            <p className='text-muted-foreground'>
+              Campeonatos são gerenciados em{' '}
+              <Link href='/championships' className='text-primary underline'>
+                Campeonatos
+              </Link>
+              .
+            </p>
+          </CardContent>
+        </Card>
+      ) : null}
+    </div>
+  );
+}

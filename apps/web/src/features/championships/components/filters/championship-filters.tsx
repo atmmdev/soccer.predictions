@@ -1,6 +1,7 @@
 'use client';
 
 import { ClearFiltersButton } from '@/components/ui/clear-filters-button';
+import { filterToolbarClassName } from '@/lib/filter-styles';
 
 import type { ChampionshipFiltersProps } from '../../types/championship-filters';
 import { CreateChampionshipDialog } from '../dialogs/create-championship-dialog';
@@ -27,7 +28,7 @@ export function ChampionshipFilters({
 }: ChampionshipFiltersProps) {
   return (
     <>
-      <div className='flex flex-col gap-3 xl:flex-row xl:flex-wrap xl:items-center'>
+      <div className={filterToolbarClassName}>
         <ChampionshipSearch
           value={search}
           onChange={onSearchChange}

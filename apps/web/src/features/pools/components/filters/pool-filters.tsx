@@ -1,6 +1,7 @@
 'use client';
 
 import { ClearFiltersButton } from '@/components/ui/clear-filters-button';
+import { filterToolbarClassName } from '@/lib/filter-styles';
 
 import type { CreatePoolFormData } from '../../schemas/create-pool.schema';
 import { CreatePoolDialog } from '../dialogs/create-pool-dialog';
@@ -30,7 +31,7 @@ export function PoolFilters({
 }: PoolFiltersProps) {
   return (
     <>
-      <div className='flex flex-col gap-3 xl:flex-row xl:flex-wrap xl:items-center'>
+      <div className={filterToolbarClassName}>
         <PoolSearch
           value={search}
           onChange={onSearchChange}

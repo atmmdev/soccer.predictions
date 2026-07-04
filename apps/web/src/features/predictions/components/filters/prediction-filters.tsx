@@ -5,6 +5,13 @@ import { Search, User } from 'lucide-react';
 import { ClearFiltersButton } from '@/components/ui/clear-filters-button';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
+import {
+  filterDateInputClassName,
+  filterSearchFieldClassName,
+  filterSelectMdClassName,
+  filterSelectSmClassName,
+  filterToolbarClassName,
+} from '@/lib/filter-styles';
 
 import type { PredictionFilterStatus } from '../../hooks/use-prediction-search-filters';
 
@@ -47,25 +54,25 @@ export function PredictionFilters({
 }: PredictionFiltersProps) {
   return (
     <>
-      <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 lg:flex lg:flex-wrap lg:items-center'>
-        <div className='relative sm:col-span-2 lg:min-w-0 lg:flex-1'>
+      <div className={filterToolbarClassName}>
+        <div className={filterSearchFieldClassName}>
           <Search className='text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2' />
           <Input
             placeholder='Buscar por time ou campeonato...'
-            className='h-11 pl-9'
+            className='pl-9'
             value={search}
             onChange={event => onSearchChange(event.target.value)}
           />
         </div>
 
         {showParticipantFilter ? (
-          <div className='relative w-full lg:w-52'>
+          <div className='relative w-full xl:w-52'>
             <User className='text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2' />
             <Input
               type='search'
               placeholder='Participante...'
               aria-label='Buscar por participante'
-              className='h-11 pl-9'
+              className='pl-9'
               value={participantSearch}
               onChange={event => onParticipantSearchChange(event.target.value)}
             />
@@ -75,7 +82,7 @@ export function PredictionFilters({
         <NativeSelect
           value={poolName}
           onChange={event => onPoolNameChange(event.target.value)}
-          className='w-full lg:w-52'
+          className={filterSelectMdClassName}
         >
           <option value='ALL'>Todos os bolões</option>
           {poolOptions.map(name => (
@@ -90,7 +97,7 @@ export function PredictionFilters({
           onChange={event =>
             onStatusChange(event.target.value as PredictionFilterStatus)
           }
-          className='w-full lg:w-44'
+          className={filterSelectSmClassName}
         >
           <option value='ALL'>Todos</option>
           <option value='PENDING'>Sem palpite</option>
@@ -103,7 +110,7 @@ export function PredictionFilters({
             type='date'
             aria-label='Data do jogo'
             title='Data do jogo'
-            className='h-11 w-full lg:w-40'
+            className={filterDateInputClassName}
             value={selectedDate}
             onChange={event => onSelectedDateChange(event.target.value)}
           />

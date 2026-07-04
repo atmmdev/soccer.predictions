@@ -5,6 +5,13 @@ import { Search } from 'lucide-react';
 import { ClearFiltersButton } from '@/components/ui/clear-filters-button';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
+import {
+  filterDateInputClassName,
+  filterSearchFieldClassName,
+  filterSelectMdClassName,
+  filterSelectSmClassName,
+  filterToolbarClassName,
+} from '@/lib/filter-styles';
 
 import type { MatchFilterStatus } from '../../hooks/use-match-search-filters';
 
@@ -43,12 +50,12 @@ export function MatchFilters({
 }: MatchFiltersProps) {
   return (
     <>
-      <div className='flex flex-col gap-3 xl:flex-row xl:flex-wrap xl:items-center'>
-        <div className='relative xl:min-w-[200px] xl:flex-1'>
+      <div className={filterToolbarClassName}>
+        <div className={filterSearchFieldClassName}>
           <Search className='text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2' />
           <Input
             placeholder='Buscar por time ou campeonato...'
-            className='h-11 pl-9'
+            className='pl-9'
             value={search}
             onChange={event => onSearchChange(event.target.value)}
           />
@@ -57,7 +64,7 @@ export function MatchFilters({
         <NativeSelect
           value={championshipName}
           onChange={event => onChampionshipNameChange(event.target.value)}
-          className='xl:w-56'
+          className={filterSelectMdClassName}
         >
           <option value='ALL'>Todos os campeonatos</option>
           {championshipOptions.map(name => (
@@ -72,7 +79,7 @@ export function MatchFilters({
           onChange={event =>
             onStatusChange(event.target.value as MatchFilterStatus)
           }
-          className='xl:w-44'
+          className={filterSelectSmClassName}
         >
           <option value='ALL'>Todos</option>
           <option value='SCHEDULED'>Agendado</option>
@@ -85,7 +92,7 @@ export function MatchFilters({
           type='date'
           aria-label='Data inicial'
           title='Data inicial'
-          className='h-11 xl:w-40'
+          className={filterDateInputClassName}
           value={dateFrom}
           onChange={event => onDateFromChange(event.target.value)}
         />
@@ -95,7 +102,7 @@ export function MatchFilters({
           type='date'
           aria-label='Data final'
           title='Data final'
-          className='h-11 xl:w-40'
+          className={filterDateInputClassName}
           min={dateFrom || undefined}
           value={dateTo}
           onChange={event => onDateToChange(event.target.value)}

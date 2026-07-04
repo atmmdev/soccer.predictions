@@ -1,4 +1,5 @@
 import { NativeSelect } from '@/components/ui/native-select';
+import { filterSelectMdClassName } from '@/lib/filter-styles';
 import { cn } from '@/lib/utils';
 
 import { championshipSelectClassName } from './championship-select-styles';
@@ -18,7 +19,7 @@ export function ChampionshipCountrySelect({
     <NativeSelect
       value={value}
       onChange={event => onChange(event.target.value)}
-      className={cn(championshipSelectClassName, 'sm:min-w-44')}
+      className={cn(championshipSelectClassName, filterSelectMdClassName)}
     >
       <option value='all'>Todos os países</option>
       {countries.map(item => (

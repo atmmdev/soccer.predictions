@@ -1,4 +1,5 @@
 import { NativeSelect } from '@/components/ui/native-select';
+import { filterSelectSmClassName } from '@/lib/filter-styles';
 import { cn } from '@/lib/utils';
 
 import { poolSelectClassName } from './pool-select-styles';
@@ -13,7 +14,7 @@ export function PoolStatusSelect({ value, onChange }: PoolStatusSelectProps) {
     <NativeSelect
       value={value}
       onChange={event => onChange(event.target.value)}
-      className={cn(poolSelectClassName, 'sm:min-w-36')}
+      className={cn(poolSelectClassName, filterSelectSmClassName)}
     >
       <option value='all'>Todos</option>
       <option value='active'>Ativo</option>

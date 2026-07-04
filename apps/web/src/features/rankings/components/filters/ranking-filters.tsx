@@ -5,6 +5,11 @@ import { Search } from 'lucide-react';
 import { ClearFiltersButton } from '@/components/ui/clear-filters-button';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
+import {
+  filterSearchFieldClassName,
+  filterSelectMdClassName,
+  filterToolbarClassName,
+} from '@/lib/filter-styles';
 
 import { SCORING_RULE_FILTER_OPTIONS } from '../../constants/scoring-rule-filters';
 import type { RankingScoringRuleFilter } from '../../types/ranking-entry';
@@ -40,12 +45,12 @@ export function RankingFilters({
 }: RankingFiltersProps) {
   return (
     <>
-      <div className='flex flex-col gap-3 xl:flex-row xl:flex-wrap xl:items-center'>
-        <div className='relative xl:min-w-[200px] xl:flex-1'>
+      <div className={filterToolbarClassName}>
+        <div className={filterSearchFieldClassName}>
           <Search className='text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2' />
           <Input
             placeholder='Buscar participante...'
-            className='h-11 pl-9'
+            className='pl-9'
             value={search}
             disabled={!isPoolSelected}
             onChange={event => onSearchChange(event.target.value)}
@@ -55,7 +60,7 @@ export function RankingFilters({
         <NativeSelect
           value={poolName}
           onChange={event => onPoolNameChange(event.target.value)}
-          className='xl:w-56'
+          className={filterSelectMdClassName}
         >
           <option value=''>Selecione um bolão</option>
           {poolOptions.map(name => (
@@ -72,7 +77,7 @@ export function RankingFilters({
               event.target.value as RankingScoringRuleFilter,
             )
           }
-          className='xl:w-64'
+          className='w-full xl:w-64'
           aria-label='Regra de pontuação'
           disabled={!isPoolSelected}
         >

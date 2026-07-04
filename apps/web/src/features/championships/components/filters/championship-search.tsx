@@ -17,7 +17,7 @@ export function ChampionshipSearch({
       placeholder='Pesquisar Campeonato ...'
       value={value}
       onChange={e => onChange(e.target.value)}
-      className={cn('h-11 px-3 py-0', className)}
+      className={cn('xl:min-w-[200px] xl:flex-1', className)}
     />
   );
 }

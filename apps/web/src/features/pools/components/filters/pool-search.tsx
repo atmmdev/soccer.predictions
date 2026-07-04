@@ -13,7 +13,7 @@ export function PoolSearch({ value, onChange, className }: PoolSearchProps) {
       placeholder='Pesquisar bolão ...'
       value={value}
       onChange={event => onChange(event.target.value)}
-      className={cn('h-11 px-3 py-0', className)}
+      className={cn('xl:min-w-[200px] xl:flex-1', className)}
     />
   );
 }

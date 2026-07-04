@@ -1,4 +1,5 @@
 import { NativeSelect } from '@/components/ui/native-select';
+import { filterSelectSmClassName } from '@/lib/filter-styles';
 import { cn } from '@/lib/utils';
 
 import { championshipSelectClassName } from './championship-select-styles';
@@ -16,7 +17,7 @@ export function ChampionshipStatusSelect({
     <NativeSelect
       value={value}
       onChange={event => onChange(event.target.value)}
-      className={cn(championshipSelectClassName, 'sm:min-w-36')}
+      className={cn(championshipSelectClassName, filterSelectSmClassName)}
     >
       <option value='all'>Todos</option>
       <option value='active'>Ativo</option>
