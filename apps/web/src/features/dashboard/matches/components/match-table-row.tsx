@@ -1,6 +1,7 @@
-import { format, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-
+import {
+  DateTimeDisplay,
+  dateTimeTableCellClassName,
+} from '@/components/ui/datetime-display';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Match } from '../types/match';
 import { MatchPredictions } from './match-predictions';
@@ -13,15 +14,11 @@ interface MatchTableRowProps {
   match: Match;
 }
 
-function formatMatchDate(date: string) {
-  return format(parseISO(date), "dd/MM - HH:mm", { locale: ptBR });
-}
-
 export function MatchTableRow({ match }: MatchTableRowProps) {
   return (
     <TableRow>
-      <TableCell className='text-muted-foreground whitespace-nowrap text-xs'>
-        {formatMatchDate(match.date)}
+      <TableCell className={dateTimeTableCellClassName}>
+        <DateTimeDisplay value={match.date} />
       </TableCell>
       <TableCell>
         <MatchStatusBadge status={match.status} />

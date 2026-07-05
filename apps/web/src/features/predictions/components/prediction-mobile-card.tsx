@@ -10,12 +10,12 @@ import {
   getPredictionScoresFromFixture,
 } from '@/components/matches';
 
+import {
+  DateTimeDisplay,
+} from '@/components/ui/datetime-display';
+
 import { PredictionCountdown } from './prediction-countdown';
 import type { PredictionFixtureItem } from '../types/prediction-fixture';
-import {
-  formatFixtureDate,
-  formatFixtureTime,
-} from '../utils/format-fixture-datetime';
 import {
   getPredictionActionLabel,
   getPredictionStatusLabel,
@@ -74,8 +74,10 @@ export function PredictionMobileCard({
 
       <dl className='grid grid-cols-2 gap-x-4 gap-y-2 text-xs'>
         <div>
-          <dt className='text-muted-foreground'>Data - Hora</dt>
-          <dd className='font-medium'>{formatFixtureDate(fixture.date)} - {formatFixtureTime(fixture.date)}</dd>
+          <dt className='text-muted-foreground'>Data</dt>
+          <dd>
+            <DateTimeDisplay value={fixture.date} />
+          </dd>
         </div>
         <div>
           <dt className='text-muted-foreground'>Bolão</dt>

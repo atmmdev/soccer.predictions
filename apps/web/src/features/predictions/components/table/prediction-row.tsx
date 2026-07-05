@@ -11,14 +11,14 @@ import {
   hasCompleteScore,
 } from '@/components/matches';
 import { PositionBadge } from '@/features/dashboard/rankings/components/position-badge';
+import {
+  DateTimeDisplay,
+  dateTimeTableCellClassName,
+} from '@/components/ui/datetime-display';
 import { TableCell, TableRow } from '@/components/ui/table';
 
 import { PredictionCountdown } from '../prediction-countdown';
 import type { PredictionFixtureItem } from '../../types/prediction-fixture';
-import {
-  formatFixtureDate,
-  formatFixtureTime,
-} from '../../utils/format-fixture-datetime';
 import {
   getPredictionActionLabel,
   getPredictionStatusLabel,
@@ -69,9 +69,8 @@ export function PredictionRow({
 
   return (
     <TableRow>
-      <TableCell className='flex flex-col gap-1 text-muted-foreground w-[6.5rem] truncate text-xs whitespace-nowrap'>
-        <span>{formatFixtureDate(fixture.date)}</span>
-        <span>{formatFixtureTime(fixture.date)}</span>
+      <TableCell className={dateTimeTableCellClassName}>
+        <DateTimeDisplay value={fixture.date} />
       </TableCell>
       <TableCell className='max-w-[9rem] text-xs whitespace-normal xl:max-w-[10rem] 2xl:max-w-none'>
         <div className='flex flex-col gap-1'>

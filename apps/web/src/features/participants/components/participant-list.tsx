@@ -1,7 +1,5 @@
 'use client';
 
-import { format, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { Copy, Link2, Search } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -9,6 +7,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ClearFiltersButton } from '@/components/ui/clear-filters-button';
+import {
+  DateTimeDisplay,
+  dateTimeTableCellClassName,
+} from '@/components/ui/datetime-display';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
 import {
@@ -53,10 +55,6 @@ function ParticipantStatusBadge({
         : 'outline';
 
   return <Badge variant={variant}>{label}</Badge>;
-}
-
-function formatJoinedAt(value: string) {
-  return format(parseISO(value), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR });
 }
 
 async function copyInviteLink(inviteCode: string) {
@@ -184,8 +182,8 @@ export function ParticipantList() {
                     <TableCell className='text-center'>
                       {participant.predictionsCount}
                     </TableCell>
-                    <TableCell className='text-muted-foreground text-xs'>
-                      {formatJoinedAt(participant.joinedAt)}
+                    <TableCell className={dateTimeTableCellClassName}>
+                      <DateTimeDisplay value={participant.joinedAt} />
                     </TableCell>
                     <TableCell className='text-right'>
                       <div className='flex justify-end gap-1'>

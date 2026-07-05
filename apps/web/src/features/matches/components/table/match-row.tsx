@@ -1,10 +1,11 @@
 'use client';
 
-import { format, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-
 import { MatchStatusBadge } from '@/features/dashboard/matches/components/match-status-badge';
 import { ScoreStack } from '@/components/matches';
+import {
+  DateTimeDisplay,
+  dateTimeTableCellClassName,
+} from '@/components/ui/datetime-display';
 import { TableCell, TableRow } from '@/components/ui/table';
 
 import type { MatchFixtureItem } from '../../types/match-fixture';
@@ -13,15 +14,11 @@ interface MatchRowProps {
   fixture: MatchFixtureItem;
 }
 
-function formatFixtureDate(date: string) {
-  return format(parseISO(date), 'dd/MM - HH:mm', { locale: ptBR });
-}
-
 export function MatchRow({ fixture }: MatchRowProps) {
   return (
     <TableRow>
-      <TableCell className='text-muted-foreground whitespace-nowrap text-xs'>
-        {formatFixtureDate(fixture.date)}
+      <TableCell className={dateTimeTableCellClassName}>
+        <DateTimeDisplay value={fixture.date} />
       </TableCell>
       <TableCell>
         <MatchStatusBadge status={fixture.status} />
