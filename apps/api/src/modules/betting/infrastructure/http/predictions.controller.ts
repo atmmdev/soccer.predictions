@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 
 import { CurrentUser } from '../../../identity/infrastructure/http/current-user.decorator.js';
 import { JwtAuthGuard } from '../../../identity/infrastructure/http/jwt-auth.guard.js';
@@ -14,6 +14,19 @@ export class PredictionsController {
   @Get()
   list(@CurrentUser() user: AuthUser) {
     return this.predictionService.listForUser(user);
+  }
+
+  @Get('by-fixture')
+  listByFixture(
+    @Query('poolId', ParseIntPipe) poolId: number,
+    @Query('fixtureId', ParseIntPipe) fixtureId: number,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.predictionService.listByPoolAndFixture(
+      poolId,
+      fixtureId,
+      user,
+    );
   }
 
   @Post()

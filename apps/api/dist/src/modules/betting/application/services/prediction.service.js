@@ -116,6 +116,51 @@ let PredictionService = class PredictionService {
             return left.participantName.localeCompare(right.participantName);
         });
     }
+    async listByPoolAndFixture(poolId, fixtureId, user) {
+        const pool = await this.findAccessiblePoolById(poolId, user);
+        const fixture = await this.prisma.fixture.findUnique({
+            where: { id: fixtureId },
+            include: {
+                homeTeam: true,
+                awayTeam: true,
+                championship: true,
+            },
+        });
+        if (!fixture || fixture.championshipId !== pool.championshipId) {
+            throw new common_1.NotFoundException('Jogo não encontrado neste bolão');
+        }
+        await this.scoringService.syncPoolScores(poolId);
+        const [predictions, membersByPoolId, positions, earnedPointsByKey] = await Promise.all([
+            this.prisma.prediction.findMany({
+                where: { poolId, fixtureId },
+            }),
+            this.loadActiveMembersByPool([poolId]),
+            this.rankingService.getPoolMemberPositions([poolId], {
+                syncScores: false,
+            }),
+            this.loadEarnedPointsByKey([poolId]),
+        ]);
+        const predictionsByUserId = new Map(predictions.map(prediction => [prediction.userId, prediction]));
+        const members = membersByPoolId.get(poolId) ?? [];
+        return members
+            .map(member => {
+            const rawPrediction = predictionsByUserId.get(member.id) ?? null;
+            const canView = (0, prediction_visibility_js_1.canViewMemberPrediction)(user, pool, fixture, member.id);
+            return this.toFixtureRow({
+                pool,
+                fixture,
+                member,
+                userId: user.id,
+                userRole: user.role,
+                prediction: canView ? rawPrediction : null,
+                poolPosition: positions.get(`${poolId}:${member.id}`) ?? 0,
+                earnedPoints: canView
+                    ? (earnedPointsByKey.get(`${poolId}:${member.id}:${fixtureId}`) ?? null)
+                    : null,
+            });
+        })
+            .sort((left, right) => left.participantName.localeCompare(right.participantName));
+    }
     async submit(dto, user) {
         (0, pool_participation_js_1.assertCanParticipateInPools)(user);
         const pool = await this.findAccessiblePoolById(dto.poolId, user);

@@ -13,6 +13,25 @@ export async function fetchPredictionsRequest(): Promise<PredictionFixtureItem[]
   return response.json() as Promise<PredictionFixtureItem[]>;
 }
 
+export async function fetchPredictionsByFixtureRequest(
+  poolId: number,
+  fixtureId: number,
+): Promise<PredictionFixtureItem[]> {
+  const params = new URLSearchParams({
+    poolId: poolId.toString(),
+    fixtureId: fixtureId.toString(),
+  });
+  const response = await authFetch(
+    `${API_URL}/predictions/by-fixture?${params.toString()}`,
+  );
+
+  if (!response.ok) {
+    throw new Error(await parseApiError(response));
+  }
+
+  return response.json() as Promise<PredictionFixtureItem[]>;
+}
+
 export async function submitPredictionRequest(
   poolId: number,
   fixtureId: number,

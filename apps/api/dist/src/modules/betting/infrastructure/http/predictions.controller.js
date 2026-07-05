@@ -26,6 +26,9 @@ let PredictionsController = class PredictionsController {
     list(user) {
         return this.predictionService.listForUser(user);
     }
+    listByFixture(poolId, fixtureId, user) {
+        return this.predictionService.listByPoolAndFixture(poolId, fixtureId, user);
+    }
     submit(dto, user) {
         return this.predictionService.submit(dto, user);
     }
@@ -38,6 +41,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], PredictionsController.prototype, "list", null);
+__decorate([
+    (0, common_1.Get)('by-fixture'),
+    __param(0, (0, common_1.Query)('poolId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Query)('fixtureId', common_1.ParseIntPipe)),
+    __param(2, (0, current_user_decorator_js_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number, Object]),
+    __metadata("design:returntype", void 0)
+], PredictionsController.prototype, "listByFixture", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),

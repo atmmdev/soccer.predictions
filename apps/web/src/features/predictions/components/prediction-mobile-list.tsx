@@ -8,11 +8,13 @@ import { PredictionMobileCard } from './prediction-mobile-card';
 interface PredictionMobileListProps {
   rows: PredictionFixtureItem[];
   onPredict: (fixture: PredictionFixtureItem) => void;
+  onViewAllPredictions: (fixture: PredictionFixtureItem) => void;
 }
 
 export function PredictionMobileList({
   rows,
   onPredict,
+  onViewAllPredictions,
 }: PredictionMobileListProps) {
   const now = useNow();
   const showParticipant = rows.some(row => !row.isOwnPrediction);
@@ -26,6 +28,7 @@ export function PredictionMobileList({
           now={now}
           showParticipant={showParticipant}
           onPredict={onPredict}
+          onViewAllPredictions={onViewAllPredictions}
         />
       ))}
     </div>

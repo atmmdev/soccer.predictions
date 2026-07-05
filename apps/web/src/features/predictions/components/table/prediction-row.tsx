@@ -34,6 +34,7 @@ interface PredictionRowProps {
   now: Date;
   showParticipantColumn: boolean;
   onPredict: (fixture: PredictionFixtureItem) => void;
+  onViewAllPredictions: (fixture: PredictionFixtureItem) => void;
 }
 
 function getSelectedPlayerName(fixture: PredictionFixtureItem) {
@@ -49,6 +50,7 @@ export function PredictionRow({
   now,
   showParticipantColumn,
   onPredict,
+  onViewAllPredictions,
 }: PredictionRowProps) {
   const hasPrediction = fixture.prediction !== null;
   const uiState = getPredictionUiState(fixture, now);
@@ -140,18 +142,25 @@ export function PredictionRow({
         <PredictionCountdown fixture={fixture} now={now} />
       </TableCell>
       <TableCell className='text-right'>
-        {fixture.isOwnPrediction ? (
-          <TableActionBadge
-            tone={actionTone}
-            icon={ActionIcon}
-            disabled={!canEdit}
-            onClick={() => onPredict(fixture)}
+        <div className='flex flex-col items-end gap-1.5'>
+          <button
+            type='button'
+            className='text-primary text-xs hover:underline'
+            onClick={() => onViewAllPredictions(fixture)}
           >
-            {actionLabel}
-          </TableActionBadge>
-        ) : (
-          <span className='text-muted-foreground text-xs'>—</span>
-        )}
+            Ver palpites
+          </button>
+          {fixture.isOwnPrediction ? (
+            <TableActionBadge
+              tone={actionTone}
+              icon={ActionIcon}
+              disabled={!canEdit}
+              onClick={() => onPredict(fixture)}
+            >
+              {actionLabel}
+            </TableActionBadge>
+          ) : null}
+        </div>
       </TableCell>
     </TableRow>
   );

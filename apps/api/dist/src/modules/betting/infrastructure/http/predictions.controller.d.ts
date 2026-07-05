@@ -5,5 +5,6 @@ export declare class PredictionsController {
     private readonly predictionService;
     constructor(predictionService: PredictionService);
     list(user: AuthUser): Promise<import("../../application/services/prediction.service.js").PredictionFixtureResponse[]>;
+    listByFixture(poolId: number, fixtureId: number, user: AuthUser): Promise<import("../../application/services/prediction.service.js").PredictionFixtureResponse[]>;
     submit(dto: SubmitPredictionDto, user: AuthUser): Promise<import("../../application/services/prediction.service.js").PredictionFixtureResponse>;
 }

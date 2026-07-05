@@ -9,6 +9,7 @@ import type { SubmitPredictionFormData } from '../schemas/submit-prediction.sche
 import type { PredictionFixtureItem } from '../types/prediction-fixture';
 import { canEditPrediction } from '../utils/prediction-window';
 import { SubmitPredictionDialog } from './dialogs/submit-prediction-dialog';
+import { FixturePredictionsDialog } from './dialogs/fixture-predictions-dialog';
 import { PredictionFilters } from './filters/prediction-filters';
 import { PredictionMobileList } from './prediction-mobile-list';
 import { PredictionTable } from './table/prediction-table';
@@ -18,6 +19,9 @@ export function PredictionList() {
     usePredictionList();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedFixture, setSelectedFixture] =
+    useState<PredictionFixtureItem | null>(null);
+  const [predictionsDialogOpen, setPredictionsDialogOpen] = useState(false);
+  const [viewPredictionsFixture, setViewPredictionsFixture] =
     useState<PredictionFixtureItem | null>(null);
 
   function handlePredict(fixture: PredictionFixtureItem) {
@@ -34,6 +38,19 @@ export function PredictionList() {
 
     if (!open) {
       setSelectedFixture(null);
+    }
+  }
+
+  function handleViewAllPredictions(fixture: PredictionFixtureItem) {
+    setViewPredictionsFixture(fixture);
+    setPredictionsDialogOpen(true);
+  }
+
+  function handlePredictionsDialogOpenChange(open: boolean) {
+    setPredictionsDialogOpen(open);
+
+    if (!open) {
+      setViewPredictionsFixture(null);
     }
   }
 
@@ -101,10 +118,12 @@ export function PredictionList() {
               <PredictionMobileList
                 rows={searchFilters.filteredFixtures}
                 onPredict={handlePredict}
+                onViewAllPredictions={handleViewAllPredictions}
               />
               <PredictionTable
                 rows={searchFilters.filteredFixtures}
                 onPredict={handlePredict}
+                onViewAllPredictions={handleViewAllPredictions}
               />
             </>
           )}
@@ -116,6 +135,12 @@ export function PredictionList() {
         open={dialogOpen}
         onOpenChange={handleDialogOpenChange}
         onSubmit={handleSubmit}
+      />
+
+      <FixturePredictionsDialog
+        fixture={viewPredictionsFixture}
+        open={predictionsDialogOpen}
+        onOpenChange={handlePredictionsDialogOpenChange}
       />
     </>
   );

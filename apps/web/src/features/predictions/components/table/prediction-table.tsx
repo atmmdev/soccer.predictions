@@ -19,9 +19,14 @@ import {
 interface PredictionTableProps {
   rows: PredictionFixtureItem[];
   onPredict: (fixture: PredictionFixtureItem) => void;
+  onViewAllPredictions: (fixture: PredictionFixtureItem) => void;
 }
 
-export function PredictionTable({ rows, onPredict }: PredictionTableProps) {
+export function PredictionTable({
+  rows,
+  onPredict,
+  onViewAllPredictions,
+}: PredictionTableProps) {
   const now = useNow();
   const showParticipantColumn = rows.some(row => !row.isOwnPrediction);
 
@@ -94,7 +99,7 @@ export function PredictionTable({ rows, onPredict }: PredictionTableProps) {
             >
               Prazo
             </TableHead>
-            <TableHead className={predictionTableHeadClass('w-[7rem] text-right')}>
+            <TableHead className={predictionTableHeadClass('w-[8.5rem] text-right')}>
               Ações
             </TableHead>
           </TableRow>
@@ -107,6 +112,7 @@ export function PredictionTable({ rows, onPredict }: PredictionTableProps) {
               now={now}
               showParticipantColumn={showParticipantColumn}
               onPredict={onPredict}
+              onViewAllPredictions={onViewAllPredictions}
             />
           ))}
         </TableBody>

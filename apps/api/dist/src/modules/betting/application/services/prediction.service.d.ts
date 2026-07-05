@@ -33,6 +33,7 @@ export declare class PredictionService {
     private readonly scoringService;
     constructor(prisma: PrismaService, rankingService: RankingService, scoringService: ScoringService);
     listForUser(user: AuthUser): Promise<PredictionFixtureResponse[]>;
+    listByPoolAndFixture(poolId: number, fixtureId: number, user: AuthUser): Promise<PredictionFixtureResponse[]>;
     submit(dto: SubmitPredictionDto, user: AuthUser): Promise<PredictionFixtureResponse>;
     private canViewAllPoolPredictions;
     private loadActiveMembersByPool;

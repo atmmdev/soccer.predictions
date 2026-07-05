@@ -30,6 +30,7 @@ interface PredictionMobileCardProps {
   now: Date;
   showParticipant: boolean;
   onPredict: (fixture: PredictionFixtureItem) => void;
+  onViewAllPredictions: (fixture: PredictionFixtureItem) => void;
 }
 
 export function PredictionMobileCard({
@@ -37,6 +38,7 @@ export function PredictionMobileCard({
   now,
   showParticipant,
   onPredict,
+  onViewAllPredictions,
 }: PredictionMobileCardProps) {
   const hasPrediction = fixture.prediction !== null;
   const uiState = getPredictionUiState(fixture, now);
@@ -101,8 +103,15 @@ export function PredictionMobileCard({
         </div>
       </dl>
 
-      {fixture.isOwnPrediction ? (
-        <div className='flex justify-end'>
+      <div className='flex flex-wrap items-center justify-end gap-2'>
+        <button
+          type='button'
+          className='text-primary text-xs hover:underline'
+          onClick={() => onViewAllPredictions(fixture)}
+        >
+          Ver palpites
+        </button>
+        {fixture.isOwnPrediction ? (
           <TableActionBadge
             tone={actionTone}
             icon={ActionIcon}
@@ -111,8 +120,8 @@ export function PredictionMobileCard({
           >
             {actionLabel}
           </TableActionBadge>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
     </article>
   );
 }
