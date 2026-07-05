@@ -34,7 +34,8 @@ npm run prisma:migrate
 npm run start:dev
 ```
 
-API: `http://localhost:3001/api/health`
+API: `http://localhost:3001/api/health`  
+Swagger: `http://localhost:3001/api/docs`
 
 ### Credenciais padrão (seed)
 

@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 
+import { ScoringService } from '../../../betting/application/services/scoring.service.js';
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 import { ApiFootballClient } from '../../infrastructure/integrations/api-football.client.js';
 import { mapEventsToGoalScorers } from '../utils/fixture-goal-scorers.js';
@@ -15,6 +16,7 @@ export class SyncFixturesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly apiFootballClient: ApiFootballClient,
+    private readonly scoringService: ScoringService,
   ) {}
 
   async syncChampionship(championshipId: number): Promise<number> {
@@ -46,6 +48,8 @@ export class SyncFixturesService {
 
       updated += result.count;
     }
+
+    await this.scoringService.syncScoresForChampionship(championshipId);
 
     return updated;
   }
@@ -99,6 +103,8 @@ export class SyncFixturesService {
         data: buildFixtureUpdateData(remote, goalScorers),
       });
     }
+
+    await this.scoringService.syncScoresForChampionship(championshipId);
   }
 
   private async resolveGoalScorers(

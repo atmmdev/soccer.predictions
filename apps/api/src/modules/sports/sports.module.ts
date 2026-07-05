@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { BettingModule } from '../betting/betting.module.js';
 import { RolesGuard } from '../../shared/auth/roles.guard.js';
 import { IdentityModule } from '../identity/identity.module.js';
 import { CatalogService } from './application/services/catalog.service.js';
@@ -14,7 +15,7 @@ import { ChampionshipsController } from './infrastructure/http/championships.con
 import { FixturesController } from './infrastructure/http/fixtures.controller.js';
 
 @Module({
-  imports: [IdentityModule],
+  imports: [IdentityModule, BettingModule],
   controllers: [ChampionshipsController, FixturesController],
   providers: [
     ApiFootballClient,

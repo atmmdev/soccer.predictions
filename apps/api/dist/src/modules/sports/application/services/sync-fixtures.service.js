@@ -12,6 +12,7 @@ var SyncFixturesService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SyncFixturesService = void 0;
 const common_1 = require("@nestjs/common");
+const scoring_service_js_1 = require("../../../betting/application/services/scoring.service.js");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
 const api_football_client_js_1 = require("../../infrastructure/integrations/api-football.client.js");
 const fixture_goal_scorers_js_1 = require("../utils/fixture-goal-scorers.js");
@@ -19,10 +20,12 @@ const fixture_sync_mapper_js_1 = require("../utils/fixture-sync.mapper.js");
 let SyncFixturesService = SyncFixturesService_1 = class SyncFixturesService {
     prisma;
     apiFootballClient;
+    scoringService;
     logger = new common_1.Logger(SyncFixturesService_1.name);
-    constructor(prisma, apiFootballClient) {
+    constructor(prisma, apiFootballClient, scoringService) {
         this.prisma = prisma;
         this.apiFootballClient = apiFootballClient;
+        this.scoringService = scoringService;
     }
     async syncChampionship(championshipId) {
         const championship = await this.prisma.championship.findUnique({
@@ -44,6 +47,7 @@ let SyncFixturesService = SyncFixturesService_1 = class SyncFixturesService {
             });
             updated += result.count;
         }
+        await this.scoringService.syncScoresForChampionship(championshipId);
         return updated;
     }
     async syncActiveChampionships(mode = 'all') {
@@ -86,6 +90,7 @@ let SyncFixturesService = SyncFixturesService_1 = class SyncFixturesService {
                 data: (0, fixture_sync_mapper_js_1.buildFixtureUpdateData)(remote, goalScorers),
             });
         }
+        await this.scoringService.syncScoresForChampionship(championshipId);
     }
     async resolveGoalScorers(remote) {
         if (!(0, fixture_sync_mapper_js_1.isFinishedFixtureStatus)(remote.fixture.status.short)) {
@@ -105,6 +110,7 @@ exports.SyncFixturesService = SyncFixturesService;
 exports.SyncFixturesService = SyncFixturesService = SyncFixturesService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_js_1.PrismaService,
-        api_football_client_js_1.ApiFootballClient])
+        api_football_client_js_1.ApiFootballClient,
+        scoring_service_js_1.ScoringService])
 ], SyncFixturesService);
 //# sourceMappingURL=sync-fixtures.service.js.map

@@ -5,6 +5,7 @@ export declare class ScoringService {
     constructor(prisma: PrismaService);
     syncPoolScores(poolId: number): Promise<void>;
     syncPoolsScores(poolIds: number[]): Promise<void>;
+    syncScoresForChampionship(championshipId: number): Promise<void>;
     private scoreFixture;
     private resolvePrimaryAchievement;
     static aggregateBreakdown(entries: Array<{

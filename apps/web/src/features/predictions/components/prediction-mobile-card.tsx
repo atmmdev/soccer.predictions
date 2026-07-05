@@ -6,6 +6,7 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { TableActionBadge } from '@/components/ui/table-action-badge';
 import {
   FixtureScoreComparison,
+  PointsBadge,
   getOfficialScoresFromFixture,
   getPredictionScoresFromFixture,
 } from '@/components/matches';
@@ -99,6 +100,15 @@ export function PredictionMobileCard({
           <dt className='text-muted-foreground'>Prazo</dt>
           <dd>
             <PredictionCountdown fixture={fixture} now={now} />
+          </dd>
+        </div>
+        <div>
+          <dt className='text-muted-foreground'>Pontos</dt>
+          <dd>
+            <PointsBadge
+              points={fixture.earnedPoints}
+              finished={fixture.matchStatus === 'FINISHED'}
+            />
           </dd>
         </div>
       </dl>

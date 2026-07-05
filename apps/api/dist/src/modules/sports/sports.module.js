@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SportsModule = void 0;
 const common_1 = require("@nestjs/common");
+const betting_module_js_1 = require("../betting/betting.module.js");
 const roles_guard_js_1 = require("../../shared/auth/roles.guard.js");
 const identity_module_js_1 = require("../identity/identity.module.js");
 const catalog_service_js_1 = require("./application/services/catalog.service.js");
@@ -25,7 +26,7 @@ let SportsModule = class SportsModule {
 exports.SportsModule = SportsModule;
 exports.SportsModule = SportsModule = __decorate([
     (0, common_1.Module)({
-        imports: [identity_module_js_1.IdentityModule],
+        imports: [identity_module_js_1.IdentityModule, betting_module_js_1.BettingModule],
         controllers: [championships_controller_js_1.ChampionshipsController, fixtures_controller_js_1.FixturesController],
         providers: [
             api_football_client_js_1.ApiFootballClient,

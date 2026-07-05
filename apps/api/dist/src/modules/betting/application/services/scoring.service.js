@@ -58,6 +58,13 @@ let ScoringService = class ScoringService {
             await this.syncPoolScores(poolId);
         }
     }
+    async syncScoresForChampionship(championshipId) {
+        const pools = await this.prisma.pool.findMany({
+            where: { championshipId },
+            select: { id: true },
+        });
+        await this.syncPoolsScores(pools.map(pool => pool.id));
+    }
     async scoreFixture(poolId, fixture, championshipType, scoring) {
         const predictions = await this.prisma.prediction.findMany({
             where: { poolId, fixtureId: fixture.id },

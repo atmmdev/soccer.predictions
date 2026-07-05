@@ -70,6 +70,15 @@ export class ScoringService {
     }
   }
 
+  async syncScoresForChampionship(championshipId: number): Promise<void> {
+    const pools = await this.prisma.pool.findMany({
+      where: { championshipId },
+      select: { id: true },
+    });
+
+    await this.syncPoolsScores(pools.map(pool => pool.id));
+  }
+
   private async scoreFixture(
     poolId: number,
     fixture: {

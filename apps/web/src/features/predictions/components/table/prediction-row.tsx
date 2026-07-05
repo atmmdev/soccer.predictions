@@ -6,6 +6,7 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { TableActionBadge } from '@/components/ui/table-action-badge';
 import {
   ScoreStack,
+  PointsBadge,
   getOfficialScoresFromFixture,
   getPredictionScoresFromFixture,
   hasCompleteScore,
@@ -137,6 +138,14 @@ export function PredictionRow({
         <StatusBadge tone={statusTone}>
           {getPredictionStatusLabel(uiState)}
         </StatusBadge>
+      </TableCell>
+      <TableCell className={`text-center ${predictionTableColumns.points}`}>
+        <div className='flex justify-center'>
+          <PointsBadge
+            points={fixture.earnedPoints}
+            finished={fixture.matchStatus === 'FINISHED'}
+          />
+        </div>
       </TableCell>
       <TableCell className={`text-center ${predictionTableColumns.deadline}`}>
         <PredictionCountdown fixture={fixture} now={now} />
