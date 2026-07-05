@@ -16,11 +16,13 @@ import type { Championship } from '../../types/championship';
 interface ChampionshipActionsProps {
   championship: Championship;
   onSync: (championshipId: number) => Promise<boolean>;
+  onStatusChange: (championshipId: number, active: boolean) => Promise<boolean>;
 }
 
 export function ChampionshipActions({
   championship,
   onSync,
+  onStatusChange,
 }: ChampionshipActionsProps) {
   return (
     <DropdownMenu>
@@ -36,9 +38,17 @@ export function ChampionshipActions({
         </DropdownMenuItem>
 
         {championship.status === 'ACTIVE' ? (
-          <DropdownMenuItem disabled>Desativar (em breve)</DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => void onStatusChange(championship.id, false)}
+          >
+            Desativar
+          </DropdownMenuItem>
         ) : (
-          <DropdownMenuItem disabled>Ativar (em breve)</DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => void onStatusChange(championship.id, true)}
+          >
+            Ativar
+          </DropdownMenuItem>
         )}
       </DropdownMenuContent>
     </DropdownMenu>

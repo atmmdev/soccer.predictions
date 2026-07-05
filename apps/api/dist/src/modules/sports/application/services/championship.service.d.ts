@@ -15,4 +15,5 @@ export declare class ChampionshipService {
     constructor(prisma: PrismaService);
     listAll(): Promise<ChampionshipListItem[]>;
     listActive(): Promise<ChampionshipListItem[]>;
+    updateStatus(championshipId: number, active: boolean): Promise<ChampionshipListItem>;
 }

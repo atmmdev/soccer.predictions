@@ -4,16 +4,19 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
 
 import { PoolAccessGuard } from '../../../../shared/auth/pool-access.guard.js';
+import { PoolOwnerGuard } from '../../../../shared/auth/pool-owner.guard.js';
 import { CurrentUser } from '../../../identity/infrastructure/http/current-user.decorator.js';
 import { JwtAuthGuard } from '../../../identity/infrastructure/http/jwt-auth.guard.js';
 import type { AuthUser } from '../../../identity/application/types/auth-user.js';
 import { CreatePoolDto } from '../../application/dtos/create-pool.dto.js';
 import { JoinPoolDto } from '../../application/dtos/join-pool.dto.js';
+import { UpdatePoolStatusDto } from '../../application/dtos/update-pool-status.dto.js';
 import { PoolService } from '../../application/services/pool.service.js';
 
 @Controller('pools')
@@ -43,5 +46,15 @@ export class PoolsController {
   @Post()
   create(@Body() dto: CreatePoolDto, @CurrentUser() user: AuthUser) {
     return this.poolService.create(dto, user);
+  }
+
+  @Patch(':id/status')
+  @UseGuards(PoolAccessGuard, PoolOwnerGuard)
+  updateStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdatePoolStatusDto,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.poolService.updateStatus(id, dto, user);
   }
 }

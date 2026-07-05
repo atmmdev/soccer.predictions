@@ -10,6 +10,7 @@ import {
   fetchChampionshipsRequest,
   importChampionshipRequest,
   syncChampionshipRequest,
+  updateChampionshipStatusRequest,
 } from '../services/championship-api.service';
 import type { Championship } from '../types/championship';
 
@@ -84,6 +85,37 @@ export function useChampionships() {
     [],
   );
 
+  const updateChampionshipStatus = useCallback(
+    async (championshipId: number, active: boolean): Promise<boolean> => {
+      try {
+        const updated = await updateChampionshipStatusRequest(
+          championshipId,
+          active,
+        );
+        setChampionships(current =>
+          current.map(championship =>
+            championship.id === championshipId ? updated : championship,
+          ),
+        );
+        toast.success(
+          active
+            ? 'Campeonato ativado com sucesso.'
+            : 'Campeonato desativado com sucesso.',
+        );
+        return true;
+      } catch (updateError) {
+        toast.error(
+          getFetchErrorMessage(
+            updateError,
+            'Não foi possível atualizar o status do campeonato.',
+          ),
+        );
+        return false;
+      }
+    },
+    [],
+  );
+
   return {
     championships,
     isLoading,
@@ -91,5 +123,6 @@ export function useChampionships() {
     reloadChampionships: loadChampionships,
     createChampionship,
     syncChampionship,
+    updateChampionshipStatus,
   };
 }

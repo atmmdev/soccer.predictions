@@ -2,7 +2,7 @@ import type { Championship } from '@/features/championships/types/championship';
 
 import type { PoolScoringConfig } from './scoring-rules';
 
-export type PoolStatus = 'ACTIVE' | 'INACTIVE';
+export type PoolStatus = 'ACTIVE' | 'INACTIVE' | 'CLOSED';
 
 export interface Pool {
   id: number;
@@ -16,4 +16,5 @@ export interface Pool {
   inviteCode: string;
   status: PoolStatus;
   scoring: PoolScoringConfig;
+  isOwner: boolean;
 }

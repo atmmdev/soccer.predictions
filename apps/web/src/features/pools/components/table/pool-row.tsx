@@ -1,14 +1,15 @@
 import { TableCell, TableRow } from '@/components/ui/table';
 
-import type { Pool } from '../../types/pool';
+import type { Pool, PoolStatus } from '../../types/pool';
 import { PoolActions } from './pool-actions';
 import { PoolStatusBadge } from './pool-status-badge';
 
 interface PoolRowProps {
   pool: Pool;
+  onStatusChange: (poolId: number, status: PoolStatus) => Promise<boolean>;
 }
 
-export function PoolRow({ pool }: PoolRowProps) {
+export function PoolRow({ pool, onStatusChange }: PoolRowProps) {
   return (
     <TableRow>
       <TableCell className='font-medium'>{pool.name}</TableCell>
@@ -20,7 +21,7 @@ export function PoolRow({ pool }: PoolRowProps) {
         <PoolStatusBadge status={pool.status} />
       </TableCell>
       <TableCell className='text-right'>
-        <PoolActions pool={pool} />
+        <PoolActions pool={pool} onStatusChange={onStatusChange} />
       </TableCell>
     </TableRow>
   );

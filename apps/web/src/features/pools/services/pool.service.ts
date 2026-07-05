@@ -46,6 +46,7 @@ export class PoolService {
       inviteCode: generateInviteCode(data.name),
       status: data.active ? 'ACTIVE' : 'INACTIVE',
       scoring: mapFormToScoringConfig(data),
+      isOwner: true,
     };
   }
 }

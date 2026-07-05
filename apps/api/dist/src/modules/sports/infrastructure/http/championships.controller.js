@@ -18,6 +18,7 @@ const roles_decorator_js_1 = require("../../../../shared/auth/roles.decorator.js
 const roles_guard_js_1 = require("../../../../shared/auth/roles.guard.js");
 const jwt_auth_guard_js_1 = require("../../../identity/infrastructure/http/jwt-auth.guard.js");
 const import_championship_dto_js_1 = require("../../application/dtos/import-championship.dto.js");
+const update_championship_status_dto_js_1 = require("../../application/dtos/update-championship-status.dto.js");
 const catalog_service_js_1 = require("../../application/services/catalog.service.js");
 const championship_service_js_1 = require("../../application/services/championship.service.js");
 const import_championship_service_js_1 = require("../../application/services/import-championship.service.js");
@@ -50,6 +51,9 @@ let ChampionshipsController = class ChampionshipsController {
     }
     sync(id) {
         return this.syncFixturesService.syncChampionship(id);
+    }
+    updateStatus(id, dto) {
+        return this.championshipService.updateStatus(id, dto.active);
     }
 };
 exports.ChampionshipsController = ChampionshipsController;
@@ -103,6 +107,16 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], ChampionshipsController.prototype, "sync", null);
+__decorate([
+    (0, common_1.Patch)(':id/status'),
+    (0, common_1.UseGuards)(roles_guard_js_1.RolesGuard),
+    (0, roles_decorator_js_1.Roles)('ADMIN', 'SUPER_ADMIN'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, update_championship_status_dto_js_1.UpdateChampionshipStatusDto]),
+    __metadata("design:returntype", void 0)
+], ChampionshipsController.prototype, "updateStatus", null);
 exports.ChampionshipsController = ChampionshipsController = __decorate([
     (0, common_1.Controller)('championships'),
     (0, common_1.UseGuards)(jwt_auth_guard_js_1.JwtAuthGuard),

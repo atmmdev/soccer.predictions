@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 
+import { PoolAccessGuard } from '../../shared/auth/pool-access.guard.js';
+import { PoolOwnerGuard } from '../../shared/auth/pool-owner.guard.js';
 import { RolesGuard } from '../../shared/auth/roles.guard.js';
 import { IdentityModule } from '../identity/identity.module.js';
 import { ParticipantService } from './application/services/participant.service.js';
@@ -15,7 +17,7 @@ import { RankingsController } from './infrastructure/http/rankings.controller.js
 @Module({
   imports: [IdentityModule],
   controllers: [PoolsController, PredictionsController, RankingsController, ParticipantsController],
-  providers: [PoolService, PredictionService, ScoringService, RankingService, ParticipantService, RolesGuard],
+  providers: [PoolService, PredictionService, ScoringService, RankingService, ParticipantService, RolesGuard, PoolAccessGuard, PoolOwnerGuard],
   exports: [PoolService, PredictionService, ScoringService, RankingService, ParticipantService],
 })
 export class BettingModule {}

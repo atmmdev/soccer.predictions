@@ -11,6 +11,7 @@ import type { CreatePoolFormData } from '../schemas/create-pool.schema';
 import {
   createPoolRequest,
   fetchPoolsRequest,
+  updatePoolStatusRequest,
 } from '../services/pool-api.service';
 import { mapFormToScoringConfig } from '../services/scoring-rules.mapper';
 import type { Pool } from '../types/pool';
@@ -69,11 +70,38 @@ export function usePools() {
     [],
   );
 
+  const updatePoolStatus = useCallback(
+    async (
+      poolId: number,
+      status: Pool['status'],
+    ): Promise<boolean> => {
+      try {
+        const updated = await updatePoolStatusRequest(poolId, status);
+        setPools(current =>
+          current.map(pool =>
+            pool.id === poolId ? mapPoolResponse(updated) : pool,
+          ),
+        );
+        return true;
+      } catch (updateError) {
+        toast.error(
+          getFetchErrorMessage(
+            updateError,
+            'Não foi possível atualizar o status do bolão.',
+          ),
+        );
+        return false;
+      }
+    },
+    [],
+  );
+
   return {
     pools,
     isLoading,
     error,
     reloadPools: loadPools,
     createPool,
+    updatePoolStatus,
   };
 }

@@ -6,12 +6,18 @@ interface PoolStatusBadgeProps {
   status: PoolStatus;
 }
 
-export function PoolStatusBadge({ status }: PoolStatusBadgeProps) {
-  const isActive = status === 'ACTIVE';
+const labels: Record<PoolStatus, string> = {
+  ACTIVE: 'Ativo',
+  INACTIVE: 'Inativo',
+  CLOSED: 'Encerrado',
+};
 
-  return (
-    <StatusBadge tone={isActive ? 'success' : 'neutral'}>
-      {isActive ? 'Ativo' : 'Inativo'}
-    </StatusBadge>
-  );
+const tones: Record<PoolStatus, 'success' | 'neutral' | 'warning'> = {
+  ACTIVE: 'success',
+  INACTIVE: 'neutral',
+  CLOSED: 'warning',
+};
+
+export function PoolStatusBadge({ status }: PoolStatusBadgeProps) {
+  return <StatusBadge tone={tones[status]}>{labels[status]}</StatusBadge>;
 }

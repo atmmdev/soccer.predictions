@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -13,6 +14,7 @@ import { Roles } from '../../../../shared/auth/roles.decorator.js';
 import { RolesGuard } from '../../../../shared/auth/roles.guard.js';
 import { JwtAuthGuard } from '../../../identity/infrastructure/http/jwt-auth.guard.js';
 import { ImportChampionshipDto } from '../../application/dtos/import-championship.dto.js';
+import { UpdateChampionshipStatusDto } from '../../application/dtos/update-championship-status.dto.js';
 import { CatalogService } from '../../application/services/catalog.service.js';
 import { ChampionshipService } from '../../application/services/championship.service.js';
 import { ImportChampionshipService } from '../../application/services/import-championship.service.js';
@@ -72,5 +74,15 @@ export class ChampionshipsController {
   @Roles('ADMIN', 'SUPER_ADMIN')
   sync(@Param('id', ParseIntPipe) id: number) {
     return this.syncFixturesService.syncChampionship(id);
+  }
+
+  @Patch(':id/status')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
+  updateStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateChampionshipStatusDto,
+  ) {
+    return this.championshipService.updateStatus(id, dto.active);
   }
 }

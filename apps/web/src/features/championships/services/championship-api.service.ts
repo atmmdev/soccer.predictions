@@ -101,3 +101,22 @@ export async function syncChampionshipRequest(
 
   return response.json() as Promise<number>;
 }
+
+export async function updateChampionshipStatusRequest(
+  championshipId: number,
+  active: boolean,
+): Promise<Championship> {
+  const response = await authFetch(
+    `${API_URL}/championships/${championshipId}/status`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({ active }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(await parseApiError(response));
+  }
+
+  return response.json() as Promise<Championship>;
+}

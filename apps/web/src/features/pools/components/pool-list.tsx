@@ -7,7 +7,7 @@ import { PoolFilters } from './filters/pool-filters';
 import { PoolTable } from './table/pool-table';
 
 export function PoolList() {
-  const { isLoading, error, reloadPools, createPool, searchFilters, tableState } =
+  const { isLoading, error, reloadPools, createPool, updatePoolStatus, searchFilters, tableState } =
     usePoolList();
 
   return (
@@ -44,6 +44,7 @@ export function PoolList() {
             sortKey={tableState.sortKey}
             sortDir={tableState.sortDir}
             onSort={tableState.toggleSort}
+            onStatusChange={updatePoolStatus}
           />
         )}
       </CardContent>

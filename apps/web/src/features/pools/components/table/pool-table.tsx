@@ -8,7 +8,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import type { Pool } from '../../types/pool';
+import type { Pool, PoolStatus } from '../../types/pool';
 import type { PoolSortKey, SortDirection } from '../../hooks/use-pool-table';
 import { PoolRow } from './pool-row';
 import { PoolSortableHead } from './pool-sortable-head';
@@ -18,9 +18,10 @@ interface PoolTableProps {
   sortKey: PoolSortKey;
   sortDir: SortDirection;
   onSort: (key: PoolSortKey) => void;
+  onStatusChange: (poolId: number, status: PoolStatus) => Promise<boolean>;
 }
 
-export function PoolTable({ rows, sortKey, sortDir, onSort }: PoolTableProps) {
+export function PoolTable({ rows, sortKey, sortDir, onSort, onStatusChange }: PoolTableProps) {
   if (rows.length === 0) {
     return (
       <div className='flex items-center justify-center py-12'>
@@ -79,7 +80,11 @@ export function PoolTable({ rows, sortKey, sortDir, onSort }: PoolTableProps) {
         </TableHeader>
         <TableBody>
           {rows.map(pool => (
-            <PoolRow key={pool.id} pool={pool} />
+            <PoolRow
+              key={pool.id}
+              pool={pool}
+              onStatusChange={onStatusChange}
+            />
           ))}
         </TableBody>
       </Table>

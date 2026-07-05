@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import type { ChampionshipType } from '../../../../../generated/prisma/client.js';
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 
@@ -55,5 +55,49 @@ export class ChampionshipService {
         },
       })
       .then(rows => rows.map(row => ({ ...row })));
+  }
+
+  async updateStatus(
+    championshipId: number,
+    active: boolean,
+  ): Promise<ChampionshipListItem> {
+    const championship = await this.prisma.championship.findUnique({
+      where: { id: championshipId },
+      select: {
+        id: true,
+        leagueId: true,
+        season: true,
+        name: true,
+        country: true,
+        flags: true,
+        type: true,
+        status: true,
+      },
+    });
+
+    if (!championship) {
+      throw new NotFoundException('Campeonato não encontrado');
+    }
+
+    const status = active ? 'ACTIVE' : 'INACTIVE';
+
+    if (championship.status === status) {
+      return championship;
+    }
+
+    return this.prisma.championship.update({
+      where: { id: championshipId },
+      data: { status },
+      select: {
+        id: true,
+        leagueId: true,
+        season: true,
+        name: true,
+        country: true,
+        flags: true,
+        type: true,
+        status: true,
+      },
+    });
   }
 }

@@ -31,7 +31,8 @@ export function usePoolSearchFilters(items: Pool[]) {
       const matchesStatus =
         status === DEFAULT_STATUS ||
         (status === 'active' && pool.status === 'ACTIVE') ||
-        (status === 'inactive' && pool.status === 'INACTIVE');
+        (status === 'inactive' && pool.status === 'INACTIVE') ||
+        (status === 'closed' && pool.status === 'CLOSED');
 
       return matchesSearch && matchesStatus;
     });

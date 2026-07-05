@@ -12,7 +12,8 @@ export function mapPoolResponse(pool: PoolResponse): Pool {
     participantsCount: pool.participantsCount,
     predictionsCount: pool.predictionsCount,
     inviteCode: pool.inviteCode,
-    status: pool.status === 'CLOSED' ? 'INACTIVE' : pool.status,
+    status: pool.status,
     scoring: pool.scoring,
+    isOwner: pool.isOwner,
   };
 }

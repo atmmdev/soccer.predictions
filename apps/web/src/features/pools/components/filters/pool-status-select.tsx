@@ -19,6 +19,7 @@ export function PoolStatusSelect({ value, onChange }: PoolStatusSelectProps) {
       <option value='all'>Todos</option>
       <option value='active'>Ativo</option>
       <option value='inactive'>Inativo</option>
+      <option value='closed'>Encerrado</option>
     </NativeSelect>
   );
 }

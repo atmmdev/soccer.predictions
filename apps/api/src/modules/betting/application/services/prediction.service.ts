@@ -15,6 +15,7 @@ import {
   canEditPrediction,
   getPredictionLockMessage,
 } from '../utils/prediction-window.js';
+import { canViewMemberPrediction } from '../utils/prediction-visibility.js';
 import { assertCanParticipateInPools } from '../../../../shared/auth/pool-participation.js';
 import { RankingService } from './ranking.service.js';
 import { ScoringService } from './scoring.service.js';
@@ -113,6 +114,17 @@ export class PredictionService {
       if (viewAll) {
         for (const fixture of poolFixtures) {
           for (const member of members) {
+            const prediction =
+              predictionsByKey.get(
+                `${pool.id}:${member.id}:${fixture.id}`,
+              ) ?? null;
+            const canView = canViewMemberPrediction(
+              user,
+              pool,
+              fixture,
+              member.id,
+            );
+
             rows.push(
               this.toFixtureRow({
                 pool,
@@ -120,16 +132,14 @@ export class PredictionService {
                 member,
                 userId: user.id,
                 userRole: user.role,
-                prediction:
-                  predictionsByKey.get(
-                    `${pool.id}:${member.id}:${fixture.id}`,
-                  ) ?? null,
+                prediction: canView ? prediction : null,
                 poolPosition:
                   positions.get(`${pool.id}:${member.id}`) ?? 0,
-                earnedPoints:
-                  earnedPointsByKey.get(
-                    `${pool.id}:${member.id}:${fixture.id}`,
-                  ) ?? null,
+                earnedPoints: canView
+                  ? (earnedPointsByKey.get(
+                      `${pool.id}:${member.id}:${fixture.id}`,
+                    ) ?? null)
+                  : null,
               }),
             );
           }
@@ -187,6 +197,14 @@ export class PredictionService {
     assertCanParticipateInPools(user);
 
     const pool = await this.findAccessiblePoolById(dto.poolId, user);
+
+    if (pool.status !== 'ACTIVE') {
+      throw new ConflictException(
+        pool.status === 'CLOSED'
+          ? 'Este bolão está encerrado e não aceita palpites'
+          : 'Este bolão está inativo e não aceita palpites',
+      );
+    }
 
     const fixture = await this.prisma.fixture.findUnique({
       where: { id: dto.fixtureId },

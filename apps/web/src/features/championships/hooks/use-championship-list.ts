@@ -14,6 +14,7 @@ export function useChampionshipList() {
     reloadChampionships,
     createChampionship,
     syncChampionship,
+    updateChampionshipStatus,
   } = useChampionships();
   const searchFilters = useChampionshipSearchFilters(championships);
   const tableState = useChampionshipTable(searchFilters.filteredChampionships);
@@ -33,6 +34,7 @@ export function useChampionshipList() {
     reloadChampionships,
     createChampionship,
     syncChampionship,
+    updateChampionshipStatus,
     searchFilters,
     tableState,
     hasActiveFilters,

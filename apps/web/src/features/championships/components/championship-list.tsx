@@ -13,6 +13,7 @@ export function ChampionshipList() {
     reloadChampionships,
     createChampionship,
     syncChampionship,
+    updateChampionshipStatus,
     searchFilters,
     tableState,
     hasActiveFilters,
@@ -62,6 +63,7 @@ export function ChampionshipList() {
             sortDir={tableState.sortDir}
             onSort={tableState.toggleSort}
             onSync={syncChampionship}
+            onStatusChange={updateChampionshipStatus}
           />
         )}
       </CardContent>

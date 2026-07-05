@@ -8,17 +8,23 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { getStoredUser } from '@/features/auth/lib/auth-storage';
 import { buildJoinPoolUrl } from '@/lib/join-pool-url';
 
-import type { Pool } from '../../types/pool';
+import type { Pool, PoolStatus } from '../../types/pool';
 
 interface PoolActionsProps {
   pool: Pool;
+  onStatusChange: (poolId: number, status: PoolStatus) => Promise<boolean>;
 }
 
-export function PoolActions({ pool }: PoolActionsProps) {
+export function PoolActions({ pool, onStatusChange }: PoolActionsProps) {
+  const canManage =
+    pool.isOwner || getStoredUser()?.role === 'SUPER_ADMIN';
+
   async function handleCopyInviteLink() {
     try {
       await navigator.clipboard.writeText(buildJoinPoolUrl(pool.inviteCode));
@@ -34,6 +40,19 @@ export function PoolActions({ pool }: PoolActionsProps) {
       toast.success('Código copiado!');
     } catch {
       toast.error('Não foi possível copiar o código.');
+    }
+  }
+
+  async function handleStatusChange(status: PoolStatus) {
+    const success = await onStatusChange(pool.id, status);
+
+    if (success) {
+      const labels: Record<PoolStatus, string> = {
+        ACTIVE: 'ativado',
+        INACTIVE: 'desativado',
+        CLOSED: 'encerrado',
+      };
+      toast.success(`Bolão ${labels[status]} com sucesso.`);
     }
   }
 
@@ -54,9 +73,33 @@ export function PoolActions({ pool }: PoolActionsProps) {
           <Copy className='size-4' />
           Copiar código {pool.inviteCode}
         </DropdownMenuItem>
-        <DropdownMenuItem disabled className='text-xs'>
-          {pool.status === 'ACTIVE' ? 'Desativar' : 'Ativar'}
-        </DropdownMenuItem>
+
+        {canManage && pool.status !== 'CLOSED' ? (
+          <>
+            <DropdownMenuSeparator />
+            {pool.status === 'ACTIVE' ? (
+              <DropdownMenuItem
+                className='text-xs'
+                onClick={() => void handleStatusChange('INACTIVE')}
+              >
+                Desativar
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem
+                className='text-xs'
+                onClick={() => void handleStatusChange('ACTIVE')}
+              >
+                Ativar
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem
+              className='text-xs'
+              onClick={() => void handleStatusChange('CLOSED')}
+            >
+              Encerrar bolão
+            </DropdownMenuItem>
+          </>
+        ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
   );

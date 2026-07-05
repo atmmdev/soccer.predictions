@@ -1,4 +1,5 @@
 import { ImportChampionshipDto } from '../../application/dtos/import-championship.dto.js';
+import { UpdateChampionshipStatusDto } from '../../application/dtos/update-championship-status.dto.js';
 import { CatalogService } from '../../application/services/catalog.service.js';
 import { ChampionshipService } from '../../application/services/championship.service.js';
 import { ImportChampionshipService } from '../../application/services/import-championship.service.js';
@@ -15,4 +16,5 @@ export declare class ChampionshipsController {
     listLeagues(country: string, season?: string): Promise<import("../../application/services/catalog.service.js").CatalogLeague[]>;
     import(dto: ImportChampionshipDto): Promise<import("../../application/services/import-championship.service.js").ChampionshipListItem>;
     sync(id: number): Promise<number>;
+    updateStatus(id: number, dto: UpdateChampionshipStatusDto): Promise<import("../../application/services/championship.service.js").ChampionshipListItem>;
 }

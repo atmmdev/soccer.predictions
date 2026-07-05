@@ -166,6 +166,20 @@ let PoolService = class PoolService {
         });
         return this.loadPoolListItem(pool.id, user.id, user.role);
     }
+    async updateStatus(poolId, dto, user) {
+        const pool = await this.findAccessiblePool(poolId, user);
+        if (pool.status === 'CLOSED' && dto.status !== 'CLOSED') {
+            throw new common_1.ConflictException('Bolão encerrado não pode ser reativado');
+        }
+        if (pool.status === dto.status) {
+            return this.loadPoolListItem(poolId, user.id, user.role);
+        }
+        await this.prisma.pool.update({
+            where: { id: poolId },
+            data: { status: dto.status },
+        });
+        return this.loadPoolListItem(poolId, user.id, user.role);
+    }
     async resolvePoolOwner(user, delegateUserId) {
         if (user.role !== 'SUPER_ADMIN') {
             return {

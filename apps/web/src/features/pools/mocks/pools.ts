@@ -27,6 +27,7 @@ export const pools: Pool[] = [
     inviteCode: 'FAM2026',
     status: 'ACTIVE',
     scoring: leagueScoring,
+    isOwner: true,
   },
   {
     id: 2,
@@ -40,6 +41,7 @@ export const pools: Pool[] = [
     inviteCode: 'TRB2026',
     status: 'ACTIVE',
     scoring: leagueScoring,
+    isOwner: true,
   },
   {
     id: 3,
@@ -53,6 +55,7 @@ export const pools: Pool[] = [
     inviteCode: 'UCL2026',
     status: 'ACTIVE',
     scoring: cupScoring,
+    isOwner: true,
   },
   {
     id: 4,
@@ -66,5 +69,6 @@ export const pools: Pool[] = [
     inviteCode: 'VIP2026',
     status: 'INACTIVE',
     scoring: leagueScoring,
+    isOwner: true,
   },
 ];

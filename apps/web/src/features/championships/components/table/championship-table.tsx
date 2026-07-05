@@ -22,6 +22,7 @@ interface ChampionshipTableProps {
   sortDir: SortDirection;
   onSort: (key: ChampionshipSortKey) => void;
   onSync: (championshipId: number) => Promise<boolean>;
+  onStatusChange: (championshipId: number, active: boolean) => Promise<boolean>;
 }
 
 export function ChampionshipTable({
@@ -30,6 +31,7 @@ export function ChampionshipTable({
   sortDir,
   onSort,
   onSync,
+  onStatusChange,
 }: ChampionshipTableProps) {
   if (rows.length === 0) {
     return (
@@ -88,6 +90,7 @@ export function ChampionshipTable({
               key={championship.id}
               championship={championship}
               onSync={onSync}
+              onStatusChange={onStatusChange}
             />
           ))}
         </TableBody>

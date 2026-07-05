@@ -55,6 +55,42 @@ let ChampionshipService = class ChampionshipService {
         })
             .then(rows => rows.map(row => ({ ...row })));
     }
+    async updateStatus(championshipId, active) {
+        const championship = await this.prisma.championship.findUnique({
+            where: { id: championshipId },
+            select: {
+                id: true,
+                leagueId: true,
+                season: true,
+                name: true,
+                country: true,
+                flags: true,
+                type: true,
+                status: true,
+            },
+        });
+        if (!championship) {
+            throw new common_1.NotFoundException('Campeonato não encontrado');
+        }
+        const status = active ? 'ACTIVE' : 'INACTIVE';
+        if (championship.status === status) {
+            return championship;
+        }
+        return this.prisma.championship.update({
+            where: { id: championshipId },
+            data: { status },
+            select: {
+                id: true,
+                leagueId: true,
+                season: true,
+                name: true,
+                country: true,
+                flags: true,
+                type: true,
+                status: true,
+            },
+        });
+    }
 };
 exports.ChampionshipService = ChampionshipService;
 exports.ChampionshipService = ChampionshipService = __decorate([

@@ -66,3 +66,19 @@ export async function joinPoolRequest(inviteCode: string): Promise<PoolResponse>
 
   return response.json() as Promise<PoolResponse>;
 }
+
+export async function updatePoolStatusRequest(
+  poolId: number,
+  status: PoolResponse['status'],
+): Promise<PoolResponse> {
+  const response = await authFetch(`${API_URL}/pools/${poolId}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseApiError(response));
+  }
+
+  return response.json() as Promise<PoolResponse>;
+}
