@@ -15,7 +15,6 @@ import {
   canEditPrediction,
   getPredictionLockMessage,
 } from '../utils/prediction-window.js';
-import { canViewMemberPrediction } from '../utils/prediction-visibility.js';
 import { assertCanParticipateInPools } from '../../../../shared/auth/pool-participation.js';
 import { RankingService } from './ranking.service.js';
 import { ScoringService } from './scoring.service.js';
@@ -109,68 +108,30 @@ export class PredictionService {
         fixture => fixture.championshipId === pool.championshipId,
       );
       const members = membersByPoolId.get(pool.id) ?? [];
-      const viewAll = this.canViewAllPoolPredictions(user, pool);
-
-      if (viewAll) {
-        for (const fixture of poolFixtures) {
-          for (const member of members) {
-            const prediction =
-              predictionsByKey.get(
-                `${pool.id}:${member.id}:${fixture.id}`,
-              ) ?? null;
-            const canView = canViewMemberPrediction(
-              user,
-              pool,
-              fixture,
-              member.id,
-            );
-
-            rows.push(
-              this.toFixtureRow({
-                pool,
-                fixture,
-                member,
-                userId: user.id,
-                userRole: user.role,
-                prediction: canView ? prediction : null,
-                poolPosition:
-                  positions.get(`${pool.id}:${member.id}`) ?? 0,
-                earnedPoints: canView
-                  ? (earnedPointsByKey.get(
-                      `${pool.id}:${member.id}:${fixture.id}`,
-                    ) ?? null)
-                  : null,
-              }),
-            );
-          }
-        }
-
-        continue;
-      }
-
-      const member =
-        members.find(poolMember => poolMember.id === user.id) ?? {
-          id: user.id,
-          name: user.name,
-        };
 
       for (const fixture of poolFixtures) {
-        rows.push(
-          this.toFixtureRow({
-            pool,
-            fixture,
-            member,
-            userId: user.id,
-            userRole: user.role,
-            prediction:
-              predictionsByKey.get(`${pool.id}:${user.id}:${fixture.id}`) ??
-              null,
-            poolPosition: positions.get(`${pool.id}:${user.id}`) ?? 0,
-            earnedPoints:
-              earnedPointsByKey.get(`${pool.id}:${user.id}:${fixture.id}`) ??
-              null,
-          }),
-        );
+        for (const member of members) {
+          const prediction =
+            predictionsByKey.get(
+              `${pool.id}:${member.id}:${fixture.id}`,
+            ) ?? null;
+
+          rows.push(
+            this.toFixtureRow({
+              pool,
+              fixture,
+              member,
+              userId: user.id,
+              userRole: user.role,
+              prediction,
+              poolPosition: positions.get(`${pool.id}:${member.id}`) ?? 0,
+              earnedPoints:
+                earnedPointsByKey.get(
+                  `${pool.id}:${member.id}:${fixture.id}`,
+                ) ?? null,
+            }),
+          );
+        }
       }
     }
 
@@ -231,13 +192,7 @@ export class PredictionService {
 
     return members
       .map(member => {
-        const rawPrediction = predictionsByUserId.get(member.id) ?? null;
-        const canView = canViewMemberPrediction(
-          user,
-          pool,
-          fixture,
-          member.id,
-        );
+        const prediction = predictionsByUserId.get(member.id) ?? null;
 
         return this.toFixtureRow({
           pool,
@@ -245,13 +200,12 @@ export class PredictionService {
           member,
           userId: user.id,
           userRole: user.role,
-          prediction: canView ? rawPrediction : null,
+          prediction,
           poolPosition: positions.get(`${poolId}:${member.id}`) ?? 0,
-          earnedPoints: canView
-            ? (earnedPointsByKey.get(
-                `${poolId}:${member.id}:${fixtureId}`,
-              ) ?? null)
-            : null,
+          earnedPoints:
+            earnedPointsByKey.get(
+              `${poolId}:${member.id}:${fixtureId}`,
+            ) ?? null,
         });
       })
       .sort((left, right) =>
@@ -336,17 +290,6 @@ export class PredictionService {
         earnedPointsByKey.get(`${dto.poolId}:${user.id}:${dto.fixtureId}`) ??
         null,
     });
-  }
-
-  private canViewAllPoolPredictions(
-    user: AuthUser,
-    pool: Pick<Pool, 'ownerId'>,
-  ): boolean {
-    if (user.role === 'SUPER_ADMIN') {
-      return true;
-    }
-
-    return user.role === 'ADMIN' && pool.ownerId === user.id;
   }
 
   private async loadActiveMembersByPool(poolIds: number[]) {

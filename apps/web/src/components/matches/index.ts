@@ -4,3 +4,4 @@ export {
   getOfficialScoresFromFixture,
   getPredictionScoresFromFixture,
 } from './fixture-score-comparison';
+export { PointsBadge, getPointsTone } from './points-badge';

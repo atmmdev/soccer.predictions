@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Dialog,
   DialogContent,
@@ -12,6 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import {
   ScoreStack,
+  PointsBadge,
   getOfficialScoresFromFixture,
   getPredictionScoresFromFixture,
   hasCompleteScore,
@@ -42,10 +42,6 @@ function getSelectedPlayerLabel(fixture: PredictionFixtureItem) {
   }
 
   return `Jogador #${fixture.prediction.selectedPlayerId}`;
-}
-
-function shouldShowVisibilityNotice(rows: PredictionFixtureItem[]) {
-  return rows.some(row => !row.isOwnPrediction && row.prediction === null);
 }
 
 export function FixturePredictionsDialog({
@@ -104,17 +100,11 @@ export function FixturePredictionsDialog({
     };
   }, [fixture, open]);
 
-  const officialScores = fixture
-    ? getOfficialScoresFromFixture(fixture)
-    : null;
-  const hasOfficial =
-    officialScores !== null && hasCompleteScore(officialScores);
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-w-2xl'>
+      <DialogContent className='max-w-3xl overflow-visible sm:max-w-3xl'>
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className='pr-8 leading-snug'>
             {fixture
               ? `${fixture.homeTeam} x ${fixture.awayTeam}`
               : 'Palpites do jogo'}
@@ -137,89 +127,101 @@ export function FixturePredictionsDialog({
             Nenhum participante encontrado neste bolão.
           </p>
         ) : (
-          <div className='space-y-4'>
-            {shouldShowVisibilityNotice(rows) ? (
-              <Alert>
-                <AlertDescription>
-                  Os palpites dos outros participantes ficam visíveis após o jogo
-                  encerrar e o bolão ser fechado.
-                </AlertDescription>
-              </Alert>
-            ) : null}
+          <div className='min-w-0 overflow-hidden [&_[data-slot=table-container]]:overflow-visible [&_[data-slot=table-head]]:px-1 [&_[data-slot=table-cell]]:px-1'>
+            <Table className='table-fixed'>
+              <TableHeader>
+                <TableRow className='hover:bg-transparent'>
+                  <TableHead className='text-muted-foreground w-[34%] text-xs'>
+                    Participante
+                  </TableHead>
+                  <TableHead className='text-muted-foreground w-[10%] text-center text-xs'>
+                    Pos.
+                  </TableHead>
+                  <TableHead className='text-muted-foreground w-[14%] text-center text-xs leading-tight whitespace-normal'>
+                    Resultado
+                  </TableHead>
+                  <TableHead className='text-muted-foreground w-[14%] text-center text-xs'>
+                    Palpite
+                  </TableHead>
+                  <TableHead className='text-muted-foreground hidden w-[16%] text-xs sm:table-cell'>
+                    Jogador
+                  </TableHead>
+                  <TableHead className='text-muted-foreground w-[12%] text-center text-xs'>
+                    Pts
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rows.map(row => {
+                  const rowOfficialScores = getOfficialScoresFromFixture(row);
+                  const predictionScores = getPredictionScoresFromFixture(
+                    row.prediction,
+                  );
+                  const hasPrediction =
+                    predictionScores !== null &&
+                    hasCompleteScore(predictionScores);
+                  const rowHasOfficial = hasCompleteScore(rowOfficialScores);
 
-            {hasOfficial && officialScores ? (
-              <div className='flex items-center justify-center gap-2 text-sm'>
-                <span className='text-muted-foreground'>Resultado oficial:</span>
-                <ScoreStack scores={officialScores} />
-              </div>
-            ) : null}
-
-            <div className='overflow-x-auto'>
-              <Table>
-                <TableHeader>
-                  <TableRow className='hover:bg-transparent'>
-                    <TableHead className='text-muted-foreground text-xs'>
-                      Participante
-                    </TableHead>
-                    <TableHead className='text-muted-foreground text-center text-xs'>
-                      Posição
-                    </TableHead>
-                    <TableHead className='text-muted-foreground text-center text-xs'>
-                      Palpite
-                    </TableHead>
-                    <TableHead className='text-muted-foreground text-xs'>
-                      Jogador
-                    </TableHead>
-                    <TableHead className='text-muted-foreground text-center text-xs'>
-                      Pontos
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {rows.map(row => {
-                    const predictionScores = getPredictionScoresFromFixture(
-                      row.prediction,
-                    );
-                    const hasPrediction =
-                      predictionScores !== null &&
-                      hasCompleteScore(predictionScores);
-
-                    return (
-                      <TableRow key={row.participantId}>
-                        <TableCell className='text-xs font-medium'>
+                  return (
+                    <TableRow key={row.participantId}>
+                      <TableCell className='max-w-0 truncate text-xs font-medium'>
+                        <span title={row.participantName}>
                           {row.participantName}
-                          {row.isOwnPrediction ? (
-                            <span className='text-muted-foreground ml-1 font-normal'>
-                              (você)
-                            </span>
-                          ) : null}
-                        </TableCell>
-                        <TableCell className='text-center'>
-                          <div className='flex justify-center'>
-                            <PositionBadge position={row.poolPosition} />
-                          </div>
-                        </TableCell>
-                        <TableCell className='text-center'>
-                          {hasPrediction ? (
-                            <ScoreStack scores={predictionScores} />
-                          ) : (
-                            <span className='text-muted-foreground text-xs'>
-                              —
-                            </span>
-                          )}
-                        </TableCell>
-                        <TableCell className='text-muted-foreground text-xs'>
-                          {getSelectedPlayerLabel(row)}
-                        </TableCell>
-                        <TableCell className='text-center text-xs font-medium'>
-                          {row.earnedPoints ?? '—'}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
+                        </span>
+                        {row.isOwnPrediction ? (
+                          <span className='text-muted-foreground font-normal'>
+                            {' '}
+                            (você)
+                          </span>
+                        ) : null}
+                      </TableCell>
+                      <TableCell className='text-center'>
+                        <div className='flex justify-center'>
+                          <PositionBadge position={row.poolPosition} />
+                        </div>
+                      </TableCell>
+                      <TableCell className='text-center'>
+                        <ScoreStack
+                          scores={rowOfficialScores}
+                          compareWith={
+                            rowHasOfficial && hasPrediction
+                              ? predictionScores
+                              : undefined
+                          }
+                          highlight={rowHasOfficial && hasPrediction}
+                        />
+                      </TableCell>
+                      <TableCell className='text-center'>
+                        {hasPrediction ? (
+                          <ScoreStack
+                            scores={predictionScores}
+                            compareWith={
+                              rowHasOfficial ? rowOfficialScores : undefined
+                            }
+                            highlight={rowHasOfficial}
+                          />
+                        ) : (
+                          <span className='text-base font-bold text-muted-foreground'>
+                            —
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className='text-muted-foreground hidden max-w-0 truncate text-xs sm:table-cell'>
+                        {getSelectedPlayerLabel(row)}
+                      </TableCell>
+                      <TableCell className='text-center'>
+                        <div className='flex justify-center'>
+                          <PointsBadge
+                            points={row.earnedPoints}
+                            finished={row.matchStatus === 'FINISHED'}
+                          />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
           </div>
         )}
       </DialogContent>

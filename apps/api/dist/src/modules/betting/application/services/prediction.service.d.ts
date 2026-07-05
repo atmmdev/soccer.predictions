@@ -35,7 +35,6 @@ export declare class PredictionService {
     listForUser(user: AuthUser): Promise<PredictionFixtureResponse[]>;
     listByPoolAndFixture(poolId: number, fixtureId: number, user: AuthUser): Promise<PredictionFixtureResponse[]>;
     submit(dto: SubmitPredictionDto, user: AuthUser): Promise<PredictionFixtureResponse>;
-    private canViewAllPoolPredictions;
     private loadActiveMembersByPool;
     private loadEarnedPointsByKey;
     private toFixtureRow;

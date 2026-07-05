@@ -13,7 +13,6 @@ exports.PredictionService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
 const prediction_window_js_1 = require("../utils/prediction-window.js");
-const prediction_visibility_js_1 = require("../utils/prediction-visibility.js");
 const pool_participation_js_1 = require("../../../../shared/auth/pool-participation.js");
 const ranking_service_js_1 = require("./ranking.service.js");
 const scoring_service_js_1 = require("./scoring.service.js");
@@ -64,45 +63,20 @@ let PredictionService = class PredictionService {
         for (const pool of pools) {
             const poolFixtures = fixtures.filter(fixture => fixture.championshipId === pool.championshipId);
             const members = membersByPoolId.get(pool.id) ?? [];
-            const viewAll = this.canViewAllPoolPredictions(user, pool);
-            if (viewAll) {
-                for (const fixture of poolFixtures) {
-                    for (const member of members) {
-                        const prediction = predictionsByKey.get(`${pool.id}:${member.id}:${fixture.id}`) ?? null;
-                        const canView = (0, prediction_visibility_js_1.canViewMemberPrediction)(user, pool, fixture, member.id);
-                        rows.push(this.toFixtureRow({
-                            pool,
-                            fixture,
-                            member,
-                            userId: user.id,
-                            userRole: user.role,
-                            prediction: canView ? prediction : null,
-                            poolPosition: positions.get(`${pool.id}:${member.id}`) ?? 0,
-                            earnedPoints: canView
-                                ? (earnedPointsByKey.get(`${pool.id}:${member.id}:${fixture.id}`) ?? null)
-                                : null,
-                        }));
-                    }
-                }
-                continue;
-            }
-            const member = members.find(poolMember => poolMember.id === user.id) ?? {
-                id: user.id,
-                name: user.name,
-            };
             for (const fixture of poolFixtures) {
-                rows.push(this.toFixtureRow({
-                    pool,
-                    fixture,
-                    member,
-                    userId: user.id,
-                    userRole: user.role,
-                    prediction: predictionsByKey.get(`${pool.id}:${user.id}:${fixture.id}`) ??
-                        null,
-                    poolPosition: positions.get(`${pool.id}:${user.id}`) ?? 0,
-                    earnedPoints: earnedPointsByKey.get(`${pool.id}:${user.id}:${fixture.id}`) ??
-                        null,
-                }));
+                for (const member of members) {
+                    const prediction = predictionsByKey.get(`${pool.id}:${member.id}:${fixture.id}`) ?? null;
+                    rows.push(this.toFixtureRow({
+                        pool,
+                        fixture,
+                        member,
+                        userId: user.id,
+                        userRole: user.role,
+                        prediction,
+                        poolPosition: positions.get(`${pool.id}:${member.id}`) ?? 0,
+                        earnedPoints: earnedPointsByKey.get(`${pool.id}:${member.id}:${fixture.id}`) ?? null,
+                    }));
+                }
             }
         }
         return rows.sort((left, right) => {
@@ -144,19 +118,16 @@ let PredictionService = class PredictionService {
         const members = membersByPoolId.get(poolId) ?? [];
         return members
             .map(member => {
-            const rawPrediction = predictionsByUserId.get(member.id) ?? null;
-            const canView = (0, prediction_visibility_js_1.canViewMemberPrediction)(user, pool, fixture, member.id);
+            const prediction = predictionsByUserId.get(member.id) ?? null;
             return this.toFixtureRow({
                 pool,
                 fixture,
                 member,
                 userId: user.id,
                 userRole: user.role,
-                prediction: canView ? rawPrediction : null,
+                prediction,
                 poolPosition: positions.get(`${poolId}:${member.id}`) ?? 0,
-                earnedPoints: canView
-                    ? (earnedPointsByKey.get(`${poolId}:${member.id}:${fixtureId}`) ?? null)
-                    : null,
+                earnedPoints: earnedPointsByKey.get(`${poolId}:${member.id}:${fixtureId}`) ?? null,
             });
         })
             .sort((left, right) => left.participantName.localeCompare(right.participantName));
@@ -223,12 +194,6 @@ let PredictionService = class PredictionService {
             earnedPoints: earnedPointsByKey.get(`${dto.poolId}:${user.id}:${dto.fixtureId}`) ??
                 null,
         });
-    }
-    canViewAllPoolPredictions(user, pool) {
-        if (user.role === 'SUPER_ADMIN') {
-            return true;
-        }
-        return user.role === 'ADMIN' && pool.ownerId === user.id;
     }
     async loadActiveMembersByPool(poolIds) {
         const members = await this.prisma.poolUser.findMany({
