@@ -16,6 +16,8 @@ spawnSync(process.execPath, [path.join(rootDir, 'scripts/bootstrap-quick.mjs')],
   env: process.env,
 });
 
+// Continue even if bootstrap fails so Next can serve errors in logs.
+
 const result = spawnSync(
   process.execPath,
   [nextCli, 'start', '-H', '0.0.0.0'],
