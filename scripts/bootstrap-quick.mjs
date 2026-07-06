@@ -3,6 +3,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { setTimeout as delay } from 'node:timers/promises';
 
 const fixPrismaBinaries = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -99,6 +100,20 @@ async function testDatabaseConnection(databaseUrl) {
   }
 }
 
+async function findWorkingDatabaseUrl(primaryUrl) {
+  for (const candidateUrl of candidateDatabaseUrls(primaryUrl)) {
+    const host = new URL(candidateUrl).hostname;
+    console.log(`Testing MySQL host: ${host}`);
+
+    if (await testDatabaseConnection(candidateUrl)) {
+      console.log(`MySQL reachable via ${host}.`);
+      return candidateUrl;
+    }
+  }
+
+  return null;
+}
+
 function logCommandOutput(result) {
   if (result.stdout?.trim()) {
     console.log(result.stdout.trim());
@@ -131,25 +146,26 @@ function runMigrateDeploy(databaseUrl) {
   return result.status === 0;
 }
 
-async function runMigrations(primaryUrl) {
-  const candidates = candidateDatabaseUrls(primaryUrl);
+async function waitForApiHealth() {
+  const healthUrl = `${apiOrigin}/api/health`;
 
-  for (const candidateUrl of candidates) {
-    const host = new URL(candidateUrl).hostname;
-    console.log(`Testing MySQL host: ${host}`);
+  for (let attempt = 1; attempt <= 30; attempt += 1) {
+    try {
+      const response = await fetch(healthUrl);
 
-    if (!(await testDatabaseConnection(candidateUrl))) {
-      continue;
+      if (response.ok) {
+        console.log(`API healthy at ${healthUrl}`);
+        return true;
+      }
+    } catch {
+      // API still booting.
     }
 
-    console.log(`MySQL reachable via ${host}.`);
-
-    if (runMigrateDeploy(candidateUrl)) {
-      return candidateUrl;
-    }
+    await delay(1000);
   }
 
-  return null;
+  console.error(`API did not respond at ${healthUrl}`);
+  return false;
 }
 
 function isApiRunning() {
@@ -170,46 +186,65 @@ function isApiRunning() {
 }
 
 function startApiProcess(databaseUrl) {
+  if (!existsSync(apiMain)) {
+    console.error(`API entry not found: ${apiMain}`);
+    return false;
+  }
+
   if (isApiRunning()) {
     console.log('API already running, skipping start.');
-    return;
+    return true;
   }
 
   console.log(`Starting API on port ${apiPort}...`);
 
-  spawn(process.execPath, [apiMain], {
+  const child = spawn(process.execPath, [apiMain], {
     cwd: apiDir,
     env: {
       ...process.env,
       DATABASE_URL: databaseUrl,
       PORT: apiPort,
+      NODE_ENV: process.env.NODE_ENV ?? 'production',
     },
     stdio: 'inherit',
     detached: true,
-  }).unref();
+  });
+
+  child.unref();
+  return true;
 }
 
 const primaryDatabaseUrl = resolveDatabaseUrl();
 
 if (!primaryDatabaseUrl) {
-  console.error('DATABASE_URL is not set — cannot run migrations.');
+  console.error('DATABASE_URL is not set — cannot bootstrap API.');
   process.exit(1);
 }
 
 console.log('Bootstrap: database and API...');
 console.log(`Database target: ${maskDatabaseUrl(primaryDatabaseUrl)}`);
 
-const workingDatabaseUrl = await runMigrations(primaryDatabaseUrl);
+const workingDatabaseUrl = await findWorkingDatabaseUrl(primaryDatabaseUrl);
 
 if (!workingDatabaseUrl) {
-  console.error('Prisma migrate deploy FAILED — tables were not created.');
-  console.error('On Hostinger set DATABASE_URL host to localhost (not srv*.hstgr.io).');
-  console.error('Or run "npm run db:migrate" from your PC / paste "npm run db:sql" in phpMyAdmin.');
-  console.error('Continuing without API — Next.js will still start.');
-} else {
+  console.error('No reachable MySQL host — API will not start.');
+  console.error('On Hostinger use DATABASE_URL with host localhost (not srv*.hstgr.io).');
+  console.log('Bootstrap complete.');
+  process.exit(0);
+}
+
+process.env.DATABASE_URL = workingDatabaseUrl;
+
+const migrated = runMigrateDeploy(workingDatabaseUrl);
+
+if (migrated) {
   console.log('Migrations applied successfully.');
-  process.env.DATABASE_URL = workingDatabaseUrl;
-  startApiProcess(workingDatabaseUrl);
+} else {
+  console.warn('Migrate deploy failed or skipped — starting API anyway if tables already exist.');
+}
+
+if (startApiProcess(workingDatabaseUrl)) {
+  await waitForApiHealth();
 }
 
 console.log('Bootstrap complete.');
