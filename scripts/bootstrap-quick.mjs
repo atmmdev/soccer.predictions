@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs';
 import { spawn, spawnSync } from 'node:child_process';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -15,22 +16,87 @@ const prismaCli = path.join(apiDir, 'node_modules', 'prisma', 'build', 'index.js
 const apiPort = process.env.API_INTERNAL_PORT ?? '3001';
 const apiOrigin = process.env.API_INTERNAL_URL ?? `http://127.0.0.1:${apiPort}`;
 
-function resolveDatabaseUrl() {
-  if (process.env.DATABASE_URL) {
-    return process.env.DATABASE_URL;
-  }
+function encodeCredential(value) {
+  return encodeURIComponent(value);
+}
 
+function buildDatabaseUrl(host) {
   const user = process.env.DB_USER;
   const password = process.env.DB_PASSWORD;
   const database = process.env.DB_NAME;
-  const host = process.env.DB_HOST ?? 'localhost';
   const port = process.env.DB_PORT ?? '3306';
 
   if (!user || !password || !database) {
     return null;
   }
 
-  return `mysql://${encodeURIComponent(user)}:${encodeURIComponent(password)}@${host}:${port}/${database}?allowPublicKeyRetrieval=true`;
+  return `mysql://${encodeCredential(user)}:${encodeCredential(password)}@${host}:${port}/${database}?allowPublicKeyRetrieval=true`;
+}
+
+function withDatabaseHost(databaseUrl, host) {
+  const parsed = new URL(databaseUrl);
+  parsed.hostname = host;
+  return parsed.toString();
+}
+
+function resolveDatabaseUrl() {
+  if (process.env.DATABASE_URL) {
+    return process.env.DATABASE_URL;
+  }
+
+  const host = process.env.DB_HOST ?? 'localhost';
+  return buildDatabaseUrl(host);
+}
+
+function maskDatabaseUrl(databaseUrl) {
+  return databaseUrl.replace(/:([^:@/]+)@/, ':***@');
+}
+
+function candidateDatabaseUrls(primaryUrl) {
+  const parsed = new URL(primaryUrl);
+  const hosts = [
+    parsed.hostname,
+    process.env.DB_HOST,
+    'localhost',
+    '127.0.0.1',
+  ].filter(Boolean);
+
+  const uniqueHosts = [...new Set(hosts)];
+
+  return uniqueHosts.map(host => {
+    if (host === parsed.hostname) {
+      return primaryUrl;
+    }
+
+    return buildDatabaseUrl(host) ?? withDatabaseHost(primaryUrl, host);
+  });
+}
+
+async function testDatabaseConnection(databaseUrl) {
+  try {
+    const require = createRequire(path.join(apiDir, 'package.json'));
+    const mariadb = require('mariadb');
+    const parsed = new URL(databaseUrl);
+
+    const connection = await mariadb.createConnection({
+      host: parsed.hostname,
+      port: Number(parsed.port || 3306),
+      user: decodeURIComponent(parsed.username),
+      password: decodeURIComponent(parsed.password),
+      database: parsed.pathname.replace(/^\//, ''),
+      connectTimeout: 5000,
+    });
+
+    await connection.query('SELECT 1');
+    await connection.end();
+    return true;
+  } catch (error) {
+    console.error(
+      `MySQL unreachable at ${new URL(databaseUrl).hostname}:`,
+      error instanceof Error ? error.message : error,
+    );
+    return false;
+  }
 }
 
 function logCommandOutput(result) {
@@ -43,12 +109,12 @@ function logCommandOutput(result) {
   }
 }
 
-function runMigrations(databaseUrl) {
+function runMigrateDeploy(databaseUrl) {
   const env = { ...process.env, DATABASE_URL: databaseUrl };
 
   spawnSync(process.execPath, [fixPrismaBinaries], { stdio: 'inherit' });
 
-  console.log('Running prisma migrate deploy...');
+  console.log(`Running prisma migrate deploy via ${new URL(databaseUrl).hostname}...`);
 
   if (!existsSync(prismaCli)) {
     console.error(`Prisma CLI not found at ${prismaCli}`);
@@ -63,6 +129,27 @@ function runMigrations(databaseUrl) {
 
   logCommandOutput(result);
   return result.status === 0;
+}
+
+async function runMigrations(primaryUrl) {
+  const candidates = candidateDatabaseUrls(primaryUrl);
+
+  for (const candidateUrl of candidates) {
+    const host = new URL(candidateUrl).hostname;
+    console.log(`Testing MySQL host: ${host}`);
+
+    if (!(await testDatabaseConnection(candidateUrl))) {
+      continue;
+    }
+
+    console.log(`MySQL reachable via ${host}.`);
+
+    if (runMigrateDeploy(candidateUrl)) {
+      return candidateUrl;
+    }
+  }
+
+  return null;
 }
 
 function isApiRunning() {
@@ -82,7 +169,7 @@ function isApiRunning() {
   }
 }
 
-function startApiProcess() {
+function startApiProcess(databaseUrl) {
   if (isApiRunning()) {
     console.log('API already running, skipping start.');
     return;
@@ -94,6 +181,7 @@ function startApiProcess() {
     cwd: apiDir,
     env: {
       ...process.env,
+      DATABASE_URL: databaseUrl,
       PORT: apiPort,
     },
     stdio: 'inherit',
@@ -101,26 +189,27 @@ function startApiProcess() {
   }).unref();
 }
 
-const databaseUrl = resolveDatabaseUrl();
+const primaryDatabaseUrl = resolveDatabaseUrl();
 
-if (!databaseUrl) {
+if (!primaryDatabaseUrl) {
   console.error('DATABASE_URL is not set — cannot run migrations.');
   process.exit(1);
 }
 
 console.log('Bootstrap: database and API...');
-console.log(`DATABASE_URL host: ${new URL(databaseUrl).hostname}`);
+console.log(`Database target: ${maskDatabaseUrl(primaryDatabaseUrl)}`);
 
-const migrated = runMigrations(databaseUrl);
+const workingDatabaseUrl = await runMigrations(primaryDatabaseUrl);
 
-if (!migrated) {
+if (!workingDatabaseUrl) {
   console.error('Prisma migrate deploy FAILED — tables were not created.');
-  console.error('Fix: run "npm run db:migrate" from your PC, or paste "npm run db:sql" into phpMyAdmin.');
+  console.error('On Hostinger set DATABASE_URL host to localhost (not srv*.hstgr.io).');
+  console.error('Or run "npm run db:migrate" from your PC / paste "npm run db:sql" in phpMyAdmin.');
   console.error('Continuing without API — Next.js will still start.');
 } else {
   console.log('Migrations applied successfully.');
-  process.env.DATABASE_URL = databaseUrl;
-  startApiProcess();
+  process.env.DATABASE_URL = workingDatabaseUrl;
+  startApiProcess(workingDatabaseUrl);
 }
 
 console.log('Bootstrap complete.');
