@@ -1,3 +1,4 @@
+import { existsSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import net from 'node:net';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
@@ -6,8 +7,46 @@ import { fileURLToPath } from 'node:url';
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const webDir = path.join(rootDir, 'apps/web');
 const nextCli = path.join(webDir, 'node_modules', 'next', 'dist', 'bin', 'next');
+const serverLock = path.join(rootDir, '.server.lock');
 
 const port = Number(process.env.PORT ?? '3000');
+
+function acquireServerLock() {
+  if (existsSync(serverLock)) {
+    const [ownerPidRaw, startedAtRaw] = readFileSync(serverLock, 'utf8').split(':');
+    const ownerPid = Number(ownerPidRaw);
+    const startedAt = Number(startedAtRaw);
+    const lockAgeMs = Date.now() - startedAt;
+
+    if (Number.isFinite(ownerPid) && ownerPid !== process.pid && lockAgeMs < 120_000) {
+      try {
+        process.kill(ownerPid, 0);
+        console.log(`Another server instance is active (pid ${ownerPid}). Exiting.`);
+        process.exit(0);
+      } catch {
+        // Stale lock.
+      }
+    }
+  }
+
+  writeFileSync(serverLock, `${process.pid}:${Date.now()}`);
+
+  process.on('exit', () => {
+    try {
+      if (!existsSync(serverLock)) {
+        return;
+      }
+
+      const [ownerPidRaw] = readFileSync(serverLock, 'utf8').split(':');
+
+      if (Number(ownerPidRaw) === process.pid) {
+        unlinkSync(serverLock);
+      }
+    } catch {
+      // Ignore cleanup errors on shutdown.
+    }
+  });
+}
 
 function isPortAvailable(listenPort) {
   return new Promise(resolve => {
@@ -21,6 +60,8 @@ function isPortAvailable(listenPort) {
     server.listen(listenPort, '0.0.0.0');
   });
 }
+
+acquireServerLock();
 
 console.log('Starting production server');
 console.log(`PORT=${port}`);

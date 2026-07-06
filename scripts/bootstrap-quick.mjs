@@ -1,21 +1,21 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import { spawn, spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { setTimeout as delay } from 'node:timers/promises';
 
-const fixPrismaBinaries = path.join(
-  path.dirname(fileURLToPath(import.meta.url)),
-  'fix-prisma-binaries.mjs',
-);
-
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const apiDir = path.join(rootDir, 'apps/api');
 const apiMain = path.join(apiDir, 'dist', 'src', 'main.js');
 const prismaCli = path.join(apiDir, 'node_modules', 'prisma', 'build', 'index.js');
+const fixPrismaBinaries = path.join(rootDir, 'scripts/fix-prisma-binaries.mjs');
+const bootstrapLock = path.join(rootDir, '.bootstrap.lock');
 const apiPort = process.env.API_INTERNAL_PORT ?? '3001';
 const apiOrigin = process.env.API_INTERNAL_URL ?? `http://127.0.0.1:${apiPort}`;
+const skipRuntimeMigrate =
+  process.env.RUN_RUNTIME_MIGRATE !== '1' &&
+  (process.env.SKIP_RUNTIME_MIGRATE === '1' || process.env.NODE_ENV === 'production');
 
 function encodeCredential(value) {
   return encodeURIComponent(value);
@@ -56,10 +56,10 @@ function maskDatabaseUrl(databaseUrl) {
 function candidateDatabaseUrls(primaryUrl) {
   const parsed = new URL(primaryUrl);
   const hosts = [
-    parsed.hostname,
-    process.env.DB_HOST,
     'localhost',
     '127.0.0.1',
+    parsed.hostname,
+    process.env.DB_HOST,
   ].filter(Boolean);
 
   const uniqueHosts = [...new Set(hosts)];
@@ -71,6 +71,40 @@ function candidateDatabaseUrls(primaryUrl) {
 
     return buildDatabaseUrl(host) ?? withDatabaseHost(primaryUrl, host);
   });
+}
+
+function acquireBootstrapLock() {
+  if (!existsSync(bootstrapLock)) {
+    writeFileSync(bootstrapLock, String(process.pid));
+    return true;
+  }
+
+  const ownerPid = Number(readFileSync(bootstrapLock, 'utf8').trim());
+
+  if (Number.isFinite(ownerPid) && ownerPid !== process.pid) {
+    try {
+      process.kill(ownerPid, 0);
+      console.log(`Bootstrap already running (pid ${ownerPid}), skipping.`);
+      return false;
+    } catch {
+      // Stale lock from a crashed process.
+    }
+  }
+
+  writeFileSync(bootstrapLock, String(process.pid));
+  return true;
+}
+
+function releaseBootstrapLock() {
+  if (!existsSync(bootstrapLock)) {
+    return;
+  }
+
+  const ownerPid = Number(readFileSync(bootstrapLock, 'utf8').trim());
+
+  if (ownerPid === process.pid) {
+    unlinkSync(bootstrapLock);
+  }
 }
 
 async function testDatabaseConnection(databaseUrl) {
@@ -146,10 +180,10 @@ function runMigrateDeploy(databaseUrl) {
   return result.status === 0;
 }
 
-async function waitForApiHealth() {
+async function waitForApiHealth(maxAttempts = 10) {
   const healthUrl = `${apiOrigin}/api/health`;
 
-  for (let attempt = 1; attempt <= 30; attempt += 1) {
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     try {
       const response = await fetch(healthUrl);
 
@@ -161,7 +195,7 @@ async function waitForApiHealth() {
       // API still booting.
     }
 
-    await delay(1000);
+    await delay(500);
   }
 
   console.error(`API did not respond at ${healthUrl}`);
@@ -206,7 +240,7 @@ function startApiProcess(databaseUrl) {
       PORT: apiPort,
       NODE_ENV: process.env.NODE_ENV ?? 'production',
     },
-    stdio: 'inherit',
+    stdio: 'ignore',
     detached: true,
   });
 
@@ -214,37 +248,52 @@ function startApiProcess(databaseUrl) {
   return true;
 }
 
-const primaryDatabaseUrl = resolveDatabaseUrl();
+if (!acquireBootstrapLock()) {
+  if (isApiRunning()) {
+    console.log('API already healthy, bootstrap skipped.');
+  }
 
-if (!primaryDatabaseUrl) {
-  console.error('DATABASE_URL is not set — cannot bootstrap API.');
-  process.exit(1);
-}
-
-console.log('Bootstrap: database and API...');
-console.log(`Database target: ${maskDatabaseUrl(primaryDatabaseUrl)}`);
-
-const workingDatabaseUrl = await findWorkingDatabaseUrl(primaryDatabaseUrl);
-
-if (!workingDatabaseUrl) {
-  console.error('No reachable MySQL host — API will not start.');
-  console.error('On Hostinger use DATABASE_URL with host localhost (not srv*.hstgr.io).');
-  console.log('Bootstrap complete.');
   process.exit(0);
 }
 
-process.env.DATABASE_URL = workingDatabaseUrl;
+try {
+  const primaryDatabaseUrl = resolveDatabaseUrl();
 
-const migrated = runMigrateDeploy(workingDatabaseUrl);
+  if (!primaryDatabaseUrl) {
+    console.error('DATABASE_URL is not set — cannot bootstrap API.');
+    process.exit(1);
+  }
 
-if (migrated) {
-  console.log('Migrations applied successfully.');
-} else {
-  console.warn('Migrate deploy failed or skipped — starting API anyway if tables already exist.');
+  console.log('Bootstrap: database and API...');
+  console.log(`Database target: ${maskDatabaseUrl(primaryDatabaseUrl)}`);
+
+  const workingDatabaseUrl = await findWorkingDatabaseUrl(primaryDatabaseUrl);
+
+  if (!workingDatabaseUrl) {
+    console.error('No reachable MySQL host — API will not start.');
+    console.error('Set DATABASE_URL with host localhost on Hostinger.');
+    process.exit(0);
+  }
+
+  process.env.DATABASE_URL = workingDatabaseUrl;
+
+  if (skipRuntimeMigrate) {
+    console.log('Skipping runtime migrate (use npm run db:migrate from your PC).');
+  } else {
+    const migrated = runMigrateDeploy(workingDatabaseUrl);
+
+    if (migrated) {
+      console.log('Migrations applied successfully.');
+    } else {
+      console.warn('Migrate deploy failed — starting API anyway.');
+    }
+  }
+
+  if (startApiProcess(workingDatabaseUrl)) {
+    await waitForApiHealth();
+  }
+
+  console.log('Bootstrap complete.');
+} finally {
+  releaseBootstrapLock();
 }
-
-if (startApiProcess(workingDatabaseUrl)) {
-  await waitForApiHealth();
-}
-
-console.log('Bootstrap complete.');
