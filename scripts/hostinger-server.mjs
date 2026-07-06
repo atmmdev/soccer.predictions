@@ -1,26 +1,29 @@
-import { createServer } from 'node:http';
-import { createRequire } from 'node:module';
+import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { bootstrapApi } from './bootstrap-api.mjs';
+const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+const webDir = path.join(rootDir, 'apps/web');
+const nextCli = path.join(webDir, 'node_modules', 'next', 'dist', 'bin', 'next');
 
-const webDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'apps/web');
-const port = Number(process.env.PORT ?? 3000);
-const host = process.env.HOST ?? '0.0.0.0';
-const require = createRequire(path.join(webDir, 'package.json'));
-const next = require('next');
+console.log(`Starting production server`);
+console.log(`PORT=${process.env.PORT ?? '(not set — Next defaults to 3000)'}`);
+console.log(`NODE_ENV=${process.env.NODE_ENV ?? '(not set)'}`);
 
-const nextApp = next({ dev: false, dir: webDir });
-const handle = nextApp.getRequestHandler();
-
-await nextApp.prepare();
-
-createServer((request, response) => {
-  handle(request, response);
-}).listen(port, host, () => {
-  console.log(`Soccer Predictions ready on http://${host}:${port}`);
-  void bootstrapApi().catch(error => {
-    console.error('API bootstrap failed:', error);
-  });
+spawnSync(process.execPath, [path.join(rootDir, 'scripts/bootstrap-quick.mjs')], {
+  cwd: rootDir,
+  stdio: 'inherit',
+  env: process.env,
 });
+
+const result = spawnSync(
+  process.execPath,
+  [nextCli, 'start', '-H', '0.0.0.0'],
+  {
+    cwd: webDir,
+    stdio: 'inherit',
+    env: process.env,
+  },
+);
+
+process.exit(result.status ?? 1);
