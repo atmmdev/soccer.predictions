@@ -1,10 +1,26 @@
-const CACHE_NAME = 'soccer-predictions-v1';
+const CACHE_NAME = 'soccer-predictions-v2';
 const SHELL_ASSETS = [
   '/offline.html',
   '/favicon.png',
   '/icon.png',
   '/brand/logomarca.png',
 ];
+
+function isCacheableRequest(request) {
+  const url = new URL(request.url);
+  return url.protocol === 'http:' || url.protocol === 'https:';
+}
+
+function cacheResponse(request, response) {
+  if (!isCacheableRequest(request) || !response.ok) {
+    return;
+  }
+
+  const copy = response.clone();
+  caches.open(CACHE_NAME).then(cache => cache.put(request, copy)).catch(() => {
+    // Ignore cache errors (e.g. opaque responses, extension URLs).
+  });
+}
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -29,7 +45,7 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const { request } = event;
 
-  if (request.method !== 'GET') {
+  if (request.method !== 'GET' || !isCacheableRequest(request)) {
     return;
   }
 
@@ -43,8 +59,7 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       fetch(request)
         .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+          cacheResponse(request, response);
           return response;
         })
         .catch(() =>
@@ -59,12 +74,7 @@ self.addEventListener('fetch', event => {
       cached =>
         cached ??
         fetch(request).then(response => {
-          if (!response.ok) {
-            return response;
-          }
-
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+          cacheResponse(request, response);
           return response;
         }),
     ),

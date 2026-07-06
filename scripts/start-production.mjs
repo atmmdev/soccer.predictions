@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { spawn, spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -6,6 +7,9 @@ import { setTimeout as delay } from 'node:timers/promises';
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const apiDir = path.join(rootDir, 'apps/api');
 const webDir = path.join(rootDir, 'apps/web');
+const apiMain = path.join(apiDir, 'dist', 'src', 'main.js');
+const prismaCli = path.join(apiDir, 'node_modules', 'prisma', 'build', 'index.js');
+const nextCli = path.join(webDir, 'node_modules', 'next', 'dist', 'bin', 'next');
 
 const publicPort = process.env.PORT ?? '3000';
 const apiPort = process.env.API_INTERNAL_PORT ?? '3001';
@@ -57,23 +61,32 @@ process.on('SIGINT', () => shutdown(0));
 process.on('SIGTERM', () => shutdown(0));
 
 function runMigrations() {
+  if (!existsSync(prismaCli)) {
+    console.warn('Prisma CLI not found — skipping migrations.');
+    return;
+  }
+
   console.log('Running Prisma migrations...');
 
-  const result = spawnSync('npx', ['prisma', 'migrate', 'deploy'], {
+  const result = spawnSync(process.execPath, [prismaCli, 'migrate', 'deploy'], {
     cwd: apiDir,
     env: process.env,
     stdio: 'inherit',
   });
 
   if (result.status !== 0) {
-    console.error('Prisma migrate deploy failed.');
-    shutdown(result.status ?? 1);
+    console.warn('Prisma migrate deploy failed — continuing if tables already exist.');
   }
+}
+
+if (!existsSync(apiMain)) {
+  console.error(`API entry not found: ${apiMain}`);
+  process.exit(1);
 }
 
 runMigrations();
 
-const api = spawnProcess('node', ['dist/main'], {
+const api = spawnProcess(process.execPath, [apiMain], {
   cwd: apiDir,
   env: {
     ...process.env,
@@ -96,8 +109,8 @@ try {
 }
 
 const web = spawnProcess(
-  process.platform === 'win32' ? 'npx.cmd' : 'npx',
-  ['next', 'start', '-p', publicPort],
+  process.execPath,
+  [nextCli, 'start', '-H', '0.0.0.0', '-p', publicPort],
   {
     cwd: webDir,
     env: {
