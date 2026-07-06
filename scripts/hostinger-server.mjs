@@ -6,8 +6,10 @@ const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const webDir = path.join(rootDir, 'apps/web');
 const nextCli = path.join(webDir, 'node_modules', 'next', 'dist', 'bin', 'next');
 
+const port = process.env.PORT ?? '3000';
+
 console.log(`Starting production server`);
-console.log(`PORT=${process.env.PORT ?? '(not set — Next defaults to 3000)'}`);
+console.log(`PORT=${port}`);
 console.log(`NODE_ENV=${process.env.NODE_ENV ?? '(not set)'}`);
 
 spawnSync(process.execPath, [path.join(rootDir, 'scripts/bootstrap-quick.mjs')], {
@@ -16,15 +18,13 @@ spawnSync(process.execPath, [path.join(rootDir, 'scripts/bootstrap-quick.mjs')],
   env: process.env,
 });
 
-// Continue even if bootstrap fails so Next can serve errors in logs.
-
 const result = spawnSync(
   process.execPath,
-  [nextCli, 'start', '-H', '0.0.0.0'],
+  [nextCli, 'start', '-H', '0.0.0.0', '-p', port],
   {
     cwd: webDir,
     stdio: 'inherit',
-    env: process.env,
+    env: { ...process.env, PORT: port },
   },
 );
 

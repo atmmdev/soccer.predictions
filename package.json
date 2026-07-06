@@ -6,7 +6,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "postinstall": "npm install --prefix apps/api --include=dev && npm install --prefix apps/web --include=dev",
+    "postinstall": "npm install --prefix apps/api --include=dev && npm install --prefix apps/web --include=dev && node scripts/fix-prisma-binaries.mjs",
     "build": "npm run build --prefix apps/api && npm run build --prefix apps/web",
     "build:deploy": "npm run build",
     "db:migrate": "npm run prisma:migrate:deploy --prefix apps/api",

@@ -3,6 +3,11 @@ import { spawn, spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+const fixPrismaBinaries = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  'fix-prisma-binaries.mjs',
+);
+
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const apiDir = path.join(rootDir, 'apps/api');
 const apiMain = path.join(apiDir, 'dist', 'src', 'main.js');
@@ -41,31 +46,23 @@ function logCommandOutput(result) {
 function runMigrations(databaseUrl) {
   const env = { ...process.env, DATABASE_URL: databaseUrl };
 
+  spawnSync(process.execPath, [fixPrismaBinaries], { stdio: 'inherit' });
+
   console.log('Running prisma migrate deploy...');
 
-  if (existsSync(prismaCli)) {
-    const result = spawnSync(process.execPath, [prismaCli, 'migrate', 'deploy'], {
-      cwd: apiDir,
-      env,
-      encoding: 'utf8',
-    });
-
-    logCommandOutput(result);
-
-    if (result.status === 0) {
-      return true;
-    }
+  if (!existsSync(prismaCli)) {
+    console.error(`Prisma CLI not found at ${prismaCli}`);
+    return false;
   }
 
-  const npmResult = spawnSync('npm', ['run', 'prisma:migrate:deploy'], {
+  const result = spawnSync(process.execPath, [prismaCli, 'migrate', 'deploy'], {
     cwd: apiDir,
     env,
     encoding: 'utf8',
-    shell: true,
   });
 
-  logCommandOutput(npmResult);
-  return npmResult.status === 0;
+  logCommandOutput(result);
+  return result.status === 0;
 }
 
 function isApiRunning() {
@@ -118,11 +115,12 @@ const migrated = runMigrations(databaseUrl);
 
 if (!migrated) {
   console.error('Prisma migrate deploy FAILED — tables were not created.');
-  console.error('Run manually: npm run db:migrate');
-  process.exit(1);
+  console.error('Fix: run "npm run db:migrate" from your PC, or paste "npm run db:sql" into phpMyAdmin.');
+  console.error('Continuing without API — Next.js will still start.');
+} else {
+  console.log('Migrations applied successfully.');
+  process.env.DATABASE_URL = databaseUrl;
+  startApiProcess();
 }
 
-console.log('Migrations applied successfully.');
-process.env.DATABASE_URL = databaseUrl;
-startApiProcess();
 console.log('Bootstrap complete.');
