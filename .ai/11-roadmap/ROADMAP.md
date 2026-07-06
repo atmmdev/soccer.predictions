@@ -6,7 +6,7 @@
 
 **Ritmo:** 15–20h/semana | **Modo:** guiado (autor implementa, agente revisa)
 
-**Progresso atual (4 jul):** ~**78%** — scoring completo; falta deploy e polish.
+**Progresso atual (6 jul):** ~**85%** — scoring completo; PWA básico pronto; falta publicar deploy.
 
 ---
 
@@ -45,7 +45,8 @@
 - [x] Scoring Engine + `PointHistory` (regras base + jogador + copa)
 - [x] Rankings derivados
 - [x] Convites por link (`/join/:code`)
-- [ ] PWA + deploy
+- [x] PWA básico (manifest + service worker + offline)
+- [~] Deploy Hostinger (`soccer.atmm.dev`)
 
 ---
 
@@ -110,4 +111,4 @@ Jul 21 ─── 🎯 MVP com amigos
 3. **Lineups** — endpoint + UI sem mock
 4. **Scoring** — jogador marcador, hat-trick, multiplicadores de copa
 5. **Championships admin** — sair dos mocks locais
-6. **Deploy** — Vercel (web) + Railway/Render (api) + PWA básico
+6. **Deploy** — Hostinger (`soccer.atmm.dev`, monorepo unificado) + PWA básico ✅

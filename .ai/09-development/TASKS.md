@@ -8,9 +8,9 @@
 - `[ ]` Pendente
 - `[~]` Em andamento / parcial
 
-## Progresso MVP estimado: **~78%**
+## Progresso MVP estimado: **~85%**
 
-Fluxo funcional com **seed** (login → bolão → palpite → ranking). Bloqueadores: API Football, import real, cron sync, scoring de jogador/copa, deploy.
+Fluxo funcional com **seed** (login → bolão → palpite → ranking). Bloqueadores restantes: publicar deploy na Hostinger.
 
 ---
 
@@ -80,9 +80,9 @@ Fluxo funcional com **seed** (login → bolão → palpite → ranking). Bloquea
 - [x] Feature `rankings/` — query derivada, tabela ordenável, legenda
 - [x] Convite `/join/:code`
 - [x] Dashboard alimentado por API (pools, palpites, ranking)
-- [ ] PWA: manifest + service worker
-- [ ] Deploy Vercel + Railway/Render
-- [ ] Swagger endpoints principais
+- [x] PWA: manifest + service worker
+- [~] Deploy Hostinger (`soccer.atmm.dev` — scripts raiz prontos, pendente publicar no hPanel)
+- [x] Swagger endpoints principais
 
 ---
 
