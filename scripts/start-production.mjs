@@ -1,2 +1,2 @@
-// Backward-compatible entry for Hostinger setups still pointing here.
-import './hostinger-server.mjs';
+// Backward-compatible entry for older Hostinger configs.
+import '../apps/web/server.mjs';

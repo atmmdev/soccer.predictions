@@ -74,7 +74,8 @@ Front e API sobem juntos: Next.js na porta pública (`$PORT`) e NestJS interno n
 | Install | `npm ci` |
 | Build | `npm run build` |
 | Start | `npm run start` |
-| Arquivo de entrada | `scripts/hostinger-server.mjs` |
+| Arquivo de entrada | `apps/web/server.mjs` |
+| Output directory | `apps/web/.next` |
 
 5. Copie as variáveis de `deploy/hostinger.env.example` para **Environment Variables** no hPanel (ajuste credenciais e secrets).
 

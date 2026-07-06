@@ -11,8 +11,8 @@
     "build:deploy": "npm run build",
     "db:migrate": "npm run prisma:migrate:deploy --prefix apps/api",
     "db:sql": "node scripts/export-migrations-sql.mjs",
-    "start": "node scripts/hostinger-server.mjs",
-    "start:prod": "node scripts/hostinger-server.mjs",
+    "start": "node apps/web/server.mjs",
+    "start:prod": "node apps/web/server.mjs",
     "start:unified": "node scripts/start-production.mjs"
   }
 }
