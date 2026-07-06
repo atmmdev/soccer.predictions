@@ -8,7 +8,7 @@
   "scripts": {
     "postinstall": "npm install --prefix apps/api && npm install --prefix apps/web",
     "build": "npm run build --prefix apps/api && npm run build --prefix apps/web",
-    "build:deploy": "npm run prisma:migrate:deploy --prefix apps/api && npm run build",
+    "build:deploy": "npm run build",
     "start": "node scripts/start-production.mjs",
     "start:prod": "node scripts/start-production.mjs"
   }

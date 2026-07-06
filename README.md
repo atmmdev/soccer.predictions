@@ -72,8 +72,8 @@ Front e API sobem juntos: Next.js na porta pública (`$PORT`) e NestJS interno n
 | ----- | ----- |
 | Node.js | 20 |
 | Install | `npm ci` |
-| Build | `npm run build:deploy` |
-| Start | `npm run start` |
+| Build | `npm run build` |
+| Start | `npm run start` (migrations rodam automaticamente na subida) |
 
 5. Copie as variáveis de `deploy/hostinger.env.example` para **Environment Variables** no hPanel (ajuste credenciais e secrets).
 

@@ -1,4 +1,4 @@
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { setTimeout as delay } from 'node:timers/promises';
@@ -55,6 +55,23 @@ function shutdown(exitCode = 0) {
 
 process.on('SIGINT', () => shutdown(0));
 process.on('SIGTERM', () => shutdown(0));
+
+function runMigrations() {
+  console.log('Running Prisma migrations...');
+
+  const result = spawnSync('npx', ['prisma', 'migrate', 'deploy'], {
+    cwd: apiDir,
+    env: process.env,
+    stdio: 'inherit',
+  });
+
+  if (result.status !== 0) {
+    console.error('Prisma migrate deploy failed.');
+    shutdown(result.status ?? 1);
+  }
+}
+
+runMigrations();
 
 const api = spawnProcess('node', ['dist/main'], {
   cwd: apiDir,
