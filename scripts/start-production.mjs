@@ -73,7 +73,7 @@ function runMigrations() {
 
 runMigrations();
 
-const api = spawnProcess('node', ['dist/main'], {
+const api = spawnProcess('node', ['dist/src/main.js'], {
   cwd: apiDir,
   env: {
     ...process.env,
