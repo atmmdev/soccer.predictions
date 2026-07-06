@@ -6,7 +6,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "postinstall": "npm install --prefix apps/api && npm install --prefix apps/web",
+    "postinstall": "npm install --prefix apps/api --include=dev && npm install --prefix apps/web --include=dev",
     "build": "npm run build --prefix apps/api && npm run build --prefix apps/web",
     "build:deploy": "npm run build",
     "start": "node scripts/start-production.mjs",
