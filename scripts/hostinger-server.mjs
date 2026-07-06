@@ -1,2 +1,2 @@
-// Backward-compatible entry for older Hostinger configs.
-import '../apps/web/server.mjs';
+// Hostinger entry (hPanel startup file).
+import './run-web-server.mjs';
