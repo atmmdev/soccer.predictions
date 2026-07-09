@@ -192,11 +192,22 @@ export class ApiFootballClient {
       url.searchParams.set(key, value);
     }
 
-    const response = await fetch(url, {
-      headers: {
-        'x-apisports-key': this.apiKey,
-      },
-    });
+    let response: Response;
+
+    try {
+      response = await fetch(url, {
+        headers: {
+          'x-apisports-key': this.apiKey,
+        },
+      });
+    } catch (error) {
+      const detail =
+        error instanceof Error ? error.message : 'falha de rede desconhecida';
+
+      throw new BadGatewayException(
+        `Não foi possível conectar à API Football: (${detail}).`,
+      );
+    }
 
     if (!response.ok) {
       throw new BadGatewayException(
