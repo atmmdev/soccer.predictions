@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
     "postinstall": "npm install --prefix apps/api --include=dev && npm install --prefix apps/web --include=dev && node scripts/fix-prisma-binaries.mjs",

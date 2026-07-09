@@ -70,7 +70,7 @@ Front e API sobem juntos: Next.js na porta pública (`$PORT`) e NestJS interno n
 
 | Campo | Valor |
 | ----- | ----- |
-| Node.js | 20 |
+| Node.js | 22 |
 | Install | `npm ci` |
 | Build | `npm run build` |
 | Start | `npm run start` |
