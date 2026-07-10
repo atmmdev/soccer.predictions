@@ -20,6 +20,8 @@ export interface PredictionFixtureItem {
   round: number;
   homeTeam: string;
   awayTeam: string;
+  homeTeamLogo: string;
+  awayTeamLogo: string;
   date: string;
   matchStatus: MatchStatus;
   /** Placar oficial; null enquanto o jogo não começou. */

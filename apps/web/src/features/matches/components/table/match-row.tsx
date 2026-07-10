@@ -1,7 +1,7 @@
 'use client';
 
 import { MatchStatusBadge } from '@/features/dashboard/matches/components/match-status-badge';
-import { ScoreStack } from '@/components/matches';
+import { MatchTeamsStack, ScoreStack } from '@/components/matches';
 import {
   DateTimeDisplay,
   dateTimeTableCellClassName,
@@ -24,10 +24,12 @@ export function MatchRow({ fixture }: MatchRowProps) {
         <MatchStatusBadge status={fixture.status} />
       </TableCell>
       <TableCell className='text-xs'>
-        <div className='flex flex-col gap-1'>
-          <span className='font-medium'>{fixture.homeTeam}</span>
-          <span className='font-medium'>{fixture.awayTeam}</span>
-        </div>
+        <MatchTeamsStack
+          homeTeam={fixture.homeTeam}
+          awayTeam={fixture.awayTeam}
+          homeTeamLogo={fixture.homeTeamLogo}
+          awayTeamLogo={fixture.awayTeamLogo}
+        />
       </TableCell>
       <TableCell className='text-muted-foreground text-xs'>
         {fixture.championshipName}

@@ -76,9 +76,14 @@ let ChampionshipService = class ChampionshipService {
         if (championship.status === status) {
             return championship;
         }
+        const isCurrentSeason = championship.season === new Date().getFullYear();
         return this.prisma.championship.update({
             where: { id: championshipId },
-            data: { status },
+            data: {
+                status,
+                isCurrentSeason,
+                allowNewPools: active && isCurrentSeason,
+            },
             select: {
                 id: true,
                 leagueId: true,

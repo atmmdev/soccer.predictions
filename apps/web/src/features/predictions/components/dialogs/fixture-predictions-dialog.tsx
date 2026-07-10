@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import {
+  MatchTeamsInline,
   ScoreStack,
   PointsBadge,
   getOfficialScoresFromFixture,
@@ -105,9 +106,18 @@ export function FixturePredictionsDialog({
       <DialogContent className='max-w-3xl overflow-visible sm:max-w-3xl'>
         <DialogHeader>
           <DialogTitle className='pr-8 leading-snug'>
-            {fixture
-              ? `${fixture.homeTeam} x ${fixture.awayTeam}`
-              : 'Palpites do jogo'}
+            {fixture ? (
+              <MatchTeamsInline
+                homeTeam={fixture.homeTeam}
+                awayTeam={fixture.awayTeam}
+                homeTeamLogo={fixture.homeTeamLogo}
+                awayTeamLogo={fixture.awayTeamLogo}
+                className='text-base font-semibold'
+                size={22}
+              />
+            ) : (
+              'Palpites do jogo'
+            )}
           </DialogTitle>
           {fixture ? (
             <DialogDescription>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { TeamCrest } from '@/components/matches';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -46,12 +47,14 @@ function PlayerButton({
 
 function TeamColumn({
   teamName,
+  teamLogo,
   players,
   selectedPlayerId,
   disabled,
   onSelect,
 }: {
   teamName: string;
+  teamLogo: string;
   players: FixtureLineup['home']['players'];
   selectedPlayerId: number | null;
   disabled: boolean;
@@ -59,7 +62,12 @@ function TeamColumn({
 }) {
   return (
     <div className='flex min-w-0 flex-1 flex-col gap-2'>
-      <p className='truncate text-center text-sm font-semibold'>{teamName}</p>
+      <TeamCrest
+        name={teamName}
+        logo={teamLogo}
+        size={18}
+        className='justify-center text-sm font-semibold'
+      />
       <div className='flex flex-col gap-2'>
         {players.map(player => (
           <PlayerButton
@@ -126,9 +134,12 @@ export function PlayerGoalPicker({
       {hasSelection && selected ? (
         <div className='flex items-center justify-between gap-2 rounded-lg border border-primary/40 bg-primary/5 px-3 py-2'>
           <div className='flex min-w-0 items-center gap-2'>
-            <span aria-hidden className='text-lg leading-none'>
-              {selected.team.flag}
-            </span>
+            <TeamCrest
+              name={selected.team.name}
+              logo={selected.team.flag}
+              size={18}
+              showName={false}
+            />
             <p className='truncate text-sm font-medium'>
               {selected.player.name}
             </p>
@@ -147,6 +158,7 @@ export function PlayerGoalPicker({
         <div className='grid grid-cols-[1fr_auto_1fr] items-start gap-3'>
           <TeamColumn
             teamName={lineup.home.team.name}
+            teamLogo={lineup.home.team.flag}
             players={lineup.home.players}
             selectedPlayerId={value}
             disabled={Boolean(disabled)}
@@ -154,19 +166,26 @@ export function PlayerGoalPicker({
           />
 
           <div className='flex flex-col items-center justify-center gap-3 self-center px-1 pt-8'>
-            <span aria-hidden className='text-2xl leading-none'>
-              {lineup.home.team.flag}
-            </span>
+            <TeamCrest
+              name={lineup.home.team.name}
+              logo={lineup.home.team.flag}
+              size={28}
+              showName={false}
+            />
             <span className='text-muted-foreground text-xs font-medium'>
               x
             </span>
-            <span aria-hidden className='text-2xl leading-none'>
-              {lineup.away.team.flag}
-            </span>
+            <TeamCrest
+              name={lineup.away.team.name}
+              logo={lineup.away.team.flag}
+              size={28}
+              showName={false}
+            />
           </div>
 
           <TeamColumn
             teamName={lineup.away.team.name}
+            teamLogo={lineup.away.team.flag}
             players={lineup.away.players}
             selectedPlayerId={value}
             disabled={Boolean(disabled)}

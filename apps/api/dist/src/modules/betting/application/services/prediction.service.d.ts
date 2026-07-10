@@ -15,6 +15,8 @@ export interface PredictionFixtureResponse {
     round: number;
     homeTeam: string;
     awayTeam: string;
+    homeTeamLogo: string;
+    awayTeamLogo: string;
     date: string;
     matchStatus: 'SCHEDULED' | 'LIVE' | 'FINISHED';
     officialHomeScore: number | null;

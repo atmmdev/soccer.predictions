@@ -3,6 +3,10 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
+import {
+  MatchTeamsInline,
+  TeamCrest,
+} from '@/components/matches';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -149,9 +153,13 @@ export function SubmitPredictionDialog({
         ) : null}
 
         <div className='space-y-1 rounded-lg border p-3'>
-          <p className='text-sm font-medium'>
-            {fixture.homeTeam} x {fixture.awayTeam}
-          </p>
+          <MatchTeamsInline
+            homeTeam={fixture.homeTeam}
+            awayTeam={fixture.awayTeam}
+            homeTeamLogo={fixture.homeTeamLogo}
+            awayTeamLogo={fixture.awayTeamLogo}
+            className='font-medium'
+          />
           <p className='text-muted-foreground text-xs'>
             {fixture.championshipName} · {fixture.poolName} · Rodada{' '}
             {fixture.round}
@@ -169,7 +177,13 @@ export function SubmitPredictionDialog({
                 name='predictedHomeScore'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{fixture.homeTeam}</FormLabel>
+                    <FormLabel>
+                      <TeamCrest
+                        name={fixture.homeTeam}
+                        logo={fixture.homeTeamLogo}
+                        size={16}
+                      />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type='number'
@@ -192,7 +206,13 @@ export function SubmitPredictionDialog({
                 name='predictedAwayScore'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{fixture.awayTeam}</FormLabel>
+                    <FormLabel>
+                      <TeamCrest
+                        name={fixture.awayTeam}
+                        logo={fixture.awayTeamLogo}
+                        size={16}
+                      />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type='number'

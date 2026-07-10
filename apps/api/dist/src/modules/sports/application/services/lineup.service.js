@@ -13,6 +13,7 @@ exports.LineupService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
 const api_football_client_js_1 = require("../../infrastructure/integrations/api-football.client.js");
+const team_logo_url_js_1 = require("../utils/team-logo-url.js");
 let LineupService = class LineupService {
     prisma;
     apiFootballClient;
@@ -54,7 +55,7 @@ let LineupService = class LineupService {
             team: {
                 id: teamExternalId,
                 name: lineup.team.name,
-                flag: lineup.team.logo,
+                flag: (0, team_logo_url_js_1.getTeamLogoPublicUrl)(teamExternalId),
             },
             players,
         };

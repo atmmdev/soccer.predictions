@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 import { ApiFootballClient } from '../../infrastructure/integrations/api-football.client.js';
+import { getTeamLogoPublicUrl } from '../utils/team-logo-url.js';
 
 export interface FixtureLineupResponse {
   home: {
@@ -87,7 +88,7 @@ export class LineupService {
       team: {
         id: teamExternalId,
         name: lineup.team.name,
-        flag: lineup.team.logo,
+        flag: getTeamLogoPublicUrl(teamExternalId),
       },
       players,
     };

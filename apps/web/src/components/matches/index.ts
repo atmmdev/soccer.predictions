@@ -5,3 +5,8 @@ export {
   getPredictionScoresFromFixture,
 } from './fixture-score-comparison';
 export { PointsBadge, getPointsTone } from './points-badge';
+export {
+  MatchTeamsInline,
+  MatchTeamsStack,
+  TeamCrest,
+} from './match-teams-stack';

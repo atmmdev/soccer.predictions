@@ -7,6 +7,7 @@ import { TableActionBadge } from '@/components/ui/table-action-badge';
 import {
   ScoreStack,
   PointsBadge,
+  MatchTeamsStack,
   getOfficialScoresFromFixture,
   getPredictionScoresFromFixture,
   hasCompleteScore,
@@ -76,10 +77,12 @@ export function PredictionRow({
         <DateTimeDisplay value={fixture.date} />
       </TableCell>
       <TableCell className='max-w-[9rem] text-xs whitespace-normal xl:max-w-[10rem] 2xl:max-w-none'>
-        <div className='flex flex-col gap-1'>
-          <span className='font-medium'>{fixture.homeTeam}</span>
-          <span className='font-medium'>{fixture.awayTeam}</span>
-        </div>
+        <MatchTeamsStack
+          homeTeam={fixture.homeTeam}
+          awayTeam={fixture.awayTeam}
+          homeTeamLogo={fixture.homeTeamLogo}
+          awayTeamLogo={fixture.awayTeamLogo}
+        />
       </TableCell>
       <TableCell
         className={`text-muted-foreground max-w-[7rem] truncate text-xs ${predictionTableColumns.championship}`}

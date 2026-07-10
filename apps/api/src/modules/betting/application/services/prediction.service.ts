@@ -16,6 +16,7 @@ import {
   getPredictionLockMessage,
 } from '../utils/prediction-window.js';
 import { assertCanParticipateInPools } from '../../../../shared/auth/pool-participation.js';
+import { getTeamLogoPublicUrl } from '../../../sports/application/utils/team-logo-url.js';
 import { RankingService } from './ranking.service.js';
 import { ScoringService } from './scoring.service.js';
 
@@ -31,6 +32,8 @@ export interface PredictionFixtureResponse {
   round: number;
   homeTeam: string;
   awayTeam: string;
+  homeTeamLogo: string;
+  awayTeamLogo: string;
   date: string;
   matchStatus: 'SCHEDULED' | 'LIVE' | 'FINISHED';
   officialHomeScore: number | null;
@@ -369,8 +372,8 @@ export class PredictionService {
       status: FixtureStatus;
       homeScore: number | null;
       awayScore: number | null;
-      homeTeam: { name: string };
-      awayTeam: { name: string };
+      homeTeam: { name: string; logo: string; externalId: number };
+      awayTeam: { name: string; logo: string; externalId: number };
       championship: { name: string };
     };
     member: { id: number; name: string };
@@ -404,6 +407,8 @@ export class PredictionService {
       round: fixture.round ?? 0,
       homeTeam: fixture.homeTeam.name,
       awayTeam: fixture.awayTeam.name,
+      homeTeamLogo: getTeamLogoPublicUrl(fixture.homeTeam.externalId),
+      awayTeamLogo: getTeamLogoPublicUrl(fixture.awayTeam.externalId),
       date: fixture.date.toISOString(),
       matchStatus: this.toMatchStatus(fixture.status),
       officialHomeScore: fixture.homeScore,

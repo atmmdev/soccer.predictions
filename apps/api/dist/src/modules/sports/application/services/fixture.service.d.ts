@@ -6,6 +6,8 @@ export interface FixtureListItem {
     round: number;
     homeTeam: string;
     awayTeam: string;
+    homeTeamLogo: string;
+    awayTeamLogo: string;
     date: string;
     status: 'SCHEDULED' | 'LIVE' | 'FINISHED';
     officialHomeScore: number | null;

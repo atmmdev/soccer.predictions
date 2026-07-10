@@ -48,7 +48,7 @@ export function CreatePoolDialog({ onCreate }: CreatePoolDialogProps) {
   );
   const hasDelegateCandidates = delegates.length > 0;
   const { championshipType, applyTemplateForChampionship } =
-    usePoolScoringTemplate(form);
+    usePoolScoringTemplate(form, activeChampionships);
 
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen);

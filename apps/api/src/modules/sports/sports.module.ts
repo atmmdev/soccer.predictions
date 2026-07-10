@@ -13,12 +13,15 @@ import { FixtureSyncScheduler } from './infrastructure/jobs/fixture-sync.schedul
 import { ApiFootballClient } from './infrastructure/integrations/api-football.client.js';
 import { ChampionshipsController } from './infrastructure/http/championships.controller.js';
 import { FixturesController } from './infrastructure/http/fixtures.controller.js';
+import { MediaController } from './infrastructure/http/media.controller.js';
+import { TeamLogoStorage } from './infrastructure/storage/team-logo.storage.js';
 
 @Module({
   imports: [IdentityModule, BettingModule],
-  controllers: [ChampionshipsController, FixturesController],
+  controllers: [ChampionshipsController, FixturesController, MediaController],
   providers: [
     ApiFootballClient,
+    TeamLogoStorage,
     CatalogService,
     ChampionshipService,
     FixtureService,
@@ -33,6 +36,7 @@ import { FixturesController } from './infrastructure/http/fixtures.controller.js
     FixtureService,
     SyncFixturesService,
     LineupService,
+    TeamLogoStorage,
   ],
 })
 export class SportsModule {}

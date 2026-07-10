@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { FixtureStatus } from '../../../../../generated/prisma/client.js';
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 import type { AuthUser } from '../../../identity/application/types/auth-user.js';
+import { getTeamLogoPublicUrl } from '../utils/team-logo-url.js';
 
 export interface FixtureListItem {
   id: number;
@@ -9,6 +10,8 @@ export interface FixtureListItem {
   round: number;
   homeTeam: string;
   awayTeam: string;
+  homeTeamLogo: string;
+  awayTeamLogo: string;
   date: string;
   status: 'SCHEDULED' | 'LIVE' | 'FINISHED';
   officialHomeScore: number | null;
@@ -45,6 +48,8 @@ export class FixtureService {
       round: fixture.round ?? 0,
       homeTeam: fixture.homeTeam.name,
       awayTeam: fixture.awayTeam.name,
+      homeTeamLogo: getTeamLogoPublicUrl(fixture.homeTeam.externalId),
+      awayTeamLogo: getTeamLogoPublicUrl(fixture.awayTeam.externalId),
       date: fixture.date.toISOString(),
       status: this.toMatchStatus(fixture.status),
       officialHomeScore: fixture.homeScore,

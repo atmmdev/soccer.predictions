@@ -6,6 +6,8 @@ export interface MatchFixtureItem {
   round: number;
   homeTeam: string;
   awayTeam: string;
+  homeTeamLogo: string;
+  awayTeamLogo: string;
   date: string;
   status: MatchStatus;
   officialHomeScore: number | null;

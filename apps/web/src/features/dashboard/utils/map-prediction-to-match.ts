@@ -7,8 +7,8 @@ export function mapPredictionToDashboardMatch(
 ): Match {
   return {
     id: item.id,
-    homeTeam: { name: item.homeTeam, flag: '' },
-    awayTeam: { name: item.awayTeam, flag: '' },
+    homeTeam: { name: item.homeTeam, flag: item.homeTeamLogo },
+    awayTeam: { name: item.awayTeam, flag: item.awayTeamLogo },
     homeScore: item.officialHomeScore ?? 0,
     awayScore: item.officialAwayScore ?? 0,
     predictedHomeScore: item.prediction?.predictedHomeScore ?? 0,
