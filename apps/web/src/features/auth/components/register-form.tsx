@@ -25,6 +25,7 @@ import {
   type RegisterFormData,
 } from '../schemas/register.schema';
 import { registerRequest } from '../services/auth.service';
+import { normalizeFullName } from '../utils/full-name';
 import { SocialAuthButtons } from './social-auth-buttons';
 
 export function RegisterForm() {
@@ -46,7 +47,7 @@ export function RegisterForm() {
 
     try {
       const response = await registerRequest({
-        name: data.name,
+        name: normalizeFullName(data.name),
         email: data.email,
         password: data.password,
       });
@@ -78,10 +79,10 @@ export function RegisterForm() {
             name='name'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nome</FormLabel>
+                <FormLabel>Nome e sobrenome</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder='Seu nome'
+                    placeholder='Ex.: João Silva'
                     autoComplete='name'
                     className='h-11'
                     {...field}
