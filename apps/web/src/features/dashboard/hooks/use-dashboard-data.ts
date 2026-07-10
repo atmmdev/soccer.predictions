@@ -1,6 +1,5 @@
 'use client';
 
-import { isToday, isTomorrow, parseISO } from 'date-fns';
 import { Calendar, Target, Trophy, Users } from 'lucide-react';
 import { useMemo } from 'react';
 import { TbPercentage } from 'react-icons/tb';
@@ -9,6 +8,12 @@ import { usePredictions } from '@/features/predictions/hooks/use-predictions';
 import { usePools } from '@/features/pools/hooks/use-pools';
 import { useRankings } from '@/features/rankings/hooks/use-rankings';
 import type { RankingEntry } from '@/features/rankings/types/ranking-entry';
+import {
+  compareFixturesForDashboard,
+  isFixtureToday,
+  isFixtureTomorrow,
+  isFixtureUpcomingOrLive,
+} from '@/lib/fixture-calendar';
 
 import type { StatsItem } from '../stats/types/stats';
 import { mapPredictionToDashboardMatch } from '../utils/map-prediction-to-match';
@@ -93,16 +98,18 @@ export function useDashboardData() {
     [poolsState.pools],
   );
 
+  const upcomingFixtures = useMemo(
+    () => ownFixtures.filter(fixture => isFixtureUpcomingOrLive(fixture)),
+    [ownFixtures],
+  );
+
   const allMatches = useMemo(
     () =>
-      [...ownFixtures]
-        .sort(
-          (left, right) =>
-            new Date(left.date).getTime() - new Date(right.date).getTime(),
-        )
+      [...upcomingFixtures]
+        .sort(compareFixturesForDashboard)
         .slice(0, MATCHES_LIMIT)
         .map(mapPredictionToDashboardMatch),
-    [ownFixtures],
+    [upcomingFixtures],
   );
 
   const matchCounts = useMemo(() => {
@@ -110,19 +117,19 @@ export function useDashboardData() {
       fixture => fixture.matchStatus === 'LIVE',
     ).length;
     const today = ownFixtures.filter(fixture =>
-      isToday(parseISO(fixture.date)),
+      isFixtureToday(fixture.date),
     ).length;
     const tomorrow = ownFixtures.filter(fixture =>
-      isTomorrow(parseISO(fixture.date)),
+      isFixtureTomorrow(fixture.date),
     ).length;
 
     return {
-      all: ownFixtures.length,
+      all: upcomingFixtures.length,
       live,
       today,
       tomorrow,
     };
-  }, [ownFixtures]);
+  }, [ownFixtures, upcomingFixtures]);
 
   const stats = useMemo((): StatsItem[] => {
     const activePoolCount = poolsState.pools.filter(
@@ -133,7 +140,7 @@ export function useDashboardData() {
       0,
     );
     const gamesToday = ownFixtures.filter(fixture =>
-      isToday(parseISO(fixture.date)),
+      isFixtureToday(fixture.date),
     ).length;
     const liveGames = ownFixtures.filter(
       fixture => fixture.matchStatus === 'LIVE',
@@ -215,21 +222,18 @@ export function useDashboardData() {
       }
 
       if (tab === 'today') {
-        return isToday(parseISO(fixture.date));
+        return isFixtureToday(fixture.date);
       }
 
       if (tab === 'tomorrow') {
-        return isTomorrow(parseISO(fixture.date));
+        return isFixtureTomorrow(fixture.date);
       }
 
-      return true;
+      return isFixtureUpcomingOrLive(fixture);
     });
 
     return filtered
-      .sort(
-        (left, right) =>
-          new Date(left.date).getTime() - new Date(right.date).getTime(),
-      )
+      .sort(compareFixturesForDashboard)
       .slice(0, MATCHES_LIMIT)
       .map(mapPredictionToDashboardMatch);
   };
