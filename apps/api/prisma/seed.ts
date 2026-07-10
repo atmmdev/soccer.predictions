@@ -22,6 +22,26 @@ function minutesFromNow(minutes: number): Date {
   return new Date(Date.now() + minutes * 60_000);
 }
 
+const SEED_PASSWORD = 'WebAtm1979#';
+
+const seedUsers = [
+  {
+    email: 'atmm.rj@gmail.com',
+    name: 'Participante',
+    role: 'PARTICIPANT' as const,
+  },
+  {
+    email: 'atmmdev@gmail.com',
+    name: 'Super Admin',
+    role: 'SUPER_ADMIN' as const,
+  },
+  {
+    email: 'atmmoreira.rj@gmail.com',
+    name: 'Admin',
+    role: 'ADMIN' as const,
+  },
+] as const;
+
 async function main(): Promise<void> {
   const databaseUrl = process.env.DATABASE_URL;
 
@@ -31,42 +51,60 @@ async function main(): Promise<void> {
 
   const adapter = createPrismaAdapter(databaseUrl);
   const prisma = new PrismaClient({ adapter });
-  const passwordHash = await hash('admin123', PASSWORD_SALT_ROUNDS);
-  const participantHash = await hash('participante123', PASSWORD_SALT_ROUNDS);
+  const passwordHash = await hash(SEED_PASSWORD, PASSWORD_SALT_ROUNDS);
+  const seedEmails = seedUsers.map(user => user.email);
 
-  const superAdmin = await prisma.user.upsert({
-    where: { email: 'admin@admin' },
-    update: {
-      name: 'Super Admin',
-      password: passwordHash,
-      role: 'SUPER_ADMIN',
-      authProvider: 'LOCAL',
-    },
-    create: {
-      email: 'admin@admin',
-      name: 'Super Admin',
-      password: passwordHash,
-      role: 'SUPER_ADMIN',
-      authProvider: 'LOCAL',
-    },
+  const usersByEmail = new Map<string, { id: number; email: string }>();
+
+  for (const user of seedUsers) {
+    const saved = await prisma.user.upsert({
+      where: { email: user.email },
+      update: {
+        name: user.name,
+        password: passwordHash,
+        role: user.role,
+        authProvider: 'LOCAL',
+      },
+      create: {
+        email: user.email,
+        name: user.name,
+        password: passwordHash,
+        role: user.role,
+        authProvider: 'LOCAL',
+      },
+    });
+
+    usersByEmail.set(saved.email, saved);
+  }
+
+  const participant = usersByEmail.get('atmm.rj@gmail.com')!;
+  const admin = usersByEmail.get('atmmoreira.rj@gmail.com')!;
+
+  const obsoleteUsers = await prisma.user.findMany({
+    where: { email: { notIn: [...seedEmails] } },
+    select: { id: true },
   });
 
-  const participant = await prisma.user.upsert({
-    where: { email: 'participante@participante.com' },
-    update: {
-      name: 'Participante Demo',
-      password: participantHash,
-      role: 'ADMIN',
-      authProvider: 'LOCAL',
-    },
-    create: {
-      email: 'participante@participante.com',
-      name: 'Participante Demo',
-      password: participantHash,
-      role: 'ADMIN',
-      authProvider: 'LOCAL',
-    },
-  });
+  if (obsoleteUsers.length > 0) {
+    const obsoleteIds = obsoleteUsers.map(user => user.id);
+
+    await prisma.prediction.deleteMany({
+      where: { userId: { in: obsoleteIds } },
+    });
+    await prisma.pointHistory.deleteMany({
+      where: { userId: { in: obsoleteIds } },
+    });
+    await prisma.poolUser.deleteMany({
+      where: { userId: { in: obsoleteIds } },
+    });
+    await prisma.pool.updateMany({
+      where: { ownerId: { in: obsoleteIds } },
+      data: { ownerId: admin.id },
+    });
+    await prisma.user.deleteMany({
+      where: { id: { in: obsoleteIds } },
+    });
+  }
 
   const league = await prisma.league.upsert({
     where: { externalId: 71 },
@@ -222,14 +260,14 @@ async function main(): Promise<void> {
   const demoPool = await prisma.pool.upsert({
     where: { inviteCode: 'DEMO2026' },
     update: {
-      ownerId: participant.id,
+      ownerId: admin.id,
       championshipId: championship.id,
       name: 'Bolão Demo',
       status: 'ACTIVE',
       scoring: defaultScoring,
     },
     create: {
-      ownerId: participant.id,
+      ownerId: admin.id,
       championshipId: championship.id,
       name: 'Bolão Demo',
       inviteCode: 'DEMO2026',
@@ -239,26 +277,34 @@ async function main(): Promise<void> {
   });
 
   await prisma.poolUser.deleteMany({
-    where: { userId: superAdmin.id },
+    where: {
+      poolId: demoPool.id,
+      userId: { notIn: [admin.id, participant.id] },
+    },
   });
   await prisma.prediction.deleteMany({
-    where: { userId: superAdmin.id },
+    where: {
+      poolId: demoPool.id,
+      userId: { notIn: [participant.id] },
+    },
   });
 
-  await prisma.poolUser.upsert({
-    where: {
-      poolId_userId: {
-        poolId: demoPool.id,
-        userId: participant.id,
+  for (const user of [admin, participant]) {
+    await prisma.poolUser.upsert({
+      where: {
+        poolId_userId: {
+          poolId: demoPool.id,
+          userId: user.id,
+        },
       },
-    },
-    update: { status: 'ACTIVE' },
-    create: {
-      poolId: demoPool.id,
-      userId: participant.id,
-      status: 'ACTIVE',
-    },
-  });
+      update: { status: 'ACTIVE' },
+      create: {
+        poolId: demoPool.id,
+        userId: user.id,
+        status: 'ACTIVE',
+      },
+    });
+  }
 
   const fixtureSaoPauloCorinthians = await prisma.fixture.findUniqueOrThrow({
     where: { externalId: 200102 },
