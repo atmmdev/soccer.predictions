@@ -22,6 +22,7 @@ let CatalogService = class CatalogService {
         return countries
             .map(country => ({
             name: country.name,
+            code: country.code ?? '',
             flag: country.flag ?? '',
         }))
             .filter(country => country.name.length > 0)
@@ -37,6 +38,7 @@ let CatalogService = class CatalogService {
                 ? 'CUP'
                 : 'LEAGUE',
             country: item.country.name,
+            code: item.country.code ?? '',
             flag: item.country.flag ?? '',
             seasons: item.seasons
                 .map(entry => entry.year)

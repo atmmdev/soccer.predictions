@@ -15,6 +15,7 @@ const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js
 const fixture_status_mapper_js_1 = require("../utils/fixture-status.mapper.js");
 const cup_phase_mapper_js_1 = require("../utils/cup-phase.mapper.js");
 const api_football_client_js_1 = require("../../infrastructure/integrations/api-football.client.js");
+const IMPORT_TRANSACTION_TIMEOUT_MS = 120_000;
 let ImportChampionshipService = class ImportChampionshipService {
     prisma;
     apiFootballClient;
@@ -76,42 +77,55 @@ let ImportChampionshipService = class ImportChampionshipService {
             });
             await this.persistFixtures(tx, createdChampionship.id, fixtures);
             return createdChampionship;
+        }, {
+            maxWait: 10_000,
+            timeout: IMPORT_TRANSACTION_TIMEOUT_MS,
         });
         return this.toListItem(championship);
     }
     async persistFixtures(tx, championshipId, fixtures) {
+        const teamsByExternalId = new Map();
         for (const item of fixtures) {
-            const homeTeam = await tx.team.upsert({
-                where: { externalId: item.teams.home.id },
+            teamsByExternalId.set(item.teams.home.id, {
+                externalId: item.teams.home.id,
+                name: item.teams.home.name,
+                logo: item.teams.home.logo,
+            });
+            teamsByExternalId.set(item.teams.away.id, {
+                externalId: item.teams.away.id,
+                name: item.teams.away.name,
+                logo: item.teams.away.logo,
+            });
+        }
+        const teamIdByExternalId = new Map();
+        for (const team of teamsByExternalId.values()) {
+            const upserted = await tx.team.upsert({
+                where: { externalId: team.externalId },
                 update: {
-                    name: item.teams.home.name,
-                    logo: item.teams.home.logo,
+                    name: team.name,
+                    logo: team.logo,
                 },
                 create: {
-                    externalId: item.teams.home.id,
-                    name: item.teams.home.name,
-                    logo: item.teams.home.logo,
+                    externalId: team.externalId,
+                    name: team.name,
+                    logo: team.logo,
                 },
             });
-            const awayTeam = await tx.team.upsert({
-                where: { externalId: item.teams.away.id },
-                update: {
-                    name: item.teams.away.name,
-                    logo: item.teams.away.logo,
-                },
-                create: {
-                    externalId: item.teams.away.id,
-                    name: item.teams.away.name,
-                    logo: item.teams.away.logo,
-                },
-            });
+            teamIdByExternalId.set(team.externalId, upserted.id);
+        }
+        for (const item of fixtures) {
+            const homeTeamId = teamIdByExternalId.get(item.teams.home.id);
+            const awayTeamId = teamIdByExternalId.get(item.teams.away.id);
+            if (!homeTeamId || !awayTeamId) {
+                continue;
+            }
             const status = (0, fixture_status_mapper_js_1.mapApiFootballFixtureStatus)(item.fixture.status.short);
             await tx.fixture.upsert({
                 where: { externalId: item.fixture.id },
                 update: {
                     championshipId,
-                    homeTeamId: homeTeam.id,
-                    awayTeamId: awayTeam.id,
+                    homeTeamId,
+                    awayTeamId,
                     date: new Date(item.fixture.date),
                     status,
                     homeScore: item.goals.home,
@@ -122,8 +136,8 @@ let ImportChampionshipService = class ImportChampionshipService {
                 create: {
                     externalId: item.fixture.id,
                     championshipId,
-                    homeTeamId: homeTeam.id,
-                    awayTeamId: awayTeam.id,
+                    homeTeamId,
+                    awayTeamId,
                     date: new Date(item.fixture.date),
                     status,
                     homeScore: item.goals.home,

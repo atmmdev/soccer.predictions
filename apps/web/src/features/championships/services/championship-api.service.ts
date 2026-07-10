@@ -5,6 +5,7 @@ import type { Championship } from '../types/championship';
 
 export interface CatalogCountry {
   name: string;
+  code: string;
   flag: string;
 }
 
@@ -13,6 +14,7 @@ export interface CatalogLeague {
   name: string;
   type: 'LEAGUE' | 'CUP';
   country: string;
+  code: string;
   flag: string;
   seasons: number[];
 }

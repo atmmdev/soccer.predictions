@@ -99,10 +99,8 @@ export function useImportChampionshipCascade(
       setCatalogError(null);
 
       try {
-        const response = await fetchCatalogLeaguesRequest(
-          selectedCountry,
-          selectedSeason,
-        );
+        // Sem season: lista o catálogo completo; a temporada é escolhida depois.
+        const response = await fetchCatalogLeaguesRequest(selectedCountry);
 
         if (!cancelled) {
           setLeagues(response);
@@ -129,7 +127,7 @@ export function useImportChampionshipCascade(
     return () => {
       cancelled = true;
     };
-  }, [enabled, selectedCountry, selectedSeason]);
+  }, [enabled, selectedCountry]);
 
   const filteredLeagues = useMemo(
     () => leagues.filter(league => league.country === selectedCountry),
@@ -143,11 +141,17 @@ export function useImportChampionshipCascade(
 
   const availableSeasons = useMemo(() => {
     if (selectedLeague?.seasons.length) {
-      return selectedLeague.seasons;
+      return [...selectedLeague.seasons].sort((left, right) => right - left);
     }
 
     return [selectedSeason];
   }, [selectedLeague, selectedSeason]);
+
+  useEffect(() => {
+    if (!availableSeasons.includes(selectedSeason)) {
+      form.setValue('season', availableSeasons[0] ?? new Date().getFullYear());
+    }
+  }, [availableSeasons, form, selectedSeason]);
 
   const resetLeagueCascade = useCallback(() => {
     form.setValue('leagueId', 0);

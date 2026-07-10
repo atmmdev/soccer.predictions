@@ -4,6 +4,7 @@ import { ApiFootballClient } from '../../infrastructure/integrations/api-footbal
 
 export interface CatalogCountry {
   name: string;
+  code: string;
   flag: string;
 }
 
@@ -12,6 +13,7 @@ export interface CatalogLeague {
   name: string;
   type: 'LEAGUE' | 'CUP';
   country: string;
+  code: string;
   flag: string;
   seasons: number[];
 }
@@ -26,6 +28,7 @@ export class CatalogService {
     return countries
       .map(country => ({
         name: country.name,
+        code: country.code ?? '',
         flag: country.flag ?? '',
       }))
       .filter(country => country.name.length > 0)
@@ -47,6 +50,7 @@ export class CatalogService {
             ? ('CUP' as const)
             : ('LEAGUE' as const),
         country: item.country.name,
+        code: item.country.code ?? '',
         flag: item.country.flag ?? '',
         seasons: item.seasons
           .map(entry => entry.year)

@@ -167,10 +167,17 @@ export class ApiFootballClient {
     let totalPages = 1;
 
     do {
-      const response = await this.request<T>(path, {
-        ...params,
-        page: page.toString(),
-      });
+      // Endpoints like /countries reject `page` entirely; only send it when
+      // requesting page 2+ (fixtures and other paginated resources).
+      const requestParams =
+        page === 1
+          ? params
+          : {
+              ...params,
+              page: page.toString(),
+            };
+
+      const response = await this.request<T>(path, requestParams);
 
       items.push(...response.response);
       totalPages = response.paging?.total ?? 1;

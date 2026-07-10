@@ -23,10 +23,18 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { NativeSelect } from '@/components/ui/native-select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 import { useCreateChampionship } from '../../hooks/use-create-championship';
 import { useImportChampionshipCascade } from '../../hooks/use-import-championship-cascade';
 import type { CreateChampionshipFormData } from '../../schemas/create-championship.schema';
+import { CountryFlag } from '../country-flag';
 import { ChampionshipActiveSwitch } from './championship-active-switch';
 
 interface CreateChampionshipDialogProps {
@@ -99,27 +107,37 @@ export function CreateChampionshipDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>País</FormLabel>
-                  <FormControl>
-                    <NativeSelect
-                      value={field.value}
-                      onChange={event => {
-                        field.onChange(event.target.value);
-                        resetLeagueCascade();
-                      }}
-                      disabled={isLoadingCountries}
-                    >
-                      <option value='' disabled>
-                        {isLoadingCountries
-                          ? 'Carregando países...'
-                          : 'Selecione o país'}
-                      </option>
+                  <Select
+                    value={field.value || undefined}
+                    onValueChange={value => {
+                      field.onChange(value);
+                      resetLeagueCascade();
+                    }}
+                    disabled={isLoadingCountries}
+                  >
+                    <FormControl>
+                      <SelectTrigger className='h-11 w-full'>
+                        <SelectValue
+                          placeholder={
+                            isLoadingCountries
+                              ? 'Carregando países...'
+                              : 'Selecione o país'
+                          }
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
                       {countries.map(country => (
-                        <option key={country.name} value={country.name}>
-                          {country.flag} {country.name}
-                        </option>
+                        <SelectItem key={country.name} value={country.name}>
+                          <CountryFlag
+                            code={country.code}
+                            flag={country.flag}
+                            name={country.name}
+                          />
+                        </SelectItem>
                       ))}
-                    </NativeSelect>
-                  </FormControl>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

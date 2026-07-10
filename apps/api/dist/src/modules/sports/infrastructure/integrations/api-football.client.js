@@ -98,10 +98,13 @@ let ApiFootballClient = class ApiFootballClient {
         let page = 1;
         let totalPages = 1;
         do {
-            const response = await this.request(path, {
-                ...params,
-                page: page.toString(),
-            });
+            const requestParams = page === 1
+                ? params
+                : {
+                    ...params,
+                    page: page.toString(),
+                };
+            const response = await this.request(path, requestParams);
             items.push(...response.response);
             totalPages = response.paging?.total ?? 1;
             page += 1;

@@ -28,6 +28,8 @@ export interface ChampionshipListItem {
   status: 'ACTIVE' | 'INACTIVE';
 }
 
+const IMPORT_TRANSACTION_TIMEOUT_MS = 120_000;
+
 @Injectable()
 export class ImportChampionshipService {
   constructor(
@@ -77,40 +79,46 @@ export class ImportChampionshipService {
     const isCurrentSeason = dto.season === currentYear;
     const status = dto.active ? 'ACTIVE' : 'INACTIVE';
 
-    const championship = await this.prisma.$transaction(async tx => {
-      const league = await tx.league.upsert({
-        where: { externalId: dto.leagueId },
-        update: {
-          name: leagueData.league.name,
-          country: leagueData.country.name,
-          type: leagueData.league.type,
-        },
-        create: {
-          externalId: dto.leagueId,
-          name: leagueData.league.name,
-          country: leagueData.country.name,
-          type: leagueData.league.type,
-        },
-      });
+    const championship = await this.prisma.$transaction(
+      async tx => {
+        const league = await tx.league.upsert({
+          where: { externalId: dto.leagueId },
+          update: {
+            name: leagueData.league.name,
+            country: leagueData.country.name,
+            type: leagueData.league.type,
+          },
+          create: {
+            externalId: dto.leagueId,
+            name: leagueData.league.name,
+            country: leagueData.country.name,
+            type: leagueData.league.type,
+          },
+        });
 
-      const createdChampionship = await tx.championship.create({
-        data: {
-          leagueId: league.id,
-          season: dto.season,
-          name: leagueData.league.name,
-          country: leagueData.country.name,
-          flags: leagueData.country.flag ?? '',
-          type: championshipType,
-          status,
-          isCurrentSeason,
-          allowNewPools: isCurrentSeason && status === 'ACTIVE',
-        },
-      });
+        const createdChampionship = await tx.championship.create({
+          data: {
+            leagueId: league.id,
+            season: dto.season,
+            name: leagueData.league.name,
+            country: leagueData.country.name,
+            flags: leagueData.country.flag ?? '',
+            type: championshipType,
+            status,
+            isCurrentSeason,
+            allowNewPools: isCurrentSeason && status === 'ACTIVE',
+          },
+        });
 
-      await this.persistFixtures(tx, createdChampionship.id, fixtures);
+        await this.persistFixtures(tx, createdChampionship.id, fixtures);
 
-      return createdChampionship;
-    });
+        return createdChampionship;
+      },
+      {
+        maxWait: 10_000,
+        timeout: IMPORT_TRANSACTION_TIMEOUT_MS,
+      },
+    );
 
     return this.toListItem(championship);
   }
@@ -120,32 +128,50 @@ export class ImportChampionshipService {
     championshipId: number,
     fixtures: ApiFootballFixtureItem[],
   ): Promise<void> {
+    const teamsByExternalId = new Map<
+      number,
+      { externalId: number; name: string; logo: string }
+    >();
+
     for (const item of fixtures) {
-      const homeTeam = await tx.team.upsert({
-        where: { externalId: item.teams.home.id },
+      teamsByExternalId.set(item.teams.home.id, {
+        externalId: item.teams.home.id,
+        name: item.teams.home.name,
+        logo: item.teams.home.logo,
+      });
+      teamsByExternalId.set(item.teams.away.id, {
+        externalId: item.teams.away.id,
+        name: item.teams.away.name,
+        logo: item.teams.away.logo,
+      });
+    }
+
+    const teamIdByExternalId = new Map<number, number>();
+
+    for (const team of teamsByExternalId.values()) {
+      const upserted = await tx.team.upsert({
+        where: { externalId: team.externalId },
         update: {
-          name: item.teams.home.name,
-          logo: item.teams.home.logo,
+          name: team.name,
+          logo: team.logo,
         },
         create: {
-          externalId: item.teams.home.id,
-          name: item.teams.home.name,
-          logo: item.teams.home.logo,
+          externalId: team.externalId,
+          name: team.name,
+          logo: team.logo,
         },
       });
 
-      const awayTeam = await tx.team.upsert({
-        where: { externalId: item.teams.away.id },
-        update: {
-          name: item.teams.away.name,
-          logo: item.teams.away.logo,
-        },
-        create: {
-          externalId: item.teams.away.id,
-          name: item.teams.away.name,
-          logo: item.teams.away.logo,
-        },
-      });
+      teamIdByExternalId.set(team.externalId, upserted.id);
+    }
+
+    for (const item of fixtures) {
+      const homeTeamId = teamIdByExternalId.get(item.teams.home.id);
+      const awayTeamId = teamIdByExternalId.get(item.teams.away.id);
+
+      if (!homeTeamId || !awayTeamId) {
+        continue;
+      }
 
       const status = mapApiFootballFixtureStatus(item.fixture.status.short);
 
@@ -153,8 +179,8 @@ export class ImportChampionshipService {
         where: { externalId: item.fixture.id },
         update: {
           championshipId,
-          homeTeamId: homeTeam.id,
-          awayTeamId: awayTeam.id,
+          homeTeamId,
+          awayTeamId,
           date: new Date(item.fixture.date),
           status,
           homeScore: item.goals.home,
@@ -165,8 +191,8 @@ export class ImportChampionshipService {
         create: {
           externalId: item.fixture.id,
           championshipId,
-          homeTeamId: homeTeam.id,
-          awayTeamId: awayTeam.id,
+          homeTeamId,
+          awayTeamId,
           date: new Date(item.fixture.date),
           status,
           homeScore: item.goals.home,

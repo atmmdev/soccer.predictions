@@ -1,5 +1,6 @@
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Championship } from '../../types/championship';
+import { CountryFlag } from '../country-flag';
 import { ChampionshipStatusBadge } from './championship-status-badge';
 import { ChampionshipActions } from './championship-actions';
 
@@ -18,10 +19,10 @@ export function ChampionshipRow({
   return (
     <TableRow>
       <TableCell className='font-medium'>
-        <span className='mr-2' aria-hidden>
-          {championship.flags || '🏆'}
-        </span>
-        {championship.name}
+        <CountryFlag
+          flag={championship.flags || '🏆'}
+          name={championship.name}
+        />
       </TableCell>
       <TableCell>{championship.country}</TableCell>
       <TableCell>{championship.season}</TableCell>
