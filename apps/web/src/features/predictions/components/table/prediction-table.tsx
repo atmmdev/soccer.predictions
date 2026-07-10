@@ -86,11 +86,6 @@ export function PredictionTable({
             <TableHead className={predictionTableHeadClass('w-[5rem] text-center')}>
               Palpite
             </TableHead>
-            <TableHead
-              className={predictionTableHeadClass(predictionTableColumns.player)}
-            >
-              Jogador
-            </TableHead>
             <TableHead className={predictionTableHeadClass('w-[6.5rem]')}>Status</TableHead>
             <TableHead
               className={predictionTableHeadClass(

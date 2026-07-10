@@ -8,14 +8,11 @@ import type {
   Prisma,
 } from '../../../../../generated/prisma/client.js';
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
-import {
-  mapApiFootballFixtureStatus,
-  parseFixtureRound,
-} from '../utils/fixture-status.mapper.js';
-import { mapRoundToCupPhase } from '../utils/cup-phase.mapper.js';
+import { mapStageToCupPhase } from '../utils/cup-phase.mapper.js';
+import { mapFootballDataFixtureStatus } from '../utils/fixture-status.mapper.js';
 import type { ImportChampionshipDto } from '../dtos/import-championship.dto.js';
-import { ApiFootballClient } from '../../infrastructure/integrations/api-football.client.js';
-import type { ApiFootballFixtureItem } from '../../infrastructure/integrations/api-football.types.js';
+import { FootballDataClient } from '../../infrastructure/integrations/football-data.client.js';
+import type { FootballDataMatch } from '../../infrastructure/integrations/football-data.types.js';
 
 export interface ChampionshipListItem {
   id: number;
@@ -34,17 +31,18 @@ const IMPORT_TRANSACTION_TIMEOUT_MS = 120_000;
 export class ImportChampionshipService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly apiFootballClient: ApiFootballClient,
+    private readonly footballDataClient: FootballDataClient,
   ) {}
 
   async import(dto: ImportChampionshipDto): Promise<ChampionshipListItem> {
-    const leagueData = await this.apiFootballClient.getLeagueById(
+    const competition = await this.footballDataClient.getCompetition(
       dto.leagueId,
-      dto.season,
     );
 
-    if (!leagueData) {
-      throw new NotFoundException('Liga ou temporada não encontrada na API Football');
+    if (!competition) {
+      throw new NotFoundException(
+        'Competição ou temporada não encontrada na Football Data API',
+      );
     }
 
     const existingLeague = await this.prisma.league.findUnique({
@@ -62,37 +60,39 @@ export class ImportChampionshipService {
       );
     }
 
-    const fixtures = await this.apiFootballClient.getFixtures(
+    const matches = await this.footballDataClient.getCompetitionMatches(
       dto.leagueId,
       dto.season,
     );
 
-    if (fixtures.length === 0) {
+    if (matches.length === 0) {
       throw new NotFoundException(
-        'Nenhum jogo encontrado para esta liga e temporada',
+        'Nenhum jogo encontrado para esta competição e temporada',
       );
     }
 
     const championshipType: ChampionshipType =
-      leagueData.league.type.toLowerCase() === 'cup' ? 'CUP' : 'LEAGUE';
+      competition.type?.toUpperCase() === 'CUP' ? 'CUP' : 'LEAGUE';
     const currentYear = new Date().getFullYear();
     const isCurrentSeason = dto.season === currentYear;
     const status = dto.active ? 'ACTIVE' : 'INACTIVE';
+    const countryName = competition.area?.name ?? '';
+    const countryFlag = competition.area?.flag ?? competition.emblem ?? '';
 
     const championship = await this.prisma.$transaction(
       async tx => {
         const league = await tx.league.upsert({
           where: { externalId: dto.leagueId },
           update: {
-            name: leagueData.league.name,
-            country: leagueData.country.name,
-            type: leagueData.league.type,
+            name: competition.name,
+            country: countryName,
+            type: competition.type ?? undefined,
           },
           create: {
             externalId: dto.leagueId,
-            name: leagueData.league.name,
-            country: leagueData.country.name,
-            type: leagueData.league.type,
+            name: competition.name,
+            country: countryName,
+            type: competition.type ?? undefined,
           },
         });
 
@@ -100,9 +100,9 @@ export class ImportChampionshipService {
           data: {
             leagueId: league.id,
             season: dto.season,
-            name: leagueData.league.name,
-            country: leagueData.country.name,
-            flags: leagueData.country.flag ?? '',
+            name: competition.name,
+            country: countryName,
+            flags: countryFlag,
             type: championshipType,
             status,
             isCurrentSeason,
@@ -110,7 +110,7 @@ export class ImportChampionshipService {
           },
         });
 
-        await this.persistFixtures(tx, createdChampionship.id, fixtures);
+        await this.persistFixtures(tx, createdChampionship.id, matches);
 
         return createdChampionship;
       },
@@ -126,24 +126,29 @@ export class ImportChampionshipService {
   private async persistFixtures(
     tx: Prisma.TransactionClient,
     championshipId: number,
-    fixtures: ApiFootballFixtureItem[],
+    matches: FootballDataMatch[],
   ): Promise<void> {
     const teamsByExternalId = new Map<
       number,
       { externalId: number; name: string; logo: string }
     >();
 
-    for (const item of fixtures) {
-      teamsByExternalId.set(item.teams.home.id, {
-        externalId: item.teams.home.id,
-        name: item.teams.home.name,
-        logo: item.teams.home.logo,
-      });
-      teamsByExternalId.set(item.teams.away.id, {
-        externalId: item.teams.away.id,
-        name: item.teams.away.name,
-        logo: item.teams.away.logo,
-      });
+    for (const match of matches) {
+      if (match.homeTeam?.id) {
+        teamsByExternalId.set(match.homeTeam.id, {
+          externalId: match.homeTeam.id,
+          name: match.homeTeam.name,
+          logo: match.homeTeam.crest ?? '',
+        });
+      }
+
+      if (match.awayTeam?.id) {
+        teamsByExternalId.set(match.awayTeam.id, {
+          externalId: match.awayTeam.id,
+          name: match.awayTeam.name,
+          logo: match.awayTeam.crest ?? '',
+        });
+      }
     }
 
     const teamIdByExternalId = new Map<number, number>();
@@ -165,40 +170,40 @@ export class ImportChampionshipService {
       teamIdByExternalId.set(team.externalId, upserted.id);
     }
 
-    for (const item of fixtures) {
-      const homeTeamId = teamIdByExternalId.get(item.teams.home.id);
-      const awayTeamId = teamIdByExternalId.get(item.teams.away.id);
+    for (const match of matches) {
+      const homeTeamId = teamIdByExternalId.get(match.homeTeam.id);
+      const awayTeamId = teamIdByExternalId.get(match.awayTeam.id);
 
       if (!homeTeamId || !awayTeamId) {
         continue;
       }
 
-      const status = mapApiFootballFixtureStatus(item.fixture.status.short);
+      const status = mapFootballDataFixtureStatus(match.status);
 
       await tx.fixture.upsert({
-        where: { externalId: item.fixture.id },
+        where: { externalId: match.id },
         update: {
           championshipId,
           homeTeamId,
           awayTeamId,
-          date: new Date(item.fixture.date),
+          date: new Date(match.utcDate),
           status,
-          homeScore: item.goals.home,
-          awayScore: item.goals.away,
-          round: parseFixtureRound(item.league.round),
-          phase: mapRoundToCupPhase(item.league.round),
+          homeScore: match.score.fullTime.home,
+          awayScore: match.score.fullTime.away,
+          round: match.matchday,
+          phase: mapStageToCupPhase(match.stage),
         },
         create: {
-          externalId: item.fixture.id,
+          externalId: match.id,
           championshipId,
           homeTeamId,
           awayTeamId,
-          date: new Date(item.fixture.date),
+          date: new Date(match.utcDate),
           status,
-          homeScore: item.goals.home,
-          awayScore: item.goals.away,
-          round: parseFixtureRound(item.league.round),
-          phase: mapRoundToCupPhase(item.league.round),
+          homeScore: match.score.fullTime.home,
+          awayScore: match.score.fullTime.away,
+          round: match.matchday,
+          phase: mapStageToCupPhase(match.stage),
         },
       });
     }

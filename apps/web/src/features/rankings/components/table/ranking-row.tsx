@@ -69,9 +69,7 @@ export function RankingRow({
             scoringRule === column.key && 'bg-primary/5 text-primary',
             column.key === 'predictionsCount' && 'hidden sm:table-cell',
             (column.key === 'loserScore' ||
-              column.key === 'drawWithoutExactScore' ||
-              column.key === 'playerGoal' ||
-              column.key === 'playerHatTrick') &&
+              column.key === 'drawWithoutExactScore') &&
               'hidden lg:table-cell',
           )}
         >

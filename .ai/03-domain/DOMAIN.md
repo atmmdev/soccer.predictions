@@ -8,7 +8,7 @@ Três subdomínios. Ranking **não é entidade** — derivado de `PointHistory`.
 
 | Entidade | Descrição |
 |----------|-----------|
-| `League` | Liga na API Football (Brasileirão, Champions…) |
+| `League` | Liga na football-data.org (Brasileirão, Champions…) |
 | `Championship` | Instância importada: liga + temporada + status |
 | `Team` | Time |
 | `Fixture` | Confronto (data, placar, status, rodada/fase) |
@@ -162,7 +162,7 @@ interface Prediction {
 
 **Lineup por time:** `FixtureLineup` — `home` / `away` com `team.flag`, `team.name` e `players[]`. Mock em `mocks/fixture-lineups.ts`.
 
-**API (Semana 3):** NestJS expõe `GET /fixtures/:id/lineup` mapeando [API Football — Lineups](https://www.api-football.com/documentation-v3#tag/Fixtures/operation/get-fixtures-lineups) (`team.logo` + jogadores titulares/reservas). O React **nunca** chama a API Football diretamente.
+**API:** `GET /fixtures/:id/lineup` retorna 503 nesta versão (lineups fora do plano free). Palpite de jogador volta em v2.
 
 **Tela (mock MVP):** `/predictions` — lista de jogos, dialog de palpite com placar + `PlayerGoalPicker`.
 
@@ -196,10 +196,12 @@ interface Prediction {
 5. Ranking = query sobre PointHistory (geral, rodada, fase, mês…)
 ```
 
-## Integração API Football
+## Integração football-data.org
 
 ```text
-País → Liga → Temporada → Import (league + teams + all fixtures)
+Área/país → Competition → Temporada → Import (league + teams + all matches)
 ```
 
 Dados dos selects do dialog: **NestJS proxy** — nunca no React.
+
+Palpite de jogador / lineups: desativado no plano free (v2 futura).

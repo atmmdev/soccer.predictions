@@ -34,7 +34,7 @@
 
 ## Fase 3 — Dados reais + Palpites ✅ ~95%
 
-- [x] API Football sync (`ApiFootballClient`, import, cron)
+- [x] football-data.org sync (`FootballDataClient`, import, cron; player prediction deferred)
 - [x] Matches + Predictions (UI + API)
 - [x] Auth middleware frontend
 - [x] Lineups reais para palpite de jogador
@@ -71,7 +71,7 @@
 
 ```text
 ✅ Pools → ✅ Matches → ✅ Predictions → ✅ Rankings
-→ 🔴 API Football + Import → 🔴 Scoring completo → Deploy
+→ ✅ football-data.org + Import → 🔴 Scoring completo → Deploy
 → Notifications → Profile → Settings → WebSocket → PWA avançado
 ```
 
@@ -83,7 +83,7 @@
 |------|---------|
 | Banco | MySQL 8 + Prisma |
 | Arquitetura | DDD + Clean Architecture progressivo |
-| API Football | Só via NestJS |
+| football-data.org | Só via NestJS |
 | Import UI | `/championships` (Dashboard CTA adiado) |
 | Temporada | Só atual permite novos bolões |
 | Pontuação | Dinâmica por rodada/fase por bolão |
@@ -97,7 +97,7 @@
 ```text
 Jun 23 ─── Semana 1: Championships + React/TS     ✅
 Jun 30 ─── Semana 2: Pools + Backend scaffold     ✅ ~85%
-Jul 07 ─── Semana 3: API Football + Palpites      🔴 em andamento
+Jul 07 ─── Semana 3: football-data.org + Palpites ✅ (jogador em v2)
 Jul 14 ─── Semana 4: Ranking + Deploy             ~50%
 Jul 21 ─── 🎯 MVP com amigos
 ```
@@ -106,7 +106,7 @@ Jul 21 ─── 🎯 MVP com amigos
 
 ## O que falta para o MVP fechar
 
-1. **ApiFootballClient** — import de campeonato e sync de resultados
+1. **FootballDataClient** — import de campeonato e sync de placares
 2. **Cron** — atualização automática (06h, LIVE, 23:59)
 3. **Lineups** — endpoint + UI sem mock
 4. **Scoring** — jogador marcador, hat-trick, multiplicadores de copa

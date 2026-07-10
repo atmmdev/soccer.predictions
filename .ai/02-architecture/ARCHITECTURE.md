@@ -5,7 +5,7 @@
 Monorepo com frontend Next.js e backend NestJS (a criar). Arquitetura **DDD progressiva** + **Clean Architecture** no backend; **feature-first** no frontend.
 
 ```text
-API Football → NestJS → MySQL → REST → Next.js (React)
+football-data.org → NestJS → MySQL → REST → Next.js (React)
                     ↘ Redis (cache)
 ```
 
@@ -26,13 +26,13 @@ soccer.predictions/
 | Contexto | Responsabilidade | Módulo backend |
 |----------|------------------|----------------|
 | **Identity** | Auth, usuários, roles, convites | `modules/identity/` |
-| **Sports** | Campeonatos, ligas, times, fixtures, sync API Football | `modules/sports/` |
+| **Sports** | Campeonatos, ligas, times, fixtures, sync football-data.org | `modules/sports/` |
 | **Betting** | Bolões, palpites, regras de pontuação, ranking | `modules/betting/` |
 
 ```text
 Betting ──referencia──► Sports (championshipId)
 Betting ──referencia──► Identity (PoolUser)
-Sports  ──sync───────► API Football
+Sports  ──sync───────► football-data.org
 ```
 
 ## Backend — Clean Architecture
@@ -52,7 +52,7 @@ modules/{context}/
 └── infrastructure/
     ├── persistence/       # Prisma repositories
     ├── http/              # Controllers
-    └── integrations/      # ApiFootballClient
+    └── integrations/      # FootballDataClient
 ```
 
 **Regra:** `domain` nunca importa NestJS, Prisma ou HTTP.
@@ -113,7 +113,7 @@ types → mocks → table/row/badge/actions → filters → header → dialog(s)
 
 ## Cache Strategy
 
-- Redis: cache de respostas API Football, queries frequentes
+- Redis: cache de queries frequentes; catálogo football-data em memória no client
 - TanStack Query: cache no cliente
 
 ## Jobs assíncronos

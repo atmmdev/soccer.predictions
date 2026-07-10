@@ -7,7 +7,6 @@ export const predictionTableColumns = {
   position: 'hidden 2xl:table-cell',
   round: 'hidden xl:table-cell',
   result: 'hidden xl:table-cell',
-  player: 'hidden 2xl:table-cell',
   points: 'hidden xl:table-cell',
   deadline: 'hidden xl:table-cell',
 } as const;

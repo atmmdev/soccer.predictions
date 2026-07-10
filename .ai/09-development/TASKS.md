@@ -60,7 +60,7 @@ Fluxo funcional com **seed** (login → bolão → palpite → ranking). Bloquea
 
 ## Semana 3 — Sync + Dados reais (7–13 jul) ✅ ~95%
 
-- [x] Módulo `sports/integrations/` + `ApiFootballClient`
+- [x] Módulo `sports/integrations/` + `FootballDataClient`
 - [x] Endpoints proxy: countries, leagues (+ seasons na resposta)
 - [x] `ImportChampionshipService` — fixtures temporada inteira
 - [x] Cron sync (`@nestjs/schedule`: 06h, LIVE a cada 5min, 23:59)
@@ -107,7 +107,7 @@ Fluxo funcional com **seed** (login → bolão → palpite → ranking). Bloquea
 
 ## Próximas 5 tarefas (ordem sugerida)
 
-1. `ApiFootballClient` + variáveis de ambiente
+1. `FootballDataClient` + variáveis `FOOTBALL_DATA_*`
 2. `ImportChampionshipUseCase` + endpoint `POST /championships/import`
 3. Cron de sync de fixtures
 4. `GET /fixtures/:id/lineup` + remover mocks de `fixture-lineups.ts`

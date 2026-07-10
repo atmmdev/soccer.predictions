@@ -153,3 +153,16 @@ Regra que seguiremos no projeto:
 ### O que é Composition?
 
 Montar componentes maiores usando componentes menores.
+
+## Sports data provider — football-data.org (2026-07)
+
+Migrámos de API Football (api-sports) para [football-data.org](https://www.football-data.org/) v4 no plano free.
+
+Motivos: fixtures + placares + crests no free; CDN de escudos próprio (`crests.football-data.org`); sem dependência de `media.api-sports.io`.
+
+Limitações aceites nesta versão:
+- Sem lineups / eventos de gol no free → palpite de jogador e hat-trick desativados (v2 futura).
+- Rate limit ~10 req/min → throttle no `FootballDataClient`.
+- IDs incompatíveis com API Football → reset + reimport (sem migração incremental).
+
+Env: `FOOTBALL_DATA_TOKEN`, `FOOTBALL_DATA_BASE_URL` (default `https://api.football-data.org/v4`).

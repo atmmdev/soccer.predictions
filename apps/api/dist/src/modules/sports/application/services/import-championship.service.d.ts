@@ -1,7 +1,7 @@
 import type { ChampionshipType } from '../../../../../generated/prisma/client.js';
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 import type { ImportChampionshipDto } from '../dtos/import-championship.dto.js';
-import { ApiFootballClient } from '../../infrastructure/integrations/api-football.client.js';
+import { FootballDataClient } from '../../infrastructure/integrations/football-data.client.js';
 export interface ChampionshipListItem {
     id: number;
     leagueId: number;
@@ -14,8 +14,8 @@ export interface ChampionshipListItem {
 }
 export declare class ImportChampionshipService {
     private readonly prisma;
-    private readonly apiFootballClient;
-    constructor(prisma: PrismaService, apiFootballClient: ApiFootballClient);
+    private readonly footballDataClient;
+    constructor(prisma: PrismaService, footballDataClient: FootballDataClient);
     import(dto: ImportChampionshipDto): Promise<ChampionshipListItem>;
     private persistFixtures;
     private toListItem;

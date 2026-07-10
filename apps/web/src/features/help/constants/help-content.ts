@@ -39,7 +39,7 @@ export const WORKFLOW_STEPS = [
     step: 3,
     title: 'Registre seus palpites',
     description:
-      'Em Meus Palpites ou Jogos, informe o placar de cada partida e, opcionalmente, escolha um jogador para marcar gol.',
+      'Em Meus Palpites ou Jogos, informe o placar previsto de cada partida.',
   },
   {
     step: 4,
@@ -67,14 +67,14 @@ export const PREDICTION_RULES = [
       'Informe quantos gols cada time marcará. O palpite considera mandante × visitante (ex.: 2 × 1).',
   },
   {
-    title: 'Jogador artilheiro',
-    description:
-      'Você pode escolher no máximo 1 jogador por partida para marcar gol. Se ele marcar, você ganha bônus extra. Hat-trick (3+ gols) dobra o bônus.',
-  },
-  {
     title: 'Sem palpite, sem pontos',
     description:
       'Se você não registrar seu palpite antes do prazo, não pontua naquela partida.',
+  },
+  {
+    title: 'Palpite de jogador (em breve)',
+    description:
+      'Escolher um jogador para marcar gol e bônus de hat-trick voltam em uma versão futura. Nesta versão o palpite é só de placar.',
   },
 ];
 
@@ -113,27 +113,12 @@ export const SCORING_RULES = [
     description:
       'Resultado oficial e palpite são empates, mas com placares diferentes (ex.: 3×3 oficial e 1×1 no palpite).',
   },
-  {
-    key: 'playerGoal',
-    label: 'Jogador marcou gol',
-    points: defaultBaseScoringRules.playerGoal,
-    description:
-      'O jogador escolhido marcou pelo menos 1 gol na partida (bônus cumulativo).',
-  },
-  {
-    key: 'playerHatTrick',
-    label: 'Hat-trick do jogador',
-    points: `×${defaultBaseScoringRules.playerHatTrickMultiplier}`,
-    description:
-      'Multiplicador aplicado sobre o bônus de jogador quando ele faz 3 ou mais gols.',
-  },
 ];
 
 export const SCORING_EVALUATION_ORDER = [
   'Placar exato — se acertou, não soma regras parciais de vencedor ou empate.',
   'Gols do vencedor e do perdedor — quando não é placar exato, mas os gols de cada lado batem.',
   'Vencedor ou empate — quando acertou o resultado, mas errou os gols.',
-  'Bônus de jogador — independente do placar, se o jogador escolhido marcou.',
   'Em copas, multiplicador da fase sobre o total de pontos da partida.',
 ];
 
@@ -190,31 +175,7 @@ export const SCORING_EXAMPLES = [
     prediction: '2 × 1',
     breakdown: ['Nenhuma regra de placar aplicada: 0 pts'],
     total: 0,
-    note: 'Errou vencedor e gols. Só pontua se houver bônus de jogador.',
-  },
-  {
-    id: 'player-goal',
-    title: 'Bônus de jogador',
-    result: 'Brasil 1 × 1 Argentina',
-    prediction: '2 × 2 + Vinícius Jr. marcou',
-    breakdown: [
-      'Empate sem placar exato: 3 pts',
-      'Jogador marcou gol: 10 pts',
-    ],
-    total: 13,
-    note: 'Regras de placar e bônus de jogador são cumulativas.',
-  },
-  {
-    id: 'player-hattrick',
-    title: 'Hat-trick do jogador',
-    result: 'França 3 × 0 Alemanha',
-    prediction: '3 × 0 + Mbappé marcou (3 gols)',
-    breakdown: [
-      'Placar exato: 10 pts',
-      'Jogador marcou gol: 10 pts × 2 (hat-trick): 20 pts',
-    ],
-    total: 30,
-    note: 'Hat-trick dobra o bônus de jogador (multiplicador padrão: ×2).',
+    note: 'Errou vencedor e gols — não pontua nesta partida.',
   },
   {
     id: 'cup-multiplier',

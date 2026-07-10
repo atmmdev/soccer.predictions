@@ -37,14 +37,6 @@ interface FixturePredictionsDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-function getSelectedPlayerLabel(fixture: PredictionFixtureItem) {
-  if (!fixture.prediction?.selectedPlayerId) {
-    return '—';
-  }
-
-  return `Jogador #${fixture.prediction.selectedPlayerId}`;
-}
-
 export function FixturePredictionsDialog({
   fixture,
   open,
@@ -150,11 +142,8 @@ export function FixturePredictionsDialog({
                   <TableHead className='text-muted-foreground w-[14%] text-center text-xs leading-tight whitespace-normal'>
                     Resultado
                   </TableHead>
-                  <TableHead className='text-muted-foreground w-[14%] text-center text-xs'>
+                  <TableHead className='text-muted-foreground w-[20%] text-center text-xs'>
                     Palpite
-                  </TableHead>
-                  <TableHead className='text-muted-foreground hidden w-[16%] text-xs sm:table-cell'>
-                    Jogador
                   </TableHead>
                   <TableHead className='text-muted-foreground w-[12%] text-center text-xs'>
                     Pts
@@ -215,9 +204,6 @@ export function FixturePredictionsDialog({
                             —
                           </span>
                         )}
-                      </TableCell>
-                      <TableCell className='text-muted-foreground hidden max-w-0 truncate text-xs sm:table-cell'>
-                        {getSelectedPlayerLabel(row)}
                       </TableCell>
                       <TableCell className='text-center'>
                         <div className='flex justify-center'>

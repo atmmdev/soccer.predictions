@@ -16,7 +16,6 @@ import {
   getPredictionLockMessage,
 } from '../utils/prediction-window.js';
 import { assertCanParticipateInPools } from '../../../../shared/auth/pool-participation.js';
-import { getTeamLogoPublicUrl } from '../../../sports/application/utils/team-logo-url.js';
 import { RankingService } from './ranking.service.js';
 import { ScoringService } from './scoring.service.js';
 
@@ -260,7 +259,7 @@ export class PredictionService {
       update: {
         predictedHomeScore: dto.predictedHomeScore,
         predictedAwayScore: dto.predictedAwayScore,
-        selectedPlayerId: dto.selectedPlayerId ?? null,
+        selectedPlayerId: null,
       },
       create: {
         poolId: dto.poolId,
@@ -268,7 +267,7 @@ export class PredictionService {
         fixtureId: dto.fixtureId,
         predictedHomeScore: dto.predictedHomeScore,
         predictedAwayScore: dto.predictedAwayScore,
-        selectedPlayerId: dto.selectedPlayerId ?? null,
+        selectedPlayerId: null,
       },
     });
 
@@ -407,8 +406,8 @@ export class PredictionService {
       round: fixture.round ?? 0,
       homeTeam: fixture.homeTeam.name,
       awayTeam: fixture.awayTeam.name,
-      homeTeamLogo: getTeamLogoPublicUrl(fixture.homeTeam.externalId),
-      awayTeamLogo: getTeamLogoPublicUrl(fixture.awayTeam.externalId),
+      homeTeamLogo: fixture.homeTeam.logo ?? '',
+      awayTeamLogo: fixture.awayTeam.logo ?? '',
       date: fixture.date.toISOString(),
       matchStatus: this.toMatchStatus(fixture.status),
       officialHomeScore: fixture.homeScore,

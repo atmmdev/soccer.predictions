@@ -16,12 +16,14 @@ Grupos de amigos, família ou trabalho querem organizar bolões de futebol sem p
 
 ## Solução
 
-1. Admin importa campeonato (país → liga → temporada atual) via API Football
+1. Admin importa campeonato (país → liga → temporada atual) via football-data.org
 2. Sistema persiste times, confrontos e atualiza resultados (cron)
 3. Admin cria bolão vinculado ao campeonato ativo
 4. Participantes entram por convite (link ou manual)
 5. Palpitam placares antes do jogo fechar
 6. Sistema calcula pontos (`PointHistory`) e exibe ranking derivado
+
+Palpite de jogador / hat-trick: adiado para v2 (plano free sem lineups/events).
 
 ## Usuários e papéis
 
@@ -83,18 +85,17 @@ Regras:
 - Configurável **por bolão** — admin confirma ou edita no dialog de criação
 - **Liga (`LEAGUE`):** regras base por rodada
 - **Copa (`CUP`):** mesmas regras base na fase de grupos; fases eliminatórias com multiplicadores (×2 a ×6)
-- Regras base MVP: placar exato, gols do vencedor/perdedor, vencedor/empate sem exato, **1 jogador** para marcar gol, hat-trick
+- Regras base MVP: placar exato, gols do vencedor/perdedor, vencedor/empate sem exato
 - Ranking **derivado** de `PointHistory` — não é tabela
 
 ### Convites
 
 - Manual e por link: `https://dominio.com/join/ABC123`
 
-### Palpite de jogador
+### Palpite de jogador (V2)
 
-- **MVP:** exatamente **0 ou 1** jogador por palpite (`selectedPlayerId`)
-- Após selecionar, demais jogadores ficam desabilitados até **Trocar** ou **Remover**
-- Pontuação: `playerGoal` se marcou; hat-trick aplica `playerHatTrickMultiplier`
+- Desativado no plano free da football-data.org (sem lineups/events)
+- Campos `selectedPlayerId` / `playerGoal` / hat-trick permanecem no schema para reativação futura
 
 ### Prazo do palpite
 
@@ -104,6 +105,7 @@ Regras:
 
 ## Fora do MVP (V2+)
 
+- Palpite de jogador / hat-trick (lineups + goal events)
 - Múltiplos jogadores por palpite
 - WebSocket / push notifications
 - PWA offline (fila de palpites)
@@ -111,7 +113,7 @@ Regras:
 - CTA "Importar" no Dashboard
 - Standings (tabela de classificação) dedicada
 
-## API Football — rate limit
+## football-data.org — rate limit
 
-- Plano gratuito: 100 req/dia — meta operacional: **< 50/dia**
+- Plano free: ~10 req/minuto — throttle no `FootballDataClient`
 - Sync: 06:00 geral, LIVE durante o dia, 23:59 final

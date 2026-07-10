@@ -44,18 +44,6 @@ const BASE_SCORING_FIELDS = [
     min: 0,
     step: 1,
   },
-  {
-    name: 'playerGoal' as const,
-    label: 'Jogador para fazer gol',
-    min: 0,
-    step: 1,
-  },
-  {
-    name: 'playerHatTrickMultiplier' as const,
-    label: 'Hat-trick (multiplicador)',
-    min: 1,
-    step: 1,
-  },
 ];
 
 interface PoolBaseScoringRulesProps {

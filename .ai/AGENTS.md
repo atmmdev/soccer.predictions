@@ -36,7 +36,7 @@ soccer.predictions/
 ### Módulos
 
 - `identity` — auth, users, invitations
-- `sports` — championships, fixtures, API Football sync
+- `sports` — championships, fixtures, football-data.org sync
 - `betting` — pools, predictions, scoring, rankings
 
 ### Motor de negócio pós-jogo
@@ -78,7 +78,7 @@ src/
 
 ### Regras críticas
 
-- Zero acesso direto à API Football
+- Zero acesso direto à football-data.org (só via NestJS)
 - Server Components nas pages; client nos forms/filtros
 - Feature barrel exports em `index.ts`
 

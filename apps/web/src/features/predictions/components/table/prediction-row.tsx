@@ -39,14 +39,6 @@ interface PredictionRowProps {
   onViewAllPredictions: (fixture: PredictionFixtureItem) => void;
 }
 
-function getSelectedPlayerName(fixture: PredictionFixtureItem) {
-  if (!fixture.prediction?.selectedPlayerId) {
-    return '—';
-  }
-
-  return `Jogador #${fixture.prediction.selectedPlayerId}`;
-}
-
 export function PredictionRow({
   fixture,
   now,
@@ -133,9 +125,6 @@ export function PredictionRow({
         ) : (
           <span className='text-base font-bold text-muted-foreground'>—</span>
         )}
-      </TableCell>
-      <TableCell className={`text-xs ${predictionTableColumns.player}`}>
-        {getSelectedPlayerName(fixture)}
       </TableCell>
       <TableCell>
         <StatusBadge tone={statusTone}>

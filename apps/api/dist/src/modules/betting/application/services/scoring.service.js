@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ScoringService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
-const fixture_goal_scorers_js_1 = require("../../../sports/application/utils/fixture-goal-scorers.js");
 const scoring_calculator_js_1 = require("../utils/scoring-calculator.js");
 let ScoringService = class ScoringService {
     prisma;
@@ -45,7 +44,6 @@ let ScoringService = class ScoringService {
                 homeScore: true,
                 awayScore: true,
                 phase: true,
-                goalScorers: true,
             },
         });
         const scoring = (0, scoring_calculator_js_1.parsePoolScoringConfig)(pool.scoring);
@@ -75,7 +73,6 @@ let ScoringService = class ScoringService {
         await this.prisma.pointHistory.deleteMany({
             where: { poolId, fixtureId: fixture.id },
         });
-        const goalScorers = (0, fixture_goal_scorers_js_1.parseGoalScorers)(fixture.goalScorers);
         const rows = [];
         for (const prediction of predictions) {
             const result = (0, scoring_calculator_js_1.calculatePredictionScore)({
@@ -83,8 +80,8 @@ let ScoringService = class ScoringService {
                 predictedAway: prediction.predictedAwayScore,
                 actualHome: fixture.homeScore,
                 actualAway: fixture.awayScore,
-                selectedPlayerId: prediction.selectedPlayerId,
-                playerGoalCount: (0, fixture_goal_scorers_js_1.getPlayerGoalCount)(goalScorers, prediction.selectedPlayerId),
+                selectedPlayerId: null,
+                playerGoalCount: 0,
                 championshipType,
                 fixturePhase: fixture.phase,
                 scoring,

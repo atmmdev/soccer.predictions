@@ -6,10 +6,6 @@ import type {
 } from '../../../../../generated/prisma/client.js';
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 import {
-  getPlayerGoalCount,
-  parseGoalScorers,
-} from '../../../sports/application/utils/fixture-goal-scorers.js';
-import {
   calculatePredictionScore,
   mergeAchievements,
   parsePoolScoringConfig,
@@ -48,7 +44,6 @@ export class ScoringService {
         homeScore: true,
         awayScore: true,
         phase: true,
-        goalScorers: true,
       },
     });
 
@@ -86,7 +81,6 @@ export class ScoringService {
       homeScore: number | null;
       awayScore: number | null;
       phase: CupPhase | null;
-      goalScorers: unknown;
     },
     championshipType: ChampionshipType,
     scoring: ReturnType<typeof parsePoolScoringConfig>,
@@ -103,7 +97,6 @@ export class ScoringService {
       where: { poolId, fixtureId: fixture.id },
     });
 
-    const goalScorers = parseGoalScorers(fixture.goalScorers);
     const rows: Prisma.PointHistoryCreateManyInput[] = [];
 
     for (const prediction of predictions) {
@@ -112,11 +105,9 @@ export class ScoringService {
         predictedAway: prediction.predictedAwayScore,
         actualHome: fixture.homeScore!,
         actualAway: fixture.awayScore!,
-        selectedPlayerId: prediction.selectedPlayerId,
-        playerGoalCount: getPlayerGoalCount(
-          goalScorers,
-          prediction.selectedPlayerId,
-        ),
+        // Player goal / hat-trick deferred to v2 (no lineups on free plan).
+        selectedPlayerId: null,
+        playerGoalCount: 0,
         championshipType,
         fixturePhase: fixture.phase,
         scoring,

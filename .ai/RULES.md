@@ -37,11 +37,11 @@ modules/{context}/
 - `JwtAuthGuard` em rotas protegidas
 - Domínio **nunca** importa NestJS ou Prisma
 
-### API Football
+### football-data.org
 
-- Cliente HTTP em `infrastructure/integrations`
-- Rate limit: meta < 50 req/dia
-- Cache Redis para respostas repetidas
+- Cliente HTTP em `infrastructure/integrations` (`FootballDataClient`)
+- Rate limit free: ~10 req/min (throttle no client)
+- Cache em memória para catálogo de competitions
 
 ## Frontend (Next.js)
 
@@ -94,7 +94,7 @@ types → mocks → table → row → badge → actions → filters
 
 - JWT access token
 - Validação Zod (frontend) + class-validator (backend)
-- Frontend nunca chama API Football
+- Frontend nunca chama football-data.org
 - CORS restrito em produção
 
 ## Performance

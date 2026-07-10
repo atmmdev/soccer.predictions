@@ -2,12 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 
 import { ScoringService } from '../../../betting/application/services/scoring.service.js';
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
-import { ApiFootballClient } from '../../infrastructure/integrations/api-football.client.js';
-import { mapEventsToGoalScorers } from '../utils/fixture-goal-scorers.js';
-import {
-  buildFixtureUpdateData,
-  isFinishedFixtureStatus,
-} from '../utils/fixture-sync.mapper.js';
+import { FootballDataClient } from '../../infrastructure/integrations/football-data.client.js';
+import { buildFixtureUpdateData } from '../utils/fixture-sync.mapper.js';
 
 @Injectable()
 export class SyncFixturesService {
@@ -15,7 +11,7 @@ export class SyncFixturesService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly apiFootballClient: ApiFootballClient,
+    private readonly footballDataClient: FootballDataClient,
     private readonly scoringService: ScoringService,
   ) {}
 
@@ -31,19 +27,17 @@ export class SyncFixturesService {
       return 0;
     }
 
-    const remoteFixtures = await this.apiFootballClient.getFixtures(
+    const remoteMatches = await this.footballDataClient.getCompetitionMatches(
       championship.league.externalId,
       championship.season,
     );
 
     let updated = 0;
 
-    for (const remote of remoteFixtures) {
-      const goalScorers = await this.resolveGoalScorers(remote);
-
+    for (const remote of remoteMatches) {
       const result = await this.prisma.fixture.updateMany({
-        where: { externalId: remote.fixture.id },
-        data: buildFixtureUpdateData(remote, goalScorers),
+        where: { externalId: remote.id },
+        data: buildFixtureUpdateData(remote),
       });
 
       updated += result.count;
@@ -56,77 +50,73 @@ export class SyncFixturesService {
 
   async syncActiveChampionships(mode: 'all' | 'live' = 'all'): Promise<void> {
     try {
-      this.apiFootballClient.assertConfigured();
+      this.footballDataClient.assertConfigured();
     } catch {
-      this.logger.warn('API Football não configurada — sync ignorado');
+      this.logger.warn('Football Data não configurada — sync ignorado');
       return;
     }
 
     const championships = await this.prisma.championship.findMany({
       where: { status: 'ACTIVE' },
-      select: { id: true },
+      select: {
+        id: true,
+        season: true,
+        league: { select: { externalId: true } },
+      },
     });
 
-    for (const championship of championships) {
-      if (mode === 'live') {
-        await this.syncLiveFixtures(championship.id);
-        continue;
-      }
+    if (mode === 'live') {
+      await this.syncLiveAcrossChampionships(championships);
+      return;
+    }
 
+    for (const championship of championships) {
       await this.syncChampionship(championship.id);
     }
   }
 
-  private async syncLiveFixtures(championshipId: number): Promise<void> {
-    const liveFixtures = await this.prisma.fixture.findMany({
-      where: {
-        championshipId,
-        status: { in: ['SCHEDULED', 'LIVE'] },
-      },
-      select: { externalId: true },
-      take: 40,
-    });
-
-    if (liveFixtures.length === 0) {
+  private async syncLiveAcrossChampionships(
+    championships: Array<{
+      id: number;
+      season: number;
+      league: { externalId: number };
+    }>,
+  ): Promise<void> {
+    if (championships.length === 0) {
       return;
     }
 
-    const remoteFixtures = await this.apiFootballClient.getFixturesByIds(
-      liveFixtures.map(fixture => fixture.externalId),
-    );
+    const competitionIds = [
+      ...new Set(championships.map(item => item.league.externalId)),
+    ];
 
-    for (const remote of remoteFixtures) {
-      const goalScorers = await this.resolveGoalScorers(remote);
+    const remoteMatches = await this.footballDataClient.getMatches({
+      status: 'IN_PLAY,PAUSED',
+      competitions: competitionIds.join(','),
+    });
 
-      await this.prisma.fixture.updateMany({
-        where: { externalId: remote.fixture.id },
-        data: buildFixtureUpdateData(remote, goalScorers),
+    const championshipIdsToScore = new Set<number>();
+
+    for (const remote of remoteMatches) {
+      const result = await this.prisma.fixture.updateMany({
+        where: { externalId: remote.id },
+        data: buildFixtureUpdateData(remote),
       });
+
+      if (result.count > 0) {
+        const fixture = await this.prisma.fixture.findUnique({
+          where: { externalId: remote.id },
+          select: { championshipId: true },
+        });
+
+        if (fixture) {
+          championshipIdsToScore.add(fixture.championshipId);
+        }
+      }
     }
 
-    await this.scoringService.syncScoresForChampionship(championshipId);
-  }
-
-  private async resolveGoalScorers(
-    remote: Parameters<typeof buildFixtureUpdateData>[0],
-  ) {
-    if (!isFinishedFixtureStatus(remote.fixture.status.short)) {
-      return undefined;
-    }
-
-    try {
-      const events = await this.apiFootballClient.getFixtureEvents(
-        remote.fixture.id,
-      );
-
-      return mapEventsToGoalScorers(events);
-    } catch (error) {
-      this.logger.warn(
-        `Não foi possível carregar gols do fixture ${remote.fixture.id}`,
-        error,
-      );
-
-      return undefined;
+    for (const championshipId of championshipIdsToScore) {
+      await this.scoringService.syncScoresForChampionship(championshipId);
     }
   }
 }

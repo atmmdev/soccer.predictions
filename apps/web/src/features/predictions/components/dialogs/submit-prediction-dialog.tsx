@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { toast } from 'sonner';
 
 import {
@@ -24,18 +24,14 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { getFetchErrorMessage } from '@/lib/api-client';
-import { fetchFixtureLineupRequest } from '@/features/matches/services/match-api.service';
 
 import { useSubmitPredictionForm } from '../../hooks/use-submit-prediction';
 import type { SubmitPredictionFormData } from '../../schemas/submit-prediction.schema';
-import type { FixtureLineup } from '../../types/fixture-lineup';
 import type { PredictionFixtureItem } from '../../types/prediction-fixture';
 import {
   canEditPrediction,
   getPredictionLockMessage,
 } from '../../utils/prediction-window';
-import { PlayerGoalPicker } from '../player-goal-picker';
 
 interface SubmitPredictionDialogProps {
   fixture: PredictionFixtureItem | null;
@@ -54,9 +50,6 @@ export function SubmitPredictionDialog({
   onSubmit,
 }: SubmitPredictionDialogProps) {
   const form = useSubmitPredictionForm(fixture?.prediction);
-  const [lineup, setLineup] = useState<FixtureLineup | null>(null);
-  const [lineupError, setLineupError] = useState<string | null>(null);
-  const [isLoadingLineup, setIsLoadingLineup] = useState(false);
   const isEditable = fixture ? canEditPrediction(fixture) : false;
   const lockMessage = fixture ? getPredictionLockMessage(fixture) : null;
 
@@ -65,61 +58,20 @@ export function SubmitPredictionDialog({
       form.reset({
         predictedHomeScore: fixture.prediction?.predictedHomeScore ?? 0,
         predictedAwayScore: fixture.prediction?.predictedAwayScore ?? 0,
-        selectedPlayerId: fixture.prediction?.selectedPlayerId ?? null,
+        selectedPlayerId: null,
       });
     }
   }, [fixture, form, open]);
-
-  useEffect(() => {
-    if (!open || !fixture) {
-      setLineup(null);
-      setLineupError(null);
-      return;
-    }
-
-    const fixtureId = fixture.id;
-    let cancelled = false;
-
-    async function loadLineup() {
-      setIsLoadingLineup(true);
-      setLineupError(null);
-
-      try {
-        const response = await fetchFixtureLineupRequest(fixtureId);
-
-        if (!cancelled) {
-          setLineup(response);
-        }
-      } catch (error) {
-        if (!cancelled) {
-          setLineup(null);
-          setLineupError(
-            getFetchErrorMessage(
-              error,
-              'Escalação indisponível para este jogo.',
-            ),
-          );
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoadingLineup(false);
-        }
-      }
-    }
-
-    void loadLineup();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [fixture, open]);
 
   async function handleSubmit(data: SubmitPredictionFormData) {
     if (!fixture) {
       return;
     }
 
-    const saved = await onSubmit(fixture.id, data);
+    const saved = await onSubmit(fixture.id, {
+      ...data,
+      selectedPlayerId: null,
+    });
 
     if (!saved) {
       return;
@@ -230,34 +182,6 @@ export function SubmitPredictionDialog({
                 )}
               />
             </div>
-
-            {isLoadingLineup ? (
-              <p className='text-muted-foreground text-sm'>
-                Carregando escalação...
-              </p>
-            ) : lineupError ? (
-              <Alert>
-                <AlertDescription>{lineupError}</AlertDescription>
-              </Alert>
-            ) : lineup ? (
-              <FormField
-                control={form.control}
-                name='selectedPlayerId'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <PlayerGoalPicker
-                        lineup={lineup}
-                        value={field.value}
-                        onChange={field.onChange}
-                        disabled={!isEditable}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ) : null}
 
             <div className='flex justify-end gap-2'>
               <Button

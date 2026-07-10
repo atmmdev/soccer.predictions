@@ -10,18 +10,15 @@ import { ImportChampionshipService } from './application/services/import-champio
 import { LineupService } from './application/services/lineup.service.js';
 import { SyncFixturesService } from './application/services/sync-fixtures.service.js';
 import { FixtureSyncScheduler } from './infrastructure/jobs/fixture-sync.scheduler.js';
-import { ApiFootballClient } from './infrastructure/integrations/api-football.client.js';
+import { FootballDataClient } from './infrastructure/integrations/football-data.client.js';
 import { ChampionshipsController } from './infrastructure/http/championships.controller.js';
 import { FixturesController } from './infrastructure/http/fixtures.controller.js';
-import { MediaController } from './infrastructure/http/media.controller.js';
-import { TeamLogoStorage } from './infrastructure/storage/team-logo.storage.js';
 
 @Module({
   imports: [IdentityModule, BettingModule],
-  controllers: [ChampionshipsController, FixturesController, MediaController],
+  controllers: [ChampionshipsController, FixturesController],
   providers: [
-    ApiFootballClient,
-    TeamLogoStorage,
+    FootballDataClient,
     CatalogService,
     ChampionshipService,
     FixtureService,
@@ -36,7 +33,6 @@ import { TeamLogoStorage } from './infrastructure/storage/team-logo.storage.js';
     FixtureService,
     SyncFixturesService,
     LineupService,
-    TeamLogoStorage,
   ],
 })
 export class SportsModule {}

@@ -18,21 +18,18 @@ const import_championship_service_js_1 = require("./application/services/import-
 const lineup_service_js_1 = require("./application/services/lineup.service.js");
 const sync_fixtures_service_js_1 = require("./application/services/sync-fixtures.service.js");
 const fixture_sync_scheduler_js_1 = require("./infrastructure/jobs/fixture-sync.scheduler.js");
-const api_football_client_js_1 = require("./infrastructure/integrations/api-football.client.js");
+const football_data_client_js_1 = require("./infrastructure/integrations/football-data.client.js");
 const championships_controller_js_1 = require("./infrastructure/http/championships.controller.js");
 const fixtures_controller_js_1 = require("./infrastructure/http/fixtures.controller.js");
-const media_controller_js_1 = require("./infrastructure/http/media.controller.js");
-const team_logo_storage_js_1 = require("./infrastructure/storage/team-logo.storage.js");
 let SportsModule = class SportsModule {
 };
 exports.SportsModule = SportsModule;
 exports.SportsModule = SportsModule = __decorate([
     (0, common_1.Module)({
         imports: [identity_module_js_1.IdentityModule, betting_module_js_1.BettingModule],
-        controllers: [championships_controller_js_1.ChampionshipsController, fixtures_controller_js_1.FixturesController, media_controller_js_1.MediaController],
+        controllers: [championships_controller_js_1.ChampionshipsController, fixtures_controller_js_1.FixturesController],
         providers: [
-            api_football_client_js_1.ApiFootballClient,
-            team_logo_storage_js_1.TeamLogoStorage,
+            football_data_client_js_1.FootballDataClient,
             catalog_service_js_1.CatalogService,
             championship_service_js_1.ChampionshipService,
             fixture_service_js_1.FixtureService,
@@ -47,7 +44,6 @@ exports.SportsModule = SportsModule = __decorate([
             fixture_service_js_1.FixtureService,
             sync_fixtures_service_js_1.SyncFixturesService,
             lineup_service_js_1.LineupService,
-            team_logo_storage_js_1.TeamLogoStorage,
         ],
     })
 ], SportsModule);

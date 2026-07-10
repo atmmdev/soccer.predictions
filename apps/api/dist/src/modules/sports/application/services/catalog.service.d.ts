@@ -1,4 +1,4 @@
-import { ApiFootballClient } from '../../infrastructure/integrations/api-football.client.js';
+import { FootballDataClient } from '../../infrastructure/integrations/football-data.client.js';
 export interface CatalogCountry {
     name: string;
     code: string;
@@ -14,8 +14,8 @@ export interface CatalogLeague {
     seasons: number[];
 }
 export declare class CatalogService {
-    private readonly apiFootballClient;
-    constructor(apiFootballClient: ApiFootballClient);
+    private readonly footballDataClient;
+    constructor(footballDataClient: FootballDataClient);
     listCountries(): Promise<CatalogCountry[]>;
     listLeagues(country: string, season?: number): Promise<CatalogLeague[]>;
 }

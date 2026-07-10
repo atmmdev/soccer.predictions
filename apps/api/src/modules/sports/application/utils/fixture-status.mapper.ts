@@ -1,40 +1,32 @@
 import type { FixtureStatus } from '../../../../../generated/prisma/client.js';
+import type { FootballDataMatchStatus } from '../../infrastructure/integrations/football-data.types.js';
 
-const LIVE_STATUSES = new Set([
-  '1H',
-  'HT',
-  '2H',
-  'ET',
-  'BT',
-  'P',
-  'LIVE',
-  'INT',
-]);
-
-const FINISHED_STATUSES = new Set(['FT', 'AET', 'PEN']);
-
-const POSTPONED_STATUSES = new Set(['PST', 'SUSP']);
-
-const CANCELLED_STATUSES = new Set(['CANC', 'ABD', 'AWD', 'WO']);
-
-export function mapApiFootballFixtureStatus(short: string): FixtureStatus {
-  if (LIVE_STATUSES.has(short)) {
-    return 'LIVE';
+export function mapFootballDataFixtureStatus(
+  status: FootballDataMatchStatus | string,
+): FixtureStatus {
+  switch (status) {
+    case 'IN_PLAY':
+    case 'PAUSED':
+      return 'LIVE';
+    case 'FINISHED':
+    case 'AWARDED':
+      return 'FINISHED';
+    case 'POSTPONED':
+    case 'SUSPENDED':
+      return 'POSTPONED';
+    case 'CANCELLED':
+      return 'CANCELLED';
+    case 'SCHEDULED':
+    case 'TIMED':
+    default:
+      return 'SCHEDULED';
   }
+}
 
-  if (FINISHED_STATUSES.has(short)) {
-    return 'FINISHED';
-  }
-
-  if (POSTPONED_STATUSES.has(short)) {
-    return 'POSTPONED';
-  }
-
-  if (CANCELLED_STATUSES.has(short)) {
-    return 'CANCELLED';
-  }
-
-  return 'SCHEDULED';
+export function isFinishedFootballDataStatus(
+  status: FootballDataMatchStatus | string,
+): boolean {
+  return status === 'FINISHED' || status === 'AWARDED';
 }
 
 export function parseFixtureRound(round: string | null): number | null {

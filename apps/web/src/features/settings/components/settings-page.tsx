@@ -52,16 +52,9 @@ export function SettingsPage() {
               {defaultBaseScoringRules.drawWithoutExactScore} pts
             </Badge>
           </div>
-          <div className='flex items-center justify-between gap-4'>
-            <span>Jogador marcou gol</span>
-            <Badge variant='secondary'>{defaultBaseScoringRules.playerGoal} pts</Badge>
-          </div>
-          <div className='flex items-center justify-between gap-4'>
-            <span>Hat-trick do jogador</span>
-            <Badge variant='secondary'>
-              ×{defaultBaseScoringRules.playerHatTrickMultiplier}
-            </Badge>
-          </div>
+          <p className='text-muted-foreground text-sm'>
+            Palpite de jogador / hat-trick fica para uma versão futura.
+          </p>
         </CardContent>
       </Card>
 
@@ -118,11 +111,11 @@ export function SettingsPage() {
           </CardHeader>
           <CardContent className='space-y-2 text-sm'>
             <p>
-              Importação de campeonatos e sincronização de jogos dependem da chave{' '}
+              Importação de campeonatos e sincronização de jogos dependem do token{' '}
               <code className='bg-muted rounded px-1 py-0.5 text-xs'>
-                API_FOOTBALL_KEY
+                FOOTBALL_DATA_TOKEN
               </code>{' '}
-              no backend.
+              (football-data.org) no backend.
             </p>
             <p className='text-muted-foreground'>
               Campeonatos são gerenciados em{' '}

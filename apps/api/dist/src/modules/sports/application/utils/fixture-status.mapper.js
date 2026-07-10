@@ -1,34 +1,29 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mapApiFootballFixtureStatus = mapApiFootballFixtureStatus;
+exports.mapFootballDataFixtureStatus = mapFootballDataFixtureStatus;
+exports.isFinishedFootballDataStatus = isFinishedFootballDataStatus;
 exports.parseFixtureRound = parseFixtureRound;
-const LIVE_STATUSES = new Set([
-    '1H',
-    'HT',
-    '2H',
-    'ET',
-    'BT',
-    'P',
-    'LIVE',
-    'INT',
-]);
-const FINISHED_STATUSES = new Set(['FT', 'AET', 'PEN']);
-const POSTPONED_STATUSES = new Set(['PST', 'SUSP']);
-const CANCELLED_STATUSES = new Set(['CANC', 'ABD', 'AWD', 'WO']);
-function mapApiFootballFixtureStatus(short) {
-    if (LIVE_STATUSES.has(short)) {
-        return 'LIVE';
+function mapFootballDataFixtureStatus(status) {
+    switch (status) {
+        case 'IN_PLAY':
+        case 'PAUSED':
+            return 'LIVE';
+        case 'FINISHED':
+        case 'AWARDED':
+            return 'FINISHED';
+        case 'POSTPONED':
+        case 'SUSPENDED':
+            return 'POSTPONED';
+        case 'CANCELLED':
+            return 'CANCELLED';
+        case 'SCHEDULED':
+        case 'TIMED':
+        default:
+            return 'SCHEDULED';
     }
-    if (FINISHED_STATUSES.has(short)) {
-        return 'FINISHED';
-    }
-    if (POSTPONED_STATUSES.has(short)) {
-        return 'POSTPONED';
-    }
-    if (CANCELLED_STATUSES.has(short)) {
-        return 'CANCELLED';
-    }
-    return 'SCHEDULED';
+}
+function isFinishedFootballDataStatus(status) {
+    return status === 'FINISHED' || status === 'AWARDED';
 }
 function parseFixtureRound(round) {
     if (!round) {

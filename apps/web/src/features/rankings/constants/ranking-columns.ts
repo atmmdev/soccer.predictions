@@ -19,8 +19,6 @@ export const RANKING_STAT_COLUMNS: RankingColumnDefinition[] = [
     sigla: 'EE',
     label: 'Empate sem placar exato',
   },
-  { key: 'playerGoal', sigla: 'JG', label: 'Jogador marcou gol' },
-  { key: 'playerHatTrick', sigla: 'HT', label: 'Hat-trick do jogador' },
 ];
 
 export const RANKING_LEGEND_ITEMS: Array<{ sigla: string; label: string }> = [

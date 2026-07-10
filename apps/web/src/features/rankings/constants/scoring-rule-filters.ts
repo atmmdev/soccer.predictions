@@ -13,8 +13,6 @@ export const SCORING_RULE_FILTER_OPTIONS: Array<{
   { value: 'loserScore', label: 'Placar do perdedor' },
   { value: 'correctWinner', label: 'Vitória vencedor' },
   { value: 'drawWithoutExactScore', label: 'Empate sem placar exato' },
-  { value: 'playerGoal', label: 'Jogador marcou gol' },
-  { value: 'playerHatTrick', label: 'Hat-trick do jogador' },
 ];
 
 export const SCORING_ACHIEVEMENT_LABELS: Record<ScoringAchievementKey, string> =

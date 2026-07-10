@@ -90,12 +90,10 @@ export function RankingTable({
                     'w-11 px-2',
                     scoringRule === column.key && 'bg-primary/5',
                     column.key === 'predictionsCount' && 'hidden sm:table-cell',
-                    (column.key === 'loserScore' ||
-                      column.key === 'drawWithoutExactScore' ||
-                      column.key === 'playerGoal' ||
-                      column.key === 'playerHatTrick') &&
-                      'hidden lg:table-cell',
-                  )}
+                      (column.key === 'loserScore' ||
+                        column.key === 'drawWithoutExactScore') &&
+                        'hidden lg:table-cell',
+                    )}
                   title={column.label}
                 />
               ))}

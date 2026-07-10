@@ -41,19 +41,24 @@ Swagger: `http://localhost:3001/api/docs`
 
 | E-mail                    | Senha         | Papel       |
 | ------------------------- | ------------- | ----------- |
-| `admin@admin.com`         | `admin123`    | SUPER_ADMIN |
-| `atmm.rj@gmail.com`       | `admin123456` | ADMIN       |
-| `participante@gmail.com ` | `senha123`    | PARTICIPANT |
+| `atmmdev@gmail.com`       | `WebAtm1979#` | SUPER_ADMIN |
+| `atmmoreira.rj@gmail.com` | `WebAtm1979#` | ADMIN       |
+| `atmm.rj@gmail.com`       | `WebAtm1979#` | PARTICIPANT |
 
 Rodar seed: `cd apps/api && npm run prisma:seed`
 
-## Documentation API Football
+## Documentation football-data.org
 
-URL: https://www.api-football.com/documentation-v3
+URL: https://www.football-data.org/documentation/quickstart
+
+Provider: football-data.org v4 (free plan — fixtures, scores, crests).  
+Env: `FOOTBALL_DATA_TOKEN`, `FOOTBALL_DATA_BASE_URL`.
 
 Credenciais de Teste (seed):
 
-- `admin@admin` / `admin123` (SUPER_ADMIN)
+- `atmmdev@gmail.com` / `WebAtm1979#` (SUPER_ADMIN)
+- `atmmoreira.rj@gmail.com` / `WebAtm1979#` (ADMIN)
+- `atmm.rj@gmail.com` / `WebAtm1979#` (PARTICIPANT)
 
 Demais usuários: cadastro em `/register` (sempre PARTICIPANT; vira ADMIN ao criar o 1º bolão).
 

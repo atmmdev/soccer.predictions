@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FixtureService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
-const team_logo_url_js_1 = require("../utils/team-logo-url.js");
 let FixtureService = class FixtureService {
     prisma;
     constructor(prisma) {
@@ -41,8 +40,8 @@ let FixtureService = class FixtureService {
             round: fixture.round ?? 0,
             homeTeam: fixture.homeTeam.name,
             awayTeam: fixture.awayTeam.name,
-            homeTeamLogo: (0, team_logo_url_js_1.getTeamLogoPublicUrl)(fixture.homeTeam.externalId),
-            awayTeamLogo: (0, team_logo_url_js_1.getTeamLogoPublicUrl)(fixture.awayTeam.externalId),
+            homeTeamLogo: fixture.homeTeam.logo ?? '',
+            awayTeamLogo: fixture.awayTeam.logo ?? '',
             date: fixture.date.toISOString(),
             status: this.toMatchStatus(fixture.status),
             officialHomeScore: fixture.homeScore,

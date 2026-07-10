@@ -13,8 +13,10 @@ O site em produção fica em: https://soccer.atmm.dev
 1. Um administrador importa um campeonato (ex.: Brasileirão 2026) com os jogos da temporada.
 2. Alguém cria um bolão ligado a esse campeonato e define as regras de pontuação.
 3. Os participantes entram no bolão por convite ou código.
-4. Antes de cada jogo, cada um dá o palpite de placar e, se quiser, escolhe um jogador que deve marcar gol.
+4. Antes de cada jogo, cada um dá o palpite de placar.
 5. Depois do jogo, o sistema calcula os pontos e atualiza o ranking.
+
+(Palpite de jogador / hat-trick fica para uma versão futura.)
 
 Um mesmo campeonato pode ter vários bolões ao mesmo tempo. Exemplo: Bolão da Família, Bolão do Trabalho e Bolão dos Amigos, todos usando os mesmos jogos, mas com regras de pontuação que podem ser diferentes.
 
@@ -32,16 +34,12 @@ Cadastro normal sempre começa como Participante.
 
 O palpite precisa ser feito até 10 minutos antes do início da partida. Quem não palpitar não pontua naquele jogo.
 
-Cada palpite tem:
-- placar previsto (obrigatório)
-- um jogador que deve marcar gol (opcional)
+Cada palpite tem placar previsto (obrigatório).
 
 A pontuação depende das regras do bolão. Em geral, o sistema considera coisas como:
 - placar exato
 - acertar o vencedor
 - acertar parte do placar
-- bônus se o jogador escolhido marcar gol
-- multiplicador se o jogador fizer hat-trick (3 gols)
 
 Em copas, a pontuação pode mudar conforme a fase (grupos, oitavas, final, etc.).
 
@@ -86,11 +84,13 @@ A lógica de negócio está organizada em três áreas:
 
 ## De onde vêm os jogos
 
-Os dados de campeonatos e partidas vêm da API-Football.
+Os dados de campeonatos e partidas vêm da [football-data.org](https://www.football-data.org/) (API v4, plano free).
 
-Só o backend fala com essa API. O frontend nunca acessa a API-Football diretamente.
+Só o backend fala com essa API (`FOOTBALL_DATA_TOKEN`). O frontend nunca acessa a API diretamente.
 
-Isso permite importar ligas/temporadas e manter os jogos atualizados (status, placar, etc.).
+No plano free: competitions, fixtures, placares e escudos (crests). Sem escalações / eventos de gol — por isso o palpite de jogador está desativado até uma versão futura.
+
+Isso permite importar ligas/temporadas e manter os jogos atualizados (status e placar). Rate limit free: ~10 requisições/minuto.
 
 ## Como sobe em produção (Hostinger)
 

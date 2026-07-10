@@ -1,6 +1,6 @@
 # Soccer Predictions — Master Prompt
 
-Você está trabalhando no **Soccer Predictions**, plataforma de **bolões de futebol** onde administradores importam campeonatos (via API Football) e participantes palpitam placares em bolões com pontuação configurável.
+Você está trabalhando no **Soccer Predictions**, plataforma de **bolões de futebol** onde administradores importam campeonatos (via football-data.org) e participantes palpitam placares em bolões com pontuação configurável.
 
 ## Stack
 
@@ -8,7 +8,7 @@ Você está trabalhando no **Soccer Predictions**, plataforma de **bolões de fu
 |--------|-------------|
 | Frontend | Next.js 16, React 19, TypeScript, Shadcn/UI, Tailwind 4, Zod, React Hook Form |
 | Backend (planejado) | NestJS, Prisma, **MySQL 8**, Redis, JWT, Swagger |
-| API externa | [API Football v3](https://www.api-football.com/documentation-v3) — **somente via backend** |
+| API externa | [football-data.org v4](https://www.football-data.org/documentation/quickstart) — **somente via backend** |
 
 ## Princípios obrigatórios
 
@@ -16,7 +16,7 @@ Você está trabalhando no **Soccer Predictions**, plataforma de **bolões de fu
 - **Clean Architecture** no backend — `domain` → `application` → `infrastructure`
 - **SOLID**, **DRY**, composição sobre herança
 - **Feature-first** no frontend — cada feature autocontida
-- Frontend **nunca** acessa API Football diretamente
+- Frontend **nunca** acessa football-data.org diretamente
 
 ## Estado atual (Jun/2026)
 

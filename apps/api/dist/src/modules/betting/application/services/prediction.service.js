@@ -14,7 +14,6 @@ const common_1 = require("@nestjs/common");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
 const prediction_window_js_1 = require("../utils/prediction-window.js");
 const pool_participation_js_1 = require("../../../../shared/auth/pool-participation.js");
-const team_logo_url_js_1 = require("../../../sports/application/utils/team-logo-url.js");
 const ranking_service_js_1 = require("./ranking.service.js");
 const scoring_service_js_1 = require("./scoring.service.js");
 let PredictionService = class PredictionService {
@@ -166,7 +165,7 @@ let PredictionService = class PredictionService {
             update: {
                 predictedHomeScore: dto.predictedHomeScore,
                 predictedAwayScore: dto.predictedAwayScore,
-                selectedPlayerId: dto.selectedPlayerId ?? null,
+                selectedPlayerId: null,
             },
             create: {
                 poolId: dto.poolId,
@@ -174,7 +173,7 @@ let PredictionService = class PredictionService {
                 fixtureId: dto.fixtureId,
                 predictedHomeScore: dto.predictedHomeScore,
                 predictedAwayScore: dto.predictedAwayScore,
-                selectedPlayerId: dto.selectedPlayerId ?? null,
+                selectedPlayerId: null,
             },
         });
         await this.scoringService.syncPoolScores(dto.poolId);
@@ -264,8 +263,8 @@ let PredictionService = class PredictionService {
             round: fixture.round ?? 0,
             homeTeam: fixture.homeTeam.name,
             awayTeam: fixture.awayTeam.name,
-            homeTeamLogo: (0, team_logo_url_js_1.getTeamLogoPublicUrl)(fixture.homeTeam.externalId),
-            awayTeamLogo: (0, team_logo_url_js_1.getTeamLogoPublicUrl)(fixture.awayTeam.externalId),
+            homeTeamLogo: fixture.homeTeam.logo ?? '',
+            awayTeamLogo: fixture.awayTeam.logo ?? '',
             date: fixture.date.toISOString(),
             matchStatus: this.toMatchStatus(fixture.status),
             officialHomeScore: fixture.homeScore,

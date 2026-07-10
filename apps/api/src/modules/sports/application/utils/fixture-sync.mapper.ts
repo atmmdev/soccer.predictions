@@ -1,33 +1,17 @@
 import type { Prisma } from '../../../../../generated/prisma/client.js';
-import type { ApiFootballFixtureItem } from '../../infrastructure/integrations/api-football.types.js';
-import { mapRoundToCupPhase } from '../utils/cup-phase.mapper.js';
-import {
-  mapApiFootballFixtureStatus,
-  parseFixtureRound,
-} from '../utils/fixture-status.mapper.js';
-import type { FixtureGoalScorer } from '../utils/fixture-goal-scorers.js';
+import type { FootballDataMatch } from '../../infrastructure/integrations/football-data.types.js';
+import { mapStageToCupPhase } from '../utils/cup-phase.mapper.js';
+import { mapFootballDataFixtureStatus } from '../utils/fixture-status.mapper.js';
 
 export function buildFixtureUpdateData(
-  remote: ApiFootballFixtureItem,
-  goalScorers?: FixtureGoalScorer[],
+  remote: FootballDataMatch,
 ): Prisma.FixtureUpdateInput {
-  const status = mapApiFootballFixtureStatus(remote.fixture.status.short);
-
   return {
-    date: new Date(remote.fixture.date),
-    status,
-    homeScore: remote.goals.home,
-    awayScore: remote.goals.away,
-    round: parseFixtureRound(remote.league.round),
-    phase: mapRoundToCupPhase(remote.league.round),
-    ...(goalScorers
-      ? { goalScorers: goalScorers as unknown as Prisma.InputJsonValue }
-      : {}),
+    date: new Date(remote.utcDate),
+    status: mapFootballDataFixtureStatus(remote.status),
+    homeScore: remote.score.fullTime.home,
+    awayScore: remote.score.fullTime.away,
+    round: remote.matchday,
+    phase: mapStageToCupPhase(remote.stage),
   };
-}
-
-export function isFinishedFixtureStatus(
-  shortStatus: string,
-): boolean {
-  return ['FT', 'AET', 'PEN'].includes(shortStatus);
 }
