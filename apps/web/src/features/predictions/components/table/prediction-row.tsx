@@ -145,7 +145,7 @@ export function PredictionRow({
       <TableCell className={`text-center ${predictionTableColumns.points}`}>
         <div className='flex justify-center'>
           <PointsBadge
-            points={fixture.earnedPoints}
+            points={hasPrediction ? fixture.earnedPoints : null}
             finished={fixture.matchStatus === 'FINISHED'}
           />
         </div>

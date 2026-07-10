@@ -18,15 +18,13 @@ interface PointsBadgeProps {
 }
 
 export function PointsBadge({ points, finished = true }: PointsBadgeProps) {
-  if (!finished) {
+  if (!finished || points === null) {
     return <StatusBadge tone='neutral'>—</StatusBadge>;
   }
 
-  const value = points ?? 0;
-
   return (
-    <StatusBadge tone={getPointsTone(value)}>
-      {value} pts
+    <StatusBadge tone={getPointsTone(points)}>
+      {points} pts
     </StatusBadge>
   );
 }

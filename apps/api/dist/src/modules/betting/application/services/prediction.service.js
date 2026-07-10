@@ -270,7 +270,7 @@ let PredictionService = class PredictionService {
             matchStatus: this.toMatchStatus(fixture.status),
             officialHomeScore: fixture.homeScore,
             officialAwayScore: fixture.awayScore,
-            earnedPoints: fixture.status === 'FINISHED' && prediction ? earnedPoints : null,
+            earnedPoints: prediction && fixture.status === 'FINISHED' ? earnedPoints : null,
             prediction: prediction
                 ? {
                     fixtureId: fixture.id,

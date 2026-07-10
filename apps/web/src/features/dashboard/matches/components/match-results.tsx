@@ -1,4 +1,4 @@
-import { ScoreStack, type ScorePair } from '@/components/matches';
+import { ScoreStack, hasCompleteScore, type ScorePair } from '@/components/matches';
 
 import { Match } from '../types/match';
 
@@ -8,8 +8,8 @@ interface MatchResultProps {
 
 export function MatchResult({ match }: MatchResultProps) {
   const officialScores: ScorePair = {
-    home: match.status === 'SCHEDULED' ? null : match.homeScore,
-    away: match.status === 'SCHEDULED' ? null : match.awayScore,
+    home: match.homeScore,
+    away: match.awayScore,
   };
 
   const predictionScores: ScorePair = {
@@ -17,16 +17,14 @@ export function MatchResult({ match }: MatchResultProps) {
     away: match.predictedAwayScore,
   };
 
-  const hasOfficial =
-    match.status !== 'SCHEDULED' &&
-    typeof officialScores.home === 'number' &&
-    typeof officialScores.away === 'number';
+  const hasOfficial = hasCompleteScore(officialScores);
+  const hasPrediction = hasCompleteScore(predictionScores);
 
   return (
     <ScoreStack
       scores={officialScores}
-      compareWith={hasOfficial ? predictionScores : undefined}
-      highlight={hasOfficial}
+      compareWith={hasOfficial && hasPrediction ? predictionScores : undefined}
+      highlight={hasOfficial && hasPrediction}
     />
   );
 }

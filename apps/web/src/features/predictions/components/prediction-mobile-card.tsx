@@ -109,7 +109,7 @@ export function PredictionMobileCard({
           <dt className='text-muted-foreground'>Pontos</dt>
           <dd>
             <PointsBadge
-              points={fixture.earnedPoints}
+              points={hasPrediction ? fixture.earnedPoints : null}
               finished={fixture.matchStatus === 'FINISHED'}
             />
           </dd>

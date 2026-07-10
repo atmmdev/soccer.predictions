@@ -1,4 +1,4 @@
-import { ScoreStack, type ScorePair } from '@/components/matches';
+import { ScoreStack, hasCompleteScore, type ScorePair } from '@/components/matches';
 
 import { Match } from '../types/match';
 
@@ -12,12 +12,18 @@ export function MatchPredictions({ match }: MatchPredictionsProps) {
     away: match.predictedAwayScore,
   };
 
+  if (!hasCompleteScore(predictionScores)) {
+    return (
+      <span className='text-base font-bold text-muted-foreground'>—</span>
+    );
+  }
+
   const officialScores: ScorePair = {
-    home: match.status === 'SCHEDULED' ? null : match.homeScore,
-    away: match.status === 'SCHEDULED' ? null : match.awayScore,
+    home: match.homeScore,
+    away: match.awayScore,
   };
 
-  const hasOfficial = match.status !== 'SCHEDULED';
+  const hasOfficial = hasCompleteScore(officialScores);
 
   return (
     <ScoreStack

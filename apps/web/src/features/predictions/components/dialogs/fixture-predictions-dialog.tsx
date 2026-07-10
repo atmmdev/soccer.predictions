@@ -222,7 +222,7 @@ export function FixturePredictionsDialog({
                       <TableCell className='text-center'>
                         <div className='flex justify-center'>
                           <PointsBadge
-                            points={row.earnedPoints}
+                            points={hasPrediction ? row.earnedPoints : null}
                             finished={row.matchStatus === 'FINISHED'}
                           />
                         </div>

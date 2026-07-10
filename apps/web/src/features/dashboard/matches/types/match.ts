@@ -1,14 +1,14 @@
-import { Team } from "./team";
+import { Team } from './team';
 
 export interface Match {
   id: number;
   homeTeam: Team;
   awayTeam: Team;
-  homeScore: number;
-  awayScore: number;
-  predictedHomeScore: number;
-  predictedAwayScore: number;
-  points: number;
+  homeScore: number | null;
+  awayScore: number | null;
+  predictedHomeScore: number | null;
+  predictedAwayScore: number | null;
+  points: number | null;
   date: string;
-  status: "SCHEDULED" | "LIVE" | "FINISHED";
+  status: 'SCHEDULED' | 'LIVE' | 'FINISHED';
 }

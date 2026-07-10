@@ -414,7 +414,7 @@ export class PredictionService {
       officialHomeScore: fixture.homeScore,
       officialAwayScore: fixture.awayScore,
       earnedPoints:
-        fixture.status === 'FINISHED' && prediction ? earnedPoints : null,
+        prediction && fixture.status === 'FINISHED' ? earnedPoints : null,
       prediction: prediction
         ? {
             fixtureId: fixture.id,

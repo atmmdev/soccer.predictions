@@ -1,4 +1,4 @@
-import { PointsBadge as SharedPointsBadge } from '@/components/matches/points-badge';
+import { hasCompleteScore, PointsBadge as SharedPointsBadge } from '@/components/matches';
 
 import { Match } from '../types/match';
 
@@ -7,9 +7,14 @@ interface PointsBadgeProps {
 }
 
 export function PointsBadge({ match }: PointsBadgeProps) {
+  const hasPrediction = hasCompleteScore({
+    home: match.predictedHomeScore,
+    away: match.predictedAwayScore,
+  });
+
   return (
     <SharedPointsBadge
-      points={match.points}
+      points={hasPrediction ? match.points : null}
       finished={match.status === 'FINISHED'}
     />
   );
