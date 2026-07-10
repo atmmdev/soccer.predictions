@@ -34,7 +34,7 @@ const BASE_SCORING_FIELDS = [
   },
   {
     name: 'correctWinner' as const,
-    label: 'Vitória vencedor',
+    label: 'Vitória do Time vencedor sem placar exato',
     min: 0,
     step: 1,
   },

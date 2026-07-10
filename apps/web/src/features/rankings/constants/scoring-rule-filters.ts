@@ -11,7 +11,7 @@ export const SCORING_RULE_FILTER_OPTIONS: Array<{
   { value: 'exactScore', label: 'Placar exato' },
   { value: 'winnerScore', label: 'Placar do vencedor' },
   { value: 'loserScore', label: 'Placar do perdedor' },
-  { value: 'correctWinner', label: 'Vitória vencedor' },
+  { value: 'correctWinner', label: 'Vitória do Time vencedor sem placar exato' },
   { value: 'drawWithoutExactScore', label: 'Empate sem placar exato' },
 ];
 

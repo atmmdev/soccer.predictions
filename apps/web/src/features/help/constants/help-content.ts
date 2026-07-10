@@ -101,7 +101,7 @@ export const SCORING_RULES = [
   },
   {
     key: 'correctWinner',
-    label: 'Vitória vencedor',
+    label: 'Vitória do Time vencedor sem placar exato',
     points: defaultBaseScoringRules.correctWinner,
     description:
       'Acertou quem venceu, mas errou os gols de ambos os lados.',
