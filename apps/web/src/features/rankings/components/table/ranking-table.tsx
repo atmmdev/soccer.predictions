@@ -27,7 +27,6 @@ interface RankingTableProps {
   sortDir: SortDirection;
   onSort: (key: RankingSortKey) => void;
   positionOffset?: number;
-  totalRows?: number;
 }
 
 export function RankingTable({
@@ -38,7 +37,6 @@ export function RankingTable({
   sortDir,
   onSort,
   positionOffset = 0,
-  totalRows,
 }: RankingTableProps) {
   if (!isPoolSelected) {
     return (
@@ -119,7 +117,6 @@ export function RankingTable({
                 key={`${entry.poolId}-${entry.id}`}
                 entry={entry}
                 position={positionOffset + index + 1}
-                totalRows={totalRows ?? rows.length}
                 scoringRule={scoringRule}
               />
             ))}

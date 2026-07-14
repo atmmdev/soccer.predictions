@@ -62,7 +62,6 @@ export function RankingList() {
             sortDir={tableState.sortDir}
             onSort={tableState.toggleSort}
             positionOffset={Math.max(0, pagination.rangeStart - 1)}
-            totalRows={pagination.totalItems}
           />
           <ListPagination pagination={pagination} itemLabel='participantes' />
         </>

@@ -17,7 +17,6 @@ import {
 interface RankingRowProps {
   entry: RankingEntry;
   position: number;
-  totalRows: number;
   scoringRule: RankingScoringRuleFilter;
 }
 
@@ -33,7 +32,6 @@ function getInitials(name: string) {
 export function RankingRow({
   entry,
   position,
-  totalRows: _totalRows,
   scoringRule,
 }: RankingRowProps) {
   return (
