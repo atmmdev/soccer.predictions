@@ -38,6 +38,7 @@ function toRankingUsers(entries: RankingEntry[]): RankingUser[] {
   return entries.map(entry => ({
     id: entry.id,
     name: entry.name,
+    email: entry.email,
     points: entry.points,
   }));
 }

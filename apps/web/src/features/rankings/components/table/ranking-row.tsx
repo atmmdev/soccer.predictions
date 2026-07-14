@@ -55,6 +55,9 @@ export function RankingRow({
           </Avatar>
           <div className='min-w-0'>
             <span className='block truncate font-medium'>{entry.name}</span>
+            <span className='text-muted-foreground block truncate text-xs'>
+              {entry.email}
+            </span>
             {entry.isCurrentUser ? (
               <span className='text-primary text-xs font-medium'>Você</span>
             ) : null}

@@ -39,6 +39,7 @@ let RankingService = class RankingService {
                         select: {
                             id: true,
                             name: true,
+                            email: true,
                             role: true,
                         },
                     },
@@ -73,6 +74,7 @@ let RankingService = class RankingService {
                     poolName: pool.name,
                     championshipName: pool.championship.name,
                     name: member.user.name,
+                    email: member.user.email,
                     points: aggregated.points,
                     predictionsCount,
                     scoringAchievements: aggregated.achievements,

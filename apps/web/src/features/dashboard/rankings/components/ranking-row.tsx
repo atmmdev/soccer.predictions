@@ -30,11 +30,17 @@ export function RankingRow({ user, position }: RankingRowProps) {
               {getInitials(user.name)}
             </AvatarFallback>
           </Avatar>
-          <span className='font-medium'>{user.name}</span>
+          <div className='min-w-0'>
+            <p className='truncate font-medium'>{user.name}</p>
+            <p className='text-muted-foreground truncate text-xs'>
+              {user.email}
+            </p>
+          </div>
         </div>
       </TableCell>
       <TableCell className='text-right'>
-        <span className='font-bold'>{user.points.toLocaleString('pt-BR')}</span> <span className='text-xs text-muted-foreground'>pts</span>
+        <span className='font-bold'>{user.points.toLocaleString('pt-BR')}</span>{' '}
+        <span className='text-muted-foreground text-xs'>pts</span>
       </TableCell>
     </TableRow>
   );

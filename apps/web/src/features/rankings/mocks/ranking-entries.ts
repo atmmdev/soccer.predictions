@@ -7,6 +7,7 @@ export const rankingEntries: RankingEntry[] = [
     poolName: 'Bolão Família',
     championshipName: 'Brasileirão Série A',
     name: 'Anderson Martins',
+    email: 'anderson.martins@email.com',
     points: 1240,
     predictionsCount: 24,
     scoringAchievements: {
@@ -26,6 +27,7 @@ export const rankingEntries: RankingEntry[] = [
     poolName: 'Bolão Família',
     championshipName: 'Brasileirão Série A',
     name: 'Carlos Eduardo',
+    email: 'carlos.eduardo@email.com',
     points: 1180,
     predictionsCount: 24,
     scoringAchievements: {
@@ -44,6 +46,7 @@ export const rankingEntries: RankingEntry[] = [
     poolName: 'Bolão Família',
     championshipName: 'Brasileirão Série A',
     name: 'João Pedro',
+    email: 'joao.pedro@email.com',
     points: 1050,
     predictionsCount: 23,
     scoringAchievements: {
@@ -62,6 +65,7 @@ export const rankingEntries: RankingEntry[] = [
     poolName: 'Bolão Família',
     championshipName: 'Brasileirão Série A',
     name: 'Mariana Silva',
+    email: 'mariana.silva@email.com',
     points: 980,
     predictionsCount: 24,
     scoringAchievements: {
@@ -80,6 +84,7 @@ export const rankingEntries: RankingEntry[] = [
     poolName: 'Bolão Família',
     championshipName: 'Brasileirão Série A',
     name: 'Pedro Henrique',
+    email: 'pedro.henrique@email.com',
     points: 920,
     predictionsCount: 22,
     scoringAchievements: {
@@ -98,6 +103,7 @@ export const rankingEntries: RankingEntry[] = [
     poolName: 'Bolão do Trabalho',
     championshipName: 'Brasileirão Série A',
     name: 'Anderson Martins',
+    email: 'anderson.martins@email.com',
     points: 890,
     predictionsCount: 20,
     scoringAchievements: {
@@ -117,6 +123,7 @@ export const rankingEntries: RankingEntry[] = [
     poolName: 'Bolão do Trabalho',
     championshipName: 'Brasileirão Série A',
     name: 'Fernanda Lima',
+    email: 'fernanda.lima@email.com',
     points: 940,
     predictionsCount: 21,
     scoringAchievements: {
@@ -135,6 +142,7 @@ export const rankingEntries: RankingEntry[] = [
     poolName: 'Bolão do Trabalho',
     championshipName: 'Brasileirão Série A',
     name: 'Ricardo Alves',
+    email: 'ricardo.alves@email.com',
     points: 870,
     predictionsCount: 20,
     scoringAchievements: {
@@ -153,6 +161,7 @@ export const rankingEntries: RankingEntry[] = [
     poolName: 'Bolão do Trabalho',
     championshipName: 'Brasileirão Série A',
     name: 'Beatriz Costa',
+    email: 'beatriz.costa@email.com',
     points: 810,
     predictionsCount: 19,
     scoringAchievements: {
@@ -171,6 +180,7 @@ export const rankingEntries: RankingEntry[] = [
     poolName: 'Champions Amigos',
     championshipName: 'Champions League',
     name: 'Anderson Martins',
+    email: 'anderson.martins@email.com',
     points: 1560,
     predictionsCount: 12,
     scoringAchievements: {
@@ -190,6 +200,7 @@ export const rankingEntries: RankingEntry[] = [
     poolName: 'Champions Amigos',
     championshipName: 'Champions League',
     name: 'Lucas Mendes',
+    email: 'lucas.mendes@email.com',
     points: 1620,
     predictionsCount: 12,
     scoringAchievements: {
@@ -208,6 +219,7 @@ export const rankingEntries: RankingEntry[] = [
     poolName: 'Champions Amigos',
     championshipName: 'Champions League',
     name: 'Julio Henrique',
+    email: 'julio.henrique@email.com',
     points: 1480,
     predictionsCount: 11,
     scoringAchievements: {
@@ -226,6 +238,7 @@ export const rankingEntries: RankingEntry[] = [
     poolName: 'Champions Amigos',
     championshipName: 'Champions League',
     name: 'Katia Fernandes',
+    email: 'katia.fernandes@email.com',
     points: 1320,
     predictionsCount: 12,
     scoringAchievements: {

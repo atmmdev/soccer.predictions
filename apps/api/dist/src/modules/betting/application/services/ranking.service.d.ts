@@ -7,6 +7,7 @@ export interface RankingListItem {
     poolName: string;
     championshipName: string;
     name: string;
+    email: string;
     points: number;
     predictionsCount: number;
     scoringAchievements: {
