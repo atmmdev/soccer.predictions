@@ -11,8 +11,13 @@ function calendarDayKey(date: Date): string {
 
 function addCalendarDays(dayKey: string, days: number): string {
   const [year, month, day] = dayKey.split('-').map(Number);
-  const utc = new Date(Date.UTC(year, month - 1, day + days));
-  return calendarDayKey(utc);
+  // Keep YYYY-MM-DD in UTC date arithmetic; reformatting via Sao_Paulo would
+  // shift midnight UTC back to the previous local day.
+  const utc = new Date(Date.UTC(year!, month! - 1, day! + days));
+  const y = utc.getUTCFullYear();
+  const m = String(utc.getUTCMonth() + 1).padStart(2, '0');
+  const d = String(utc.getUTCDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
 export function getFixtureCalendarDay(isoDate: string): string {
