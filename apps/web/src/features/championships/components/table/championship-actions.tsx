@@ -1,15 +1,8 @@
 'use client';
 
-import { MoreVertical } from 'lucide-react';
+import { Ban, CheckCircle2, RefreshCw } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { IconActionButton } from '@/components/ui/icon-action-button';
 
 import type { Championship } from '../../types/championship';
 
@@ -25,32 +18,32 @@ export function ChampionshipActions({
   onStatusChange,
 }: ChampionshipActionsProps) {
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button size='icon' variant='ghost'>
-          <MoreVertical className='size-4' />
-        </Button>
-      </DropdownMenuTrigger>
+    <div className='flex items-center justify-end gap-0.5'>
+      <IconActionButton
+        label='Sincronizar jogos'
+        tone='sync'
+        onClick={() => void onSync(championship.id)}
+      >
+        <RefreshCw className='size-4' />
+      </IconActionButton>
 
-      <DropdownMenuContent align='end'>
-        <DropdownMenuItem onClick={() => void onSync(championship.id)}>
-          Sincronizar jogos
-        </DropdownMenuItem>
-
-        {championship.status === 'ACTIVE' ? (
-          <DropdownMenuItem
-            onClick={() => void onStatusChange(championship.id, false)}
-          >
-            Desativar
-          </DropdownMenuItem>
-        ) : (
-          <DropdownMenuItem
-            onClick={() => void onStatusChange(championship.id, true)}
-          >
-            Ativar
-          </DropdownMenuItem>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      {championship.status === 'ACTIVE' ? (
+        <IconActionButton
+          label='Desativar'
+          tone='mute'
+          onClick={() => void onStatusChange(championship.id, false)}
+        >
+          <Ban className='size-4' />
+        </IconActionButton>
+      ) : (
+        <IconActionButton
+          label='Ativar'
+          tone='success'
+          onClick={() => void onStatusChange(championship.id, true)}
+        >
+          <CheckCircle2 className='size-4' />
+        </IconActionButton>
+      )}
+    </div>
   );
 }

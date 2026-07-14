@@ -1,16 +1,16 @@
 'use client';
 
-import { Pencil, Copy, Link2, MoreVertical } from 'lucide-react';
+import {
+  Ban,
+  CheckCircle2,
+  Copy,
+  Link2,
+  OctagonX,
+  Pencil,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { IconActionButton } from '@/components/ui/icon-action-button';
 import { getStoredUser } from '@/features/auth/lib/auth-storage';
 import { buildJoinPoolUrl } from '@/lib/join-pool-url';
 
@@ -62,54 +62,60 @@ export function PoolActions({
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button size='icon' variant='ghost'>
-          <MoreVertical className='size-4' />
-        </Button>
-      </DropdownMenuTrigger>
+    <div className='flex items-center justify-end gap-0.5'>
+      <IconActionButton
+        label='Copiar link de convite'
+        tone='link'
+        onClick={() => void handleCopyInviteLink()}
+      >
+        <Link2 className='size-4' />
+      </IconActionButton>
 
-      <DropdownMenuContent align='end'>
-        <DropdownMenuItem className='text-xs' onClick={() => void handleCopyInviteLink()}>
-          <Link2 className='size-4' />
-          Copiar link de convite
-        </DropdownMenuItem>
-        <DropdownMenuItem className='text-xs' onClick={() => void handleCopyInviteCode()}>
-          <Copy className='size-4' />
-          Copiar código {pool.inviteCode}
-        </DropdownMenuItem>
+      <IconActionButton
+        label={`Copiar código ${pool.inviteCode}`}
+        tone='copy'
+        onClick={() => void handleCopyInviteCode()}
+      >
+        <Copy className='size-4' />
+      </IconActionButton>
 
-        {canManage && pool.status !== 'CLOSED' ? (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className='text-xs' onClick={() => onEdit(pool)}>
-              <Pencil className='size-4' />
-              Editar bolão
-            </DropdownMenuItem>
-            {pool.status === 'ACTIVE' ? (
-              <DropdownMenuItem
-                className='text-xs'
-                onClick={() => void handleStatusChange('INACTIVE')}
-              >
-                Desativar
-              </DropdownMenuItem>
-            ) : (
-              <DropdownMenuItem
-                className='text-xs'
-                onClick={() => void handleStatusChange('ACTIVE')}
-              >
-                Ativar
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuItem
-              className='text-xs'
-              onClick={() => void handleStatusChange('CLOSED')}
+      {canManage && pool.status !== 'CLOSED' ? (
+        <>
+          <IconActionButton
+            label='Editar bolão'
+            tone='edit'
+            onClick={() => onEdit(pool)}
+          >
+            <Pencil className='size-4' />
+          </IconActionButton>
+
+          {pool.status === 'ACTIVE' ? (
+            <IconActionButton
+              label='Desativar'
+              tone='mute'
+              onClick={() => void handleStatusChange('INACTIVE')}
             >
-              Encerrar bolão
-            </DropdownMenuItem>
-          </>
-        ) : null}
-      </DropdownMenuContent>
-    </DropdownMenu>
+              <Ban className='size-4' />
+            </IconActionButton>
+          ) : (
+            <IconActionButton
+              label='Ativar'
+              tone='success'
+              onClick={() => void handleStatusChange('ACTIVE')}
+            >
+              <CheckCircle2 className='size-4' />
+            </IconActionButton>
+          )}
+
+          <IconActionButton
+            label='Encerrar bolão'
+            tone='danger'
+            onClick={() => void handleStatusChange('CLOSED')}
+          >
+            <OctagonX className='size-4' />
+          </IconActionButton>
+        </>
+      ) : null}
+    </div>
   );
 }

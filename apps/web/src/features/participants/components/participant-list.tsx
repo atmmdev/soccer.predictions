@@ -7,7 +7,6 @@ import {
   Copy,
   Link2,
   Loader2Icon,
-  MoreVertical,
   Search,
   Users,
   X,
@@ -28,12 +27,7 @@ import {
   DateTimeDisplay,
   dateTimeTableCellClassName,
 } from '@/components/ui/datetime-display';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { IconActionButton } from '@/components/ui/icon-action-button';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
 import { PageLoading } from '@/components/ui/page-loading';
@@ -403,9 +397,9 @@ export function ParticipantList() {
                                   <div className='flex items-center justify-end gap-1'>
                                     {canModerate ? (
                                       <>
-                                        <Button
-                                          type='button'
-                                          size='sm'
+                                        <IconActionButton
+                                          label='Aprovar'
+                                          tone='success'
                                           disabled={
                                             isActing || actingKey !== null
                                           }
@@ -427,13 +421,10 @@ export function ParticipantList() {
                                               aria-hidden
                                             />
                                           )}
-                                          Aprovar
-                                        </Button>
-                                        <Button
-                                          type='button'
-                                          size='sm'
-                                          variant='outline'
-                                          className='text-destructive hover:text-destructive'
+                                        </IconActionButton>
+                                        <IconActionButton
+                                          label='Recusar'
+                                          tone='danger'
                                           disabled={
                                             isActing || actingKey !== null
                                           }
@@ -445,16 +436,13 @@ export function ParticipantList() {
                                           }
                                         >
                                           <X className='size-4' aria-hidden />
-                                          Recusar
-                                        </Button>
+                                        </IconActionButton>
                                       </>
                                     ) : (
                                       <>
-                                        <Button
-                                          type='button'
-                                          size='icon-sm'
-                                          variant='ghost'
-                                          title='Copiar link'
+                                        <IconActionButton
+                                          label='Copiar link'
+                                          tone='link'
                                           onClick={() =>
                                             void copyInviteLink(
                                               participant.inviteCode,
@@ -462,12 +450,10 @@ export function ParticipantList() {
                                           }
                                         >
                                           <Link2 className='size-4' />
-                                        </Button>
-                                        <Button
-                                          type='button'
-                                          size='icon-sm'
-                                          variant='ghost'
-                                          title='Copiar código'
+                                        </IconActionButton>
+                                        <IconActionButton
+                                          label='Copiar código'
+                                          tone='copy'
                                           onClick={() =>
                                             void copyInviteCode(
                                               participant.inviteCode,
@@ -475,44 +461,9 @@ export function ParticipantList() {
                                           }
                                         >
                                           <Copy className='size-4' />
-                                        </Button>
+                                        </IconActionButton>
                                       </>
                                     )}
-
-                                    <DropdownMenu>
-                                      <DropdownMenuTrigger asChild>
-                                        <Button
-                                          type='button'
-                                          size='icon-sm'
-                                          variant='ghost'
-                                          aria-label='Mais ações'
-                                        >
-                                          <MoreVertical className='size-4' />
-                                        </Button>
-                                      </DropdownMenuTrigger>
-                                      <DropdownMenuContent align='end'>
-                                        <DropdownMenuItem
-                                          onClick={() =>
-                                            void copyInviteLink(
-                                              participant.inviteCode,
-                                            )
-                                          }
-                                        >
-                                          <Link2 />
-                                          Copiar link do bolão
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                          onClick={() =>
-                                            void copyInviteCode(
-                                              participant.inviteCode,
-                                            )
-                                          }
-                                        >
-                                          <Copy />
-                                          Copiar código
-                                        </DropdownMenuItem>
-                                      </DropdownMenuContent>
-                                    </DropdownMenu>
                                   </div>
                                 </TableCell>
                               </TableRow>
