@@ -56,7 +56,7 @@ export function TablePagination({
   return (
     <div
       className={cn(
-        'flex flex-col gap-3 border-t pt-3 sm:flex-row sm:items-center sm:justify-between',
+        'flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between',
         className,
       )}
     >
