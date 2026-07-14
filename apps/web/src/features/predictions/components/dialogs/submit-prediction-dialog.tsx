@@ -104,20 +104,6 @@ export function SubmitPredictionDialog({
           </Alert>
         ) : null}
 
-        <div className='space-y-1 rounded-lg border p-3'>
-          <MatchTeamsInline
-            homeTeam={fixture.homeTeam}
-            awayTeam={fixture.awayTeam}
-            homeTeamLogo={fixture.homeTeamLogo}
-            awayTeamLogo={fixture.awayTeamLogo}
-            className='font-medium'
-          />
-          <p className='text-muted-foreground text-xs'>
-            {fixture.championshipName} · {fixture.poolName} · Rodada{' '}
-            {fixture.round}
-          </p>
-        </div>
-
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}

@@ -1,9 +1,11 @@
+import type { CupPhase } from '../../../../../generated/prisma/client.js';
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 import type { AuthUser } from '../../../identity/application/types/auth-user.js';
 export interface FixtureListItem {
     id: number;
     championshipName: string;
-    round: number;
+    round: number | null;
+    phase: CupPhase | null;
     homeTeam: string;
     awayTeam: string;
     homeTeamLogo: string;

@@ -25,6 +25,7 @@ import {
   predictionStatusTone,
 } from '../utils/prediction-ui-state';
 import { canEditPrediction } from '../utils/prediction-window';
+import { formatFixtureRoundLabel } from '@/lib/format-fixture-round-label';
 
 interface PredictionMobileCardProps {
   fixture: PredictionFixtureItem;
@@ -82,12 +83,8 @@ export function PredictionMobileCard({
           </dd>
         </div>
         <div>
-          <dt className='text-muted-foreground'>Bolão</dt>
-          <dd className='font-medium'>{fixture.poolName}</dd>
-        </div>
-        <div>
           <dt className='text-muted-foreground'>Rodada</dt>
-          <dd className='font-medium'>{fixture.round}</dd>
+          <dd className='font-medium'>{formatFixtureRoundLabel(fixture)}</dd>
         </div>
         {showParticipant ? (
           <div className='col-span-2'>

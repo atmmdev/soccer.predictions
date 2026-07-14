@@ -30,6 +30,7 @@ export function PredictionList() {
     resetKey: [
       searchFilters.search,
       searchFilters.status,
+      searchFilters.matchStatus,
       searchFilters.poolName,
       searchFilters.selectedDate,
       searchFilters.participantSearch,
@@ -85,6 +86,8 @@ export function PredictionList() {
           onSearchChange={searchFilters.setSearch}
           status={searchFilters.status}
           onStatusChange={searchFilters.setStatus}
+          matchStatus={searchFilters.matchStatus}
+          onMatchStatusChange={searchFilters.setMatchStatus}
           poolName={searchFilters.poolName}
           onPoolNameChange={searchFilters.setPoolName}
           poolOptions={searchFilters.poolOptions}
@@ -94,6 +97,7 @@ export function PredictionList() {
           showParticipantFilter={searchFilters.enableParticipantFilter}
           participantSearch={searchFilters.participantSearch}
           onParticipantSearchChange={searchFilters.setParticipantSearch}
+          isPoolSelected={searchFilters.isPoolSelected}
           hasActiveFilters={searchFilters.hasActiveFilters}
           onClearFilters={searchFilters.clearFilters}
         />
@@ -111,12 +115,23 @@ export function PredictionList() {
               Tentar novamente
             </button>
           </div>
+        ) : !searchFilters.isPoolSelected ? (
+          <div className='flex items-center justify-center py-16'>
+            <div className='max-w-sm space-y-2 text-center'>
+              <p className='text-foreground text-sm font-medium'>
+                Selecione um bolão
+              </p>
+              <p className='text-muted-foreground text-sm'>
+                Escolha um bolão no filtro acima para visualizar seus palpites.
+              </p>
+            </div>
+          </div>
         ) : searchFilters.filteredFixtures.length === 0 ? (
           <div className='flex items-center justify-center py-12'>
             <p className='text-muted-foreground text-center text-sm'>
               Nenhum jogo encontrado com os filtros selecionados.
               <br />
-              Tente limpar a busca e usar &quot;Todos&quot; nos filtros de bolão e
+              Tente limpar a busca ou usar &quot;Todos&quot; no filtro de
               palpite.
             </p>
           </div>

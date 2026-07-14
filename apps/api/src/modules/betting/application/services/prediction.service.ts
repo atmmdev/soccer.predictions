@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import type {
+  CupPhase,
   FixtureStatus,
   Pool,
   Prediction,
@@ -28,7 +29,8 @@ export interface PredictionFixtureResponse {
   participantName: string;
   isOwnPrediction: boolean;
   championshipName: string;
-  round: number;
+  round: number | null;
+  phase: CupPhase | null;
   homeTeam: string;
   awayTeam: string;
   homeTeamLogo: string;
@@ -85,13 +87,16 @@ export class PredictionService {
           orderBy: { date: 'asc' },
         }),
         this.prisma.prediction.findMany({
-          where: { poolId: { in: poolIds } },
+          where: {
+            poolId: { in: poolIds },
+            userId: user.id,
+          },
         }),
         this.loadActiveMembersByPool(poolIds),
         this.rankingService.getPoolMemberPositions(poolIds, {
           syncScores: false,
         }),
-        this.loadEarnedPointsByKey(poolIds),
+        this.loadEarnedPointsByKey(poolIds, user.id),
       ]);
 
     const predictionsByKey = new Map<string, Prediction>();
@@ -109,31 +114,35 @@ export class PredictionService {
       const poolFixtures = fixtures.filter(
         fixture => fixture.championshipId === pool.championshipId,
       );
-      const members = membersByPoolId.get(pool.id) ?? [];
+      const selfMember = (membersByPoolId.get(pool.id) ?? []).find(
+        member => member.id === user.id,
+      );
+
+      // Meus Palpites lista somente o participante logado; outros saem no modal "Ver palpites".
+      if (!selfMember) {
+        continue;
+      }
 
       for (const fixture of poolFixtures) {
-        for (const member of members) {
-          const prediction =
-            predictionsByKey.get(
-              `${pool.id}:${member.id}:${fixture.id}`,
-            ) ?? null;
+        const prediction =
+          predictionsByKey.get(
+            `${pool.id}:${selfMember.id}:${fixture.id}`,
+          ) ?? null;
 
-          rows.push(
-            this.toFixtureRow({
-              pool,
-              fixture,
-              member,
-              userId: user.id,
-              userRole: user.role,
-              prediction,
-              poolPosition: positions.get(`${pool.id}:${member.id}`) ?? 0,
-              earnedPoints:
-                earnedPointsByKey.get(
-                  `${pool.id}:${member.id}:${fixture.id}`,
-                ) ?? null,
-            }),
-          );
-        }
+        rows.push(
+          this.toFixtureRow({
+            pool,
+            fixture,
+            member: selfMember,
+            userId: user.id,
+            prediction,
+            poolPosition: positions.get(`${pool.id}:${selfMember.id}`) ?? 0,
+            earnedPoints:
+              earnedPointsByKey.get(
+                `${pool.id}:${selfMember.id}:${fixture.id}`,
+              ) ?? null,
+          }),
+        );
       }
     }
 
@@ -145,11 +154,7 @@ export class PredictionService {
         return dateDiff;
       }
 
-      if (left.poolName !== right.poolName) {
-        return left.poolName.localeCompare(right.poolName);
-      }
-
-      return left.participantName.localeCompare(right.participantName);
+      return left.poolName.localeCompare(right.poolName);
     });
   }
 
@@ -201,7 +206,6 @@ export class PredictionService {
           fixture,
           member,
           userId: user.id,
-          userRole: user.role,
           prediction,
           poolPosition: positions.get(`${poolId}:${member.id}`) ?? 0,
           earnedPoints:
@@ -285,7 +289,6 @@ export class PredictionService {
       fixture,
       member: { id: user.id, name: user.name },
       userId: user.id,
-      userRole: user.role,
       prediction,
       poolPosition: positions.get(`${dto.poolId}:${user.id}`) ?? 0,
       earnedPoints:
@@ -335,7 +338,7 @@ export class PredictionService {
     return membersByPoolId;
   }
 
-  private async loadEarnedPointsByKey(poolIds: number[]) {
+  private async loadEarnedPointsByKey(poolIds: number[], userId?: number) {
     const earnedPointsByKey = new Map<string, number>();
 
     if (poolIds.length === 0) {
@@ -343,7 +346,10 @@ export class PredictionService {
     }
 
     const rows = await this.prisma.pointHistory.findMany({
-      where: { poolId: { in: poolIds } },
+      where: {
+        poolId: { in: poolIds },
+        ...(userId !== undefined ? { userId } : {}),
+      },
       select: {
         poolId: true,
         userId: true,
@@ -367,6 +373,7 @@ export class PredictionService {
     fixture: {
       id: number;
       round: number | null;
+      phase: CupPhase | null;
       date: Date;
       status: FixtureStatus;
       homeScore: number | null;
@@ -377,7 +384,6 @@ export class PredictionService {
     };
     member: { id: number; name: string };
     userId: number;
-    userRole: AuthUser['role'];
     prediction: Prediction | null;
     poolPosition: number;
     earnedPoints: number | null;
@@ -387,7 +393,6 @@ export class PredictionService {
       fixture,
       member,
       userId,
-      userRole,
       prediction,
       poolPosition,
       earnedPoints,
@@ -400,10 +405,10 @@ export class PredictionService {
       poolPosition,
       participantId: member.id,
       participantName: member.name,
-      isOwnPrediction:
-        userRole !== 'SUPER_ADMIN' && member.id === userId,
+      isOwnPrediction: member.id === userId,
       championshipName: fixture.championship.name,
-      round: fixture.round ?? 0,
+      round: fixture.round,
+      phase: fixture.phase,
       homeTeam: fixture.homeTeam.name,
       awayTeam: fixture.awayTeam.name,
       homeTeamLogo: fixture.homeTeam.logo ?? '',

@@ -2,9 +2,7 @@ import { cn } from '@/lib/utils';
 
 export const predictionTableColumns = {
   championship: 'hidden 2xl:table-cell',
-  pool: 'hidden 2xl:table-cell',
   participant: 'hidden 2xl:table-cell',
-  position: 'hidden 2xl:table-cell',
   round: 'hidden xl:table-cell',
   result: 'hidden xl:table-cell',
   points: 'hidden xl:table-cell',

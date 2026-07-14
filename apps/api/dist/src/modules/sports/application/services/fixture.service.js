@@ -37,7 +37,8 @@ let FixtureService = class FixtureService {
         return fixtures.map(fixture => ({
             id: fixture.id,
             championshipName: fixture.championship.name,
-            round: fixture.round ?? 0,
+            round: fixture.round,
+            phase: fixture.phase,
             homeTeam: fixture.homeTeam.name,
             awayTeam: fixture.awayTeam.name,
             homeTeamLogo: fixture.homeTeam.logo ?? '',

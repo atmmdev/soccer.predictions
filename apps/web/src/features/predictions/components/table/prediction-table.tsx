@@ -56,13 +56,6 @@ export function PredictionTable({
             >
               Campeonato
             </TableHead>
-            <TableHead
-              className={predictionTableHeadClass(
-                `${predictionTableColumns.pool} text-center`,
-              )}
-            >
-              Bolão
-            </TableHead>
             {showParticipantColumn ? (
               <TableHead
                 className={predictionTableHeadClass(
@@ -72,13 +65,6 @@ export function PredictionTable({
                 Participante
               </TableHead>
             ) : null}
-            <TableHead
-              className={predictionTableHeadClass(
-                `${predictionTableColumns.position} text-center`,
-              )}
-            >
-              Posição
-            </TableHead>
             <TableHead
               className={predictionTableHeadClass(
                 `${predictionTableColumns.round} text-center`,

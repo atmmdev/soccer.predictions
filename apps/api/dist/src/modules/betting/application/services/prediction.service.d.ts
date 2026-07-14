@@ -1,3 +1,4 @@
+import type { CupPhase } from '../../../../../generated/prisma/client.js';
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 import type { AuthUser } from '../../../identity/application/types/auth-user.js';
 import type { SubmitPredictionDto } from '../dtos/submit-prediction.dto.js';
@@ -12,7 +13,8 @@ export interface PredictionFixtureResponse {
     participantName: string;
     isOwnPrediction: boolean;
     championshipName: string;
-    round: number;
+    round: number | null;
+    phase: CupPhase | null;
     homeTeam: string;
     awayTeam: string;
     homeTeamLogo: string;

@@ -12,7 +12,6 @@ import {
   getPredictionScoresFromFixture,
   hasCompleteScore,
 } from '@/components/matches';
-import { PositionBadge } from '@/features/dashboard/rankings/components/position-badge';
 import {
   DateTimeDisplay,
   dateTimeTableCellClassName,
@@ -29,6 +28,7 @@ import {
 } from '../../utils/prediction-ui-state';
 import { canEditPrediction } from '../../utils/prediction-window';
 import { predictionTableColumns } from './prediction-table-columns';
+import { formatFixtureRoundLabel } from '@/lib/format-fixture-round-label';
 
 interface PredictionRowProps {
   fixture: PredictionFixtureItem;
@@ -78,12 +78,6 @@ export function PredictionRow({
       >
         {fixture.championshipName}
       </TableCell>
-      <TableCell
-        className={`text-muted-foreground max-w-[6rem] truncate text-center text-xs ${predictionTableColumns.pool}`}
-        title={fixture.poolName}
-      >
-        {fixture.poolName}
-      </TableCell>
       {showParticipantColumn ? (
         <TableCell
           className={`max-w-[7rem] truncate text-center text-xs font-medium ${predictionTableColumns.participant}`}
@@ -92,15 +86,10 @@ export function PredictionRow({
           {fixture.participantName}
         </TableCell>
       ) : null}
-      <TableCell className={`text-center ${predictionTableColumns.position}`}>
-        <div className='flex justify-center'>
-          <PositionBadge position={fixture.poolPosition} />
-        </div>
-      </TableCell>
       <TableCell
         className={`text-center text-xs ${predictionTableColumns.round}`}
       >
-        {fixture.round}
+        {formatFixtureRoundLabel(fixture)}
       </TableCell>
       <TableCell
         className={`text-center ${predictionTableColumns.result}`}

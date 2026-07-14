@@ -9,6 +9,7 @@ import {
 import { TableCell, TableRow } from '@/components/ui/table';
 
 import type { MatchFixtureItem } from '../../types/match-fixture';
+import { formatFixtureRoundLabel } from '@/lib/format-fixture-round-label';
 
 interface MatchRowProps {
   fixture: MatchFixtureItem;
@@ -32,7 +33,7 @@ export function MatchRow({ fixture }: MatchRowProps) {
         {fixture.championshipName}
       </TableCell>
       <TableCell className='text-center text-xs'>
-        {fixture.round}
+        {formatFixtureRoundLabel(fixture)}
       </TableCell>
       <TableCell className='text-center'>
         <ScoreStack

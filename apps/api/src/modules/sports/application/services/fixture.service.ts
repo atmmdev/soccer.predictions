@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import type { FixtureStatus } from '../../../../../generated/prisma/client.js';
+import type {
+  CupPhase,
+  FixtureStatus,
+} from '../../../../../generated/prisma/client.js';
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 import type { AuthUser } from '../../../identity/application/types/auth-user.js';
 export interface FixtureListItem {
   id: number;
   championshipName: string;
-  round: number;
+  round: number | null;
+  phase: CupPhase | null;
   homeTeam: string;
   awayTeam: string;
   homeTeamLogo: string;
@@ -43,7 +47,8 @@ export class FixtureService {
     return fixtures.map(fixture => ({
       id: fixture.id,
       championshipName: fixture.championship.name,
-      round: fixture.round ?? 0,
+      round: fixture.round,
+      phase: fixture.phase,
       homeTeam: fixture.homeTeam.name,
       awayTeam: fixture.awayTeam.name,
       homeTeamLogo: fixture.homeTeam.logo ?? '',

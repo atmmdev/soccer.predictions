@@ -28,6 +28,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { PageLoading } from '@/components/ui/page-loading';
+import { formatFixtureRoundLabel } from '@/lib/format-fixture-round-label';
 
 import { fetchPredictionsByFixtureRequest } from '../../services/prediction-api.service';
 import type { PredictionFixtureItem } from '../../types/prediction-fixture';
@@ -105,7 +106,7 @@ export function FixturePredictionsDialog({
         <DialogHeader className='gap-3 pr-8'>
           {fixture ? (
             <DialogDescription className='text-xs'>
-              {fixture.poolName} · Rodada {fixture.round}
+              {fixture.poolName} · {formatFixtureRoundLabel(fixture)}
             </DialogDescription>
           ) : null}
           <DialogTitle className='leading-snug'>

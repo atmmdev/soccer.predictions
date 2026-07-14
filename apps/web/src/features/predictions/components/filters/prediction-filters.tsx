@@ -13,13 +13,18 @@ import {
   filterToolbarClassName,
 } from '@/lib/filter-styles';
 
-import type { PredictionFilterStatus } from '../../hooks/use-prediction-search-filters';
+import type {
+  PredictionFilterStatus,
+  PredictionMatchFilterStatus,
+} from '../../hooks/use-prediction-search-filters';
 
 interface PredictionFiltersProps {
   search: string;
   onSearchChange: (value: string) => void;
   status: PredictionFilterStatus;
   onStatusChange: (value: PredictionFilterStatus) => void;
+  matchStatus: PredictionMatchFilterStatus;
+  onMatchStatusChange: (value: PredictionMatchFilterStatus) => void;
   poolName: string;
   onPoolNameChange: (value: string) => void;
   poolOptions: string[];
@@ -29,6 +34,7 @@ interface PredictionFiltersProps {
   showParticipantFilter: boolean;
   participantSearch: string;
   onParticipantSearchChange: (value: string) => void;
+  isPoolSelected: boolean;
   hasActiveFilters: boolean;
   onClearFilters: () => void;
 }
@@ -38,6 +44,8 @@ export function PredictionFilters({
   onSearchChange,
   status,
   onStatusChange,
+  matchStatus,
+  onMatchStatusChange,
   poolName,
   onPoolNameChange,
   poolOptions,
@@ -47,17 +55,33 @@ export function PredictionFilters({
   showParticipantFilter,
   participantSearch,
   onParticipantSearchChange,
+  isPoolSelected,
   hasActiveFilters,
   onClearFilters,
 }: PredictionFiltersProps) {
   return (
     <div className={filterToolbarClassName}>
+      <NativeSelect
+        value={poolName}
+        onChange={event => onPoolNameChange(event.target.value)}
+        className={`${filterSelectMdClassName} bg-white`}
+        aria-label='Bolão'
+      >
+        <option value=''>Selecione um bolão</option>
+        {poolOptions.map(name => (
+          <option key={name} value={name}>
+            {name}
+          </option>
+        ))}
+      </NativeSelect>
+
       <div className={filterSearchFieldClassName}>
         <Search className='text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2' />
         <Input
           placeholder='Buscar por time ou campeonato...'
           className='bg-white pl-9'
           value={search}
+          disabled={!isPoolSelected}
           onChange={event => onSearchChange(event.target.value)}
         />
       </div>
@@ -71,22 +95,27 @@ export function PredictionFilters({
             aria-label='Buscar por participante'
             className='bg-white pl-9'
             value={participantSearch}
+            disabled={!isPoolSelected}
             onChange={event => onParticipantSearchChange(event.target.value)}
           />
         </div>
       ) : null}
 
       <NativeSelect
-        value={poolName}
-        onChange={event => onPoolNameChange(event.target.value)}
-        className={`${filterSelectMdClassName} bg-white`}
+        value={matchStatus}
+        onChange={event =>
+          onMatchStatusChange(
+            event.target.value as PredictionMatchFilterStatus,
+          )
+        }
+        className={`${filterSelectSmClassName} bg-white`}
+        aria-label='Status do jogo'
+        disabled={!isPoolSelected}
       >
-        <option value='ALL'>Todos os bolões</option>
-        {poolOptions.map(name => (
-          <option key={name} value={name}>
-            {name}
-          </option>
-        ))}
+        <option value='ALL'>Status do jogo</option>
+        <option value='SCHEDULED'>Agendado</option>
+        <option value='LIVE'>Ao vivo</option>
+        <option value='FINISHED'>Encerrado</option>
       </NativeSelect>
 
       <NativeSelect
@@ -95,8 +124,10 @@ export function PredictionFilters({
           onStatusChange(event.target.value as PredictionFilterStatus)
         }
         className={`${filterSelectSmClassName} bg-white`}
+        aria-label='Status do palpite'
+        disabled={!isPoolSelected}
       >
-        <option value='ALL'>Todos</option>
+        <option value='ALL'>Status do palpite</option>
         <option value='PENDING'>Sem palpite</option>
         <option value='SUBMITTED'>Palpites feitos</option>
       </NativeSelect>
@@ -109,6 +140,7 @@ export function PredictionFilters({
           title='Data do jogo'
           className={`${filterDateInputClassName} bg-white`}
           value={selectedDate}
+          disabled={!isPoolSelected}
           onChange={event => onSelectedDateChange(event.target.value)}
         />
       ) : null}
