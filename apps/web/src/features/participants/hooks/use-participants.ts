@@ -1,16 +1,22 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 import { getFetchErrorMessage } from '@/lib/api-client';
 
-import { fetchParticipantsRequest } from '../services/participant-api.service';
+import {
+  approveParticipantRequest,
+  fetchParticipantsRequest,
+  rejectParticipantRequest,
+} from '../services/participant-api.service';
 import type { PoolParticipant } from '../types/participant';
 
 export function useParticipants() {
   const [participants, setParticipants] = useState<PoolParticipant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [actingKey, setActingKey] = useState<string | null>(null);
 
   const loadParticipants = useCallback(async () => {
     setIsLoading(true);
@@ -36,15 +42,85 @@ export function useParticipants() {
     void loadParticipants();
   }, [loadParticipants]);
 
+  const approveParticipant = useCallback(
+    async (poolId: number, userId: number): Promise<boolean> => {
+      const key = `${poolId}:${userId}`;
+      setActingKey(key);
+
+      try {
+        await approveParticipantRequest(poolId, userId);
+        setParticipants(current =>
+          current.map(participant =>
+            participant.poolId === poolId && participant.userId === userId
+              ? { ...participant, status: 'ACTIVE' }
+              : participant,
+          ),
+        );
+        toast.success('Pedido aprovado. O participante já pode palpitar.');
+        return true;
+      } catch (approveError) {
+        toast.error(
+          getFetchErrorMessage(
+            approveError,
+            'Não foi possível aprovar o pedido.',
+          ),
+        );
+        return false;
+      } finally {
+        setActingKey(null);
+      }
+    },
+    [],
+  );
+
+  const rejectParticipant = useCallback(
+    async (poolId: number, userId: number): Promise<boolean> => {
+      const key = `${poolId}:${userId}`;
+      setActingKey(key);
+
+      try {
+        await rejectParticipantRequest(poolId, userId);
+        setParticipants(current =>
+          current.map(participant =>
+            participant.poolId === poolId && participant.userId === userId
+              ? { ...participant, status: 'INACTIVE' }
+              : participant,
+          ),
+        );
+        toast.success('Pedido recusado.');
+        return true;
+      } catch (rejectError) {
+        toast.error(
+          getFetchErrorMessage(
+            rejectError,
+            'Não foi possível recusar o pedido.',
+          ),
+        );
+        return false;
+      } finally {
+        setActingKey(null);
+      }
+    },
+    [],
+  );
+
   return {
     participants,
     isLoading,
     error,
+    actingKey,
     reloadParticipants: loadParticipants,
+    approveParticipant,
+    rejectParticipant,
   };
 }
 
 export function useParticipantFilters(participants: PoolParticipant[]) {
+  const pendingCount = useMemo(
+    () => participants.filter(item => item.status === 'PENDING').length,
+    [participants],
+  );
+
   const [search, setSearch] = useState('');
   const [poolName, setPoolName] = useState('ALL');
   const [status, setStatus] = useState('ALL');
@@ -98,5 +174,6 @@ export function useParticipantFilters(participants: PoolParticipant[]) {
     filteredParticipants,
     hasActiveFilters,
     clearFilters,
+    pendingCount,
   };
 }

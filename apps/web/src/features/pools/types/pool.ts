@@ -4,6 +4,8 @@ import type { PoolScoringConfig } from './scoring-rules';
 
 export type PoolStatus = 'ACTIVE' | 'INACTIVE' | 'CLOSED';
 
+export type DiscoverMembershipStatus = 'PENDING' | 'INACTIVE' | null;
+
 export interface Pool {
   id: number;
   name: string;
@@ -17,4 +19,17 @@ export interface Pool {
   status: PoolStatus;
   scoring: PoolScoringConfig;
   isOwner: boolean;
+}
+
+export interface DiscoverablePool {
+  id: number;
+  name: string;
+  championshipName: string;
+  championshipType: Championship['type'];
+  season: number;
+  participantsCount: number;
+  ownerId: number;
+  ownerName: string;
+  status: PoolStatus;
+  membershipStatus: DiscoverMembershipStatus;
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { Copy, Link2, Search } from 'lucide-react';
+import { Copy, Link2, Loader2Icon, Search } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
@@ -77,13 +77,37 @@ async function copyInviteCode(inviteCode: string) {
 }
 
 export function ParticipantList() {
-  const { participants, isLoading, error, reloadParticipants } =
-    useParticipants();
+  const {
+    participants,
+    isLoading,
+    error,
+    actingKey,
+    reloadParticipants,
+    approveParticipant,
+    rejectParticipant,
+  } = useParticipants();
   const filters = useParticipantFilters(participants);
 
   return (
     <Card className='overflow-visible shadow-sm'>
       <CardContent className='space-y-4 pt-4'>
+        {filters.pendingCount > 0 ? (
+          <div className='flex flex-col gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-zinc-700 sm:flex-row sm:items-center sm:justify-between'>
+            <p>
+              Você tem {filters.pendingCount} pedido(s) de acesso aguardando
+              aprovação.
+            </p>
+            <Button
+              type='button'
+              size='sm'
+              variant='outline'
+              onClick={() => filters.setStatus('PENDING')}
+            >
+              Ver pendentes
+            </Button>
+          </div>
+        ) : null}
+
         <div className={filterToolbarClassName}>
           <div className={filterSearchFieldClassName}>
             <Search className='text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2' />
@@ -157,59 +181,103 @@ export function ParticipantList() {
                   <TableHead>Status</TableHead>
                   <TableHead className='text-center'>Palpites</TableHead>
                   <TableHead>Entrada</TableHead>
-                  <TableHead className='text-right'>Convite</TableHead>
+                  <TableHead className='text-right'>Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filters.filteredParticipants.map(participant => (
-                  <TableRow key={participant.id}>
-                    <TableCell className='font-medium'>
-                      {participant.name}
-                      {participant.isOwner ? (
-                        <Badge variant='outline' className='ml-2 text-xs'>
-                          Dono
-                        </Badge>
-                      ) : null}
-                    </TableCell>
-                    <TableCell>{participant.email}</TableCell>
-                    <TableCell>{participant.poolName}</TableCell>
-                    <TableCell>
-                      <ParticipantStatusBadge status={participant.status} />
-                    </TableCell>
-                    <TableCell className='text-center'>
-                      {participant.predictionsCount}
-                    </TableCell>
-                    <TableCell className={dateTimeTableCellClassName}>
-                      <DateTimeDisplay value={participant.joinedAt} />
-                    </TableCell>
-                    <TableCell className='text-right'>
-                      <div className='flex justify-end gap-1'>
-                        <Button
-                          type='button'
-                          size='icon'
-                          variant='ghost'
-                          title='Copiar link'
-                          onClick={() =>
-                            void copyInviteLink(participant.inviteCode)
-                          }
-                        >
-                          <Link2 className='size-4' />
-                        </Button>
-                        <Button
-                          type='button'
-                          size='icon'
-                          variant='ghost'
-                          title='Copiar código'
-                          onClick={() =>
-                            void copyInviteCode(participant.inviteCode)
-                          }
-                        >
-                          <Copy className='size-4' />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {filters.filteredParticipants.map(participant => {
+                  const actionKey = `${participant.poolId}:${participant.userId}`;
+                  const isActing = actingKey === actionKey;
+
+                  return (
+                    <TableRow key={participant.id}>
+                      <TableCell className='font-medium'>
+                        {participant.name}
+                        {participant.isOwner ? (
+                          <Badge variant='outline' className='ml-2 text-xs'>
+                            Dono
+                          </Badge>
+                        ) : null}
+                      </TableCell>
+                      <TableCell>{participant.email}</TableCell>
+                      <TableCell>{participant.poolName}</TableCell>
+                      <TableCell>
+                        <ParticipantStatusBadge status={participant.status} />
+                      </TableCell>
+                      <TableCell className='text-center'>
+                        {participant.predictionsCount}
+                      </TableCell>
+                      <TableCell className={dateTimeTableCellClassName}>
+                        <DateTimeDisplay value={participant.joinedAt} />
+                      </TableCell>
+                      <TableCell className='text-right'>
+                        {participant.status === 'PENDING' &&
+                        !participant.isOwner ? (
+                          <div className='flex justify-end gap-1'>
+                            <Button
+                              type='button'
+                              size='sm'
+                              disabled={isActing || actingKey !== null}
+                              onClick={() =>
+                                void approveParticipant(
+                                  participant.poolId,
+                                  participant.userId,
+                                )
+                              }
+                            >
+                              {isActing ? (
+                                <Loader2Icon
+                                  className='size-4 animate-spin'
+                                  aria-hidden
+                                />
+                              ) : null}
+                              Aprovar
+                            </Button>
+                            <Button
+                              type='button'
+                              size='sm'
+                              variant='outline'
+                              disabled={isActing || actingKey !== null}
+                              onClick={() =>
+                                void rejectParticipant(
+                                  participant.poolId,
+                                  participant.userId,
+                                )
+                              }
+                            >
+                              Recusar
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className='flex justify-end gap-1'>
+                            <Button
+                              type='button'
+                              size='icon'
+                              variant='ghost'
+                              title='Copiar link'
+                              onClick={() =>
+                                void copyInviteLink(participant.inviteCode)
+                              }
+                            >
+                              <Link2 className='size-4' />
+                            </Button>
+                            <Button
+                              type='button'
+                              size='icon'
+                              variant='ghost'
+                              title='Copiar código'
+                              onClick={() =>
+                                void copyInviteCode(participant.inviteCode)
+                              }
+                            >
+                              <Copy className='size-4' />
+                            </Button>
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>

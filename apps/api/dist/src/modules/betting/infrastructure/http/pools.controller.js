@@ -30,8 +30,20 @@ let PoolsController = class PoolsController {
     list(user) {
         return this.poolService.listForUser(user);
     }
+    discover(user) {
+        return this.poolService.discoverForUser(user);
+    }
     join(dto, user) {
         return this.poolService.join(dto, user);
+    }
+    requestAccess(id, user) {
+        return this.poolService.requestAccess(id, user);
+    }
+    approveMember(id, userId, user) {
+        return this.poolService.approveMember(id, userId, user);
+    }
+    rejectMember(id, userId, user) {
+        return this.poolService.rejectMember(id, userId, user);
     }
     getById(id, user) {
         return this.poolService.getByIdForUser(id, user);
@@ -52,6 +64,13 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PoolsController.prototype, "list", null);
 __decorate([
+    (0, common_1.Get)('discover'),
+    __param(0, (0, current_user_decorator_js_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], PoolsController.prototype, "discover", null);
+__decorate([
     (0, common_1.Post)('join'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, current_user_decorator_js_1.CurrentUser)()),
@@ -59,6 +78,34 @@ __decorate([
     __metadata("design:paramtypes", [join_pool_dto_js_1.JoinPoolDto, Object]),
     __metadata("design:returntype", void 0)
 ], PoolsController.prototype, "join", null);
+__decorate([
+    (0, common_1.Post)(':id/request-access'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, current_user_decorator_js_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", void 0)
+], PoolsController.prototype, "requestAccess", null);
+__decorate([
+    (0, common_1.Post)(':id/members/:userId/approve'),
+    (0, common_1.UseGuards)(pool_owner_guard_js_1.PoolOwnerGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('userId', common_1.ParseIntPipe)),
+    __param(2, (0, current_user_decorator_js_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number, Object]),
+    __metadata("design:returntype", void 0)
+], PoolsController.prototype, "approveMember", null);
+__decorate([
+    (0, common_1.Post)(':id/members/:userId/reject'),
+    (0, common_1.UseGuards)(pool_owner_guard_js_1.PoolOwnerGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('userId', common_1.ParseIntPipe)),
+    __param(2, (0, current_user_decorator_js_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number, Object]),
+    __metadata("design:returntype", void 0)
+], PoolsController.prototype, "rejectMember", null);
 __decorate([
     (0, common_1.Get)(':id'),
     (0, common_1.UseGuards)(pool_access_guard_js_1.PoolAccessGuard),

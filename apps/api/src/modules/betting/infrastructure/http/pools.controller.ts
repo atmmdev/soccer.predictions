@@ -29,9 +29,42 @@ export class PoolsController {
     return this.poolService.listForUser(user);
   }
 
+  @Get('discover')
+  discover(@CurrentUser() user: AuthUser) {
+    return this.poolService.discoverForUser(user);
+  }
+
   @Post('join')
   join(@Body() dto: JoinPoolDto, @CurrentUser() user: AuthUser) {
     return this.poolService.join(dto, user);
+  }
+
+  @Post(':id/request-access')
+  requestAccess(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.poolService.requestAccess(id, user);
+  }
+
+  @Post(':id/members/:userId/approve')
+  @UseGuards(PoolOwnerGuard)
+  approveMember(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('userId', ParseIntPipe) userId: number,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.poolService.approveMember(id, userId, user);
+  }
+
+  @Post(':id/members/:userId/reject')
+  @UseGuards(PoolOwnerGuard)
+  rejectMember(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('userId', ParseIntPipe) userId: number,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.poolService.rejectMember(id, userId, user);
   }
 
   @Get(':id')

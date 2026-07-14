@@ -1,52 +1,147 @@
 'use client';
 
+import { useState } from 'react';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { PageLoading } from '@/components/ui/page-loading';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { getStoredUser } from '@/features/auth/lib/auth-storage';
+import { canParticipateInPools } from '@/features/auth/lib/role-access';
+import {
+  lineTabTriggerClassName,
+  lineTabsListClassName,
+} from '@/lib/line-tabs';
 
+import { useDiscoverablePools } from '../hooks/use-discoverable-pools';
 import { usePoolList } from '../hooks/use-pool-list';
+import { DiscoverablePoolsTable } from './discoverable-pools-table';
 import { PoolFilters } from './filters/pool-filters';
 import { PoolTable } from './table/pool-table';
 
+type PoolsTab = 'mine' | 'available';
+
 export function PoolList() {
+  const canDiscover = canParticipateInPools(getStoredUser()?.role);
+  const [tab, setTab] = useState<PoolsTab>('mine');
   const { isLoading, error, reloadPools, createPool, updatePoolStatus, searchFilters, tableState } =
     usePoolList();
+  const discoverState = useDiscoverablePools(canDiscover);
 
   return (
     <Card className='overflow-visible shadow-sm'>
       <CardContent className='space-y-4 pt-4'>
-        <PoolFilters
-          search={searchFilters.search}
-          onSearchChange={searchFilters.setSearch}
-          status={searchFilters.status}
-          onStatusChange={searchFilters.setStatus}
-          resultCount={tableState.rows.length}
-          hasActiveFilters={searchFilters.hasActiveFilters}
-          onClearFilters={searchFilters.clearFilters}
-          onCreatePool={createPool}
-        />
-        {isLoading ? (
-          <PageLoading compact label='Carregando bolões...' />
-        ) : error ? (
-          <div className='flex flex-col items-center justify-center gap-3 py-12'>
-            <p className='text-destructive text-sm text-center'>{error}</p>
-            <button
-              type='button'
-              className='text-primary text-sm underline'
-              onClick={() => void reloadPools()}
-            >
-              Tentar novamente
-            </button>
-          </div>
+        {canDiscover ? (
+          <Tabs
+            value={tab}
+            onValueChange={value => setTab(value as PoolsTab)}
+          >
+            <TabsList variant='line' className={lineTabsListClassName}>
+              <TabsTrigger value='mine' className={lineTabTriggerClassName}>
+                Meus bolões
+                {!isLoading ? ` (${tableState.rows.length})` : ''}
+              </TabsTrigger>
+              <TabsTrigger
+                value='available'
+                className={lineTabTriggerClassName}
+              >
+                Disponíveis
+                {!discoverState.isLoading
+                  ? ` (${discoverState.pools.length})`
+                  : ''}
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value='mine' className='mt-4 space-y-4'>
+              <MyPoolsSection
+                isLoading={isLoading}
+                error={error}
+                reloadPools={reloadPools}
+                createPool={createPool}
+                updatePoolStatus={updatePoolStatus}
+                searchFilters={searchFilters}
+                tableState={tableState}
+              />
+            </TabsContent>
+
+            <TabsContent value='available' className='mt-4'>
+              <DiscoverablePoolsTable
+                pools={discoverState.pools}
+                isLoading={discoverState.isLoading}
+                error={discoverState.error}
+                requestingPoolId={discoverState.requestingPoolId}
+                onRetry={() => void discoverState.reloadPools()}
+                onRequestAccess={discoverState.requestAccess}
+              />
+            </TabsContent>
+          </Tabs>
         ) : (
-          <PoolTable
-            rows={tableState.rows}
-            sortKey={tableState.sortKey}
-            sortDir={tableState.sortDir}
-            onSort={tableState.toggleSort}
-            onStatusChange={updatePoolStatus}
+          <MyPoolsSection
+            isLoading={isLoading}
+            error={error}
+            reloadPools={reloadPools}
+            createPool={createPool}
+            updatePoolStatus={updatePoolStatus}
+            searchFilters={searchFilters}
+            tableState={tableState}
           />
         )}
       </CardContent>
     </Card>
+  );
+}
+
+function MyPoolsSection({
+  isLoading,
+  error,
+  reloadPools,
+  createPool,
+  updatePoolStatus,
+  searchFilters,
+  tableState,
+}: Pick<
+  ReturnType<typeof usePoolList>,
+  | 'isLoading'
+  | 'error'
+  | 'reloadPools'
+  | 'createPool'
+  | 'updatePoolStatus'
+  | 'searchFilters'
+  | 'tableState'
+>) {
+  return (
+    <>
+      <PoolFilters
+        search={searchFilters.search}
+        onSearchChange={searchFilters.setSearch}
+        status={searchFilters.status}
+        onStatusChange={searchFilters.setStatus}
+        resultCount={tableState.rows.length}
+        hasActiveFilters={searchFilters.hasActiveFilters}
+        onClearFilters={searchFilters.clearFilters}
+        onCreatePool={createPool}
+      />
+      {isLoading ? (
+        <PageLoading compact label='Carregando bolões...' />
+      ) : error ? (
+        <div className='flex flex-col items-center justify-center gap-3 py-12'>
+          <p className='text-destructive text-center text-sm'>{error}</p>
+          <button
+            type='button'
+            className='text-primary text-sm underline'
+            onClick={() => void reloadPools()}
+          >
+            Tentar novamente
+          </button>
+        </div>
+      ) : (
+        <PoolTable
+          rows={tableState.rows}
+          sortKey={tableState.sortKey}
+          sortDir={tableState.sortDir}
+          onSort={tableState.toggleSort}
+          onStatusChange={updatePoolStatus}
+        />
+      )}
+    </>
   );
 }
