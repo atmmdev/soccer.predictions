@@ -102,10 +102,9 @@ export function StatisticsPage() {
         bestPosition = position;
       }
     }
-    const participantsTotal = poolsState.pools.reduce(
-      (total, pool) => total + pool.participantsCount,
-      0,
-    );
+    const participantsTotal = new Set(
+      rankingsState.entries.map(entry => entry.id),
+    ).size;
 
     return {
       poolsCount: poolsState.pools.length,

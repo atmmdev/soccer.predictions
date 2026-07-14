@@ -135,10 +135,9 @@ export function useDashboardData() {
     const activePoolCount = poolsState.pools.filter(
       pool => pool.status === 'ACTIVE',
     ).length;
-    const participantsTotal = poolsState.pools.reduce(
-      (total, pool) => total + pool.participantsCount,
-      0,
-    );
+    const participantsTotal = new Set(
+      rankingsState.entries.map(entry => entry.id),
+    ).size;
     const gamesToday = ownFixtures.filter(fixture =>
       isFixtureToday(fixture.date),
     ).length;
@@ -164,7 +163,7 @@ export function useDashboardData() {
       {
         title: 'Total de Participantes',
         value: participantsTotal.toLocaleString('pt-BR'),
-        trend: `${poolsState.pools.length} bolão(ões)`,
+        trend: `Cadastrados no sistema`,
         icon: Users,
         iconBackground: 'bg-emerald-100',
         iconColor: 'text-emerald-600',
@@ -194,7 +193,7 @@ export function useDashboardData() {
       {
         title: 'Palpites Registrados',
         value: registeredPredictions.toLocaleString('pt-BR'),
-        trend: `${ownFixtures.length} jogos nos seus bolões`,
+        trend: `Aguardando resultados`,
         trendPositive: registeredPredictions > 0,
         icon: Target,
         iconBackground: 'bg-violet-100',
@@ -213,7 +212,7 @@ export function useDashboardData() {
         iconColor: 'text-rose-600',
       },
     ];
-  }, [ownFixtures, poolsState.pools]);
+  }, [ownFixtures, poolsState.pools, rankingsState.entries]);
 
   const filterMatches = (tab: 'all' | 'live' | 'today' | 'tomorrow'): Match[] => {
     const filtered = ownFixtures.filter(fixture => {
