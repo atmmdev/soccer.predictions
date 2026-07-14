@@ -1,7 +1,9 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { ListPagination } from '@/components/ui/list-pagination';
 import { PageLoading } from '@/components/ui/page-loading';
+import { useClientPagination } from '@/hooks/use-client-pagination';
 
 import { useChampionshipList } from '../hooks/use-championship-list';
 import { ChampionshipFilters } from './filters/championship-filters';
@@ -20,6 +22,17 @@ export function ChampionshipList() {
     hasActiveFilters,
     clearFilters,
   } = useChampionshipList();
+
+  const pagination = useClientPagination(tableState.rows, {
+    resetKey: [
+      searchFilters.search,
+      searchFilters.status,
+      tableState.country,
+      tableState.season,
+      tableState.sortKey,
+      tableState.sortDir,
+    ].join('|'),
+  });
 
   return (
     <Card className='overflow-visible shadow-sm'>
@@ -54,14 +67,20 @@ export function ChampionshipList() {
             </button>
           </div>
         ) : (
-          <ChampionshipTable
-            rows={tableState.rows}
-            sortKey={tableState.sortKey}
-            sortDir={tableState.sortDir}
-            onSort={tableState.toggleSort}
-            onSync={syncChampionship}
-            onStatusChange={updateChampionshipStatus}
-          />
+          <>
+            <ChampionshipTable
+              rows={pagination.pageItems}
+              sortKey={tableState.sortKey}
+              sortDir={tableState.sortDir}
+              onSort={tableState.toggleSort}
+              onSync={syncChampionship}
+              onStatusChange={updateChampionshipStatus}
+            />
+            <ListPagination
+              pagination={pagination}
+              itemLabel='campeonatos'
+            />
+          </>
         )}
       </CardContent>
     </Card>

@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/datetime-display';
 import { IconActionButton } from '@/components/ui/icon-action-button';
 import { Input } from '@/components/ui/input';
+import { ListPagination } from '@/components/ui/list-pagination';
 import { NativeSelect } from '@/components/ui/native-select';
 import { PageLoading } from '@/components/ui/page-loading';
 import { StatusBadge } from '@/components/ui/status-badge';
@@ -41,6 +42,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useClientPagination } from '@/hooks/use-client-pagination';
 import {
   lineTabTriggerClassName,
   lineTabsListClassName,
@@ -137,15 +139,26 @@ export function ParticipantList() {
   } = useParticipants();
   const filters = useParticipantFilters(participants);
 
+  const pagination = useClientPagination(filters.groupedParticipants, {
+    resetKey: [
+      filters.search,
+      filters.roleTab,
+      filters.sort,
+      filters.status,
+    ].join('|'),
+  });
+
   const accordionKey = [
     filters.search,
     filters.roleTab,
     filters.sort,
     filters.status,
-    filters.groupedParticipants.map(group => group.userId).join(','),
+    pagination.page,
+    pagination.pageSize,
+    pagination.pageItems.map(group => group.userId).join(','),
   ].join('|');
 
-  const defaultOpenUserIds = filters.groupedParticipants
+  const defaultOpenUserIds = pagination.pageItems
     .filter(group => group.pendingCount > 0)
     .map(group => String(group.userId));
 
@@ -272,211 +285,217 @@ export function ParticipantList() {
             </p>
           </div>
         ) : (
-          <Accordion
-            key={accordionKey}
-            type='multiple'
-            defaultValue={defaultOpenUserIds}
-            className='gap-3'
-          >
-            {filters.groupedParticipants.map(group => {
-              const value = String(group.userId);
-              const poolsLabel =
-                group.memberships.length === 1
-                  ? '1 bolão'
-                  : `${group.memberships.length} bolões`;
+          <>
+            <Accordion
+              key={accordionKey}
+              type='multiple'
+              defaultValue={defaultOpenUserIds}
+              className='gap-3'
+            >
+              {pagination.pageItems.map(group => {
+                const value = String(group.userId);
+                const poolsLabel =
+                  group.memberships.length === 1
+                    ? '1 bolão'
+                    : `${group.memberships.length} bolões`;
 
-              return (
-                <AccordionItem
-                  key={value}
-                  value={value}
-                  className={cn(
-                    'rounded-xl border bg-card px-3 shadow-sm transition-colors not-last:border-b-0',
-                    'data-open:border-primary data-open:ring-1 data-open:ring-primary/25',
-                  )}
-                >
-                  <AccordionTrigger className='items-center gap-2 py-3.5 hover:no-underline'>
-                    <div className='flex min-w-0 flex-1 items-center gap-3 pr-2'>
-                      <Avatar size='default' className='bg-primary/10'>
-                        <AvatarFallback className='bg-primary/10 text-xs font-semibold text-primary'>
-                          {initialsFromName(group.name)}
-                        </AvatarFallback>
-                      </Avatar>
+                return (
+                  <AccordionItem
+                    key={value}
+                    value={value}
+                    className={cn(
+                      'rounded-xl border bg-card px-3 shadow-sm transition-colors not-last:border-b-0',
+                      'data-open:border-primary data-open:ring-1 data-open:ring-primary/25',
+                    )}
+                  >
+                    <AccordionTrigger className='items-center gap-2 py-3.5 hover:no-underline'>
+                      <div className='flex min-w-0 flex-1 items-center gap-3 pr-2'>
+                        <Avatar size='default' className='bg-primary/10'>
+                          <AvatarFallback className='bg-primary/10 text-xs font-semibold text-primary'>
+                            {initialsFromName(group.name)}
+                          </AvatarFallback>
+                        </Avatar>
 
-                      <div className='min-w-0 flex-1 text-left'>
-                        <div className='flex flex-wrap items-center gap-2'>
-                          <span className='truncate font-semibold text-zinc-900'>
-                            {group.name}
-                          </span>
-                          {group.isOwnerAnywhere ? (
-                            <Badge
-                              variant='secondary'
-                              className='bg-primary/10 text-primary'
-                            >
-                              Dono
-                            </Badge>
-                          ) : null}
-                          <Badge variant='outline' className='font-normal'>
-                            {poolsLabel}
-                          </Badge>
-                        </div>
-                        <p className='text-muted-foreground truncate text-xs font-normal'>
-                          {group.email}
-                        </p>
-                      </div>
-                    </div>
-                  </AccordionTrigger>
-
-                  <AccordionContent className='pb-3'>
-                    <div className='overflow-x-auto rounded-lg border bg-zinc-50/70'>
-                      <Table>
-                        <TableHeader>
-                          <TableRow className='hover:bg-transparent'>
-                            <TableHead className='text-[11px] tracking-wide uppercase'>
-                              Bolão
-                            </TableHead>
-                            <TableHead className='text-[11px] tracking-wide uppercase'>
-                              Status
-                            </TableHead>
-                            <TableHead className='text-center text-[11px] tracking-wide uppercase'>
-                              Palpites
-                            </TableHead>
-                            <TableHead className='text-[11px] tracking-wide uppercase'>
-                              Entrada
-                            </TableHead>
-                            <TableHead className='text-right text-[11px] tracking-wide uppercase'>
-                              Ações
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {group.memberships.map(participant => {
-                            const actionKey = `${participant.poolId}:${participant.userId}`;
-                            const isActing = actingKey === actionKey;
-                            const canModerate =
-                              participant.status === 'PENDING' &&
-                              !participant.isOwner;
-
-                            return (
-                              <TableRow
-                                key={participant.id}
-                                className='bg-transparent'
+                        <div className='min-w-0 flex-1 text-left'>
+                          <div className='flex flex-wrap items-center gap-2'>
+                            <span className='truncate font-semibold text-zinc-900'>
+                              {group.name}
+                            </span>
+                            {group.isOwnerAnywhere ? (
+                              <Badge
+                                variant='secondary'
+                                className='bg-primary/10 text-primary'
                               >
-                                <TableCell>
-                                  <div className='flex items-center gap-2 font-medium'>
-                                    <Users
-                                      className='text-muted-foreground size-4 shrink-0'
-                                      aria-hidden
-                                    />
-                                    <span>{participant.poolName}</span>
-                                    {participant.isOwner ? (
-                                      <Badge
-                                        variant='secondary'
-                                        className='bg-primary/10 text-xs text-primary'
-                                      >
-                                        Dono
-                                      </Badge>
-                                    ) : null}
-                                  </div>
-                                </TableCell>
-                                <TableCell>
-                                  <ParticipantStatusBadge
-                                    status={participant.status}
-                                  />
-                                </TableCell>
-                                <TableCell className='text-center tabular-nums'>
-                                  {participant.predictionsCount}
-                                </TableCell>
-                                <TableCell
-                                  className={dateTimeTableCellClassName}
+                                Dono
+                              </Badge>
+                            ) : null}
+                            <Badge variant='outline' className='font-normal'>
+                              {poolsLabel}
+                            </Badge>
+                          </div>
+                          <p className='text-muted-foreground truncate text-xs font-normal'>
+                            {group.email}
+                          </p>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+
+                    <AccordionContent className='pb-3'>
+                      <div className='overflow-x-auto rounded-lg border bg-zinc-50/70'>
+                        <Table>
+                          <TableHeader>
+                            <TableRow className='hover:bg-transparent'>
+                              <TableHead className='text-[11px] tracking-wide uppercase'>
+                                Bolão
+                              </TableHead>
+                              <TableHead className='text-[11px] tracking-wide uppercase'>
+                                Status
+                              </TableHead>
+                              <TableHead className='text-center text-[11px] tracking-wide uppercase'>
+                                Palpites
+                              </TableHead>
+                              <TableHead className='text-[11px] tracking-wide uppercase'>
+                                Entrada
+                              </TableHead>
+                              <TableHead className='text-right text-[11px] tracking-wide uppercase'>
+                                Ações
+                              </TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {group.memberships.map(participant => {
+                              const actionKey = `${participant.poolId}:${participant.userId}`;
+                              const isActing = actingKey === actionKey;
+                              const canModerate =
+                                participant.status === 'PENDING' &&
+                                !participant.isOwner;
+
+                              return (
+                                <TableRow
+                                  key={participant.id}
+                                  className='bg-transparent'
                                 >
-                                  <DateTimeDisplay
-                                    value={participant.joinedAt}
-                                  />
-                                </TableCell>
-                                <TableCell className='text-right'>
-                                  <div className='flex items-center justify-end gap-1'>
-                                    {canModerate ? (
-                                      <>
-                                        <IconActionButton
-                                          label='Aprovar'
-                                          tone='success'
-                                          disabled={
-                                            isActing || actingKey !== null
-                                          }
-                                          onClick={() =>
-                                            void approveParticipant(
-                                              participant.poolId,
-                                              participant.userId,
-                                            )
-                                          }
+                                  <TableCell>
+                                    <div className='flex items-center gap-2 font-medium'>
+                                      <Users
+                                        className='text-muted-foreground size-4 shrink-0'
+                                        aria-hidden
+                                      />
+                                      <span>{participant.poolName}</span>
+                                      {participant.isOwner ? (
+                                        <Badge
+                                          variant='secondary'
+                                          className='bg-primary/10 text-xs text-primary'
                                         >
-                                          {isActing ? (
-                                            <Loader2Icon
-                                              className='size-4 animate-spin'
-                                              aria-hidden
-                                            />
-                                          ) : (
-                                            <Check
-                                              className='size-4'
-                                              aria-hidden
-                                            />
-                                          )}
-                                        </IconActionButton>
-                                        <IconActionButton
-                                          label='Recusar'
-                                          tone='danger'
-                                          disabled={
-                                            isActing || actingKey !== null
-                                          }
-                                          onClick={() =>
-                                            void rejectParticipant(
-                                              participant.poolId,
-                                              participant.userId,
-                                            )
-                                          }
-                                        >
-                                          <X className='size-4' aria-hidden />
-                                        </IconActionButton>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <IconActionButton
-                                          label='Copiar link'
-                                          tone='link'
-                                          onClick={() =>
-                                            void copyInviteLink(
-                                              participant.inviteCode,
-                                            )
-                                          }
-                                        >
-                                          <Link2 className='size-4' />
-                                        </IconActionButton>
-                                        <IconActionButton
-                                          label='Copiar código'
-                                          tone='copy'
-                                          onClick={() =>
-                                            void copyInviteCode(
-                                              participant.inviteCode,
-                                            )
-                                          }
-                                        >
-                                          <Copy className='size-4' />
-                                        </IconActionButton>
-                                      </>
-                                    )}
-                                  </div>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              );
-            })}
-          </Accordion>
+                                          Dono
+                                        </Badge>
+                                      ) : null}
+                                    </div>
+                                  </TableCell>
+                                  <TableCell>
+                                    <ParticipantStatusBadge
+                                      status={participant.status}
+                                    />
+                                  </TableCell>
+                                  <TableCell className='text-center tabular-nums'>
+                                    {participant.predictionsCount}
+                                  </TableCell>
+                                  <TableCell
+                                    className={dateTimeTableCellClassName}
+                                  >
+                                    <DateTimeDisplay
+                                      value={participant.joinedAt}
+                                    />
+                                  </TableCell>
+                                  <TableCell className='text-right'>
+                                    <div className='flex items-center justify-end gap-1'>
+                                      {canModerate ? (
+                                        <>
+                                          <IconActionButton
+                                            label='Aprovar'
+                                            tone='success'
+                                            disabled={
+                                              isActing || actingKey !== null
+                                            }
+                                            onClick={() =>
+                                              void approveParticipant(
+                                                participant.poolId,
+                                                participant.userId,
+                                              )
+                                            }
+                                          >
+                                            {isActing ? (
+                                              <Loader2Icon
+                                                className='size-4 animate-spin'
+                                                aria-hidden
+                                              />
+                                            ) : (
+                                              <Check
+                                                className='size-4'
+                                                aria-hidden
+                                              />
+                                            )}
+                                          </IconActionButton>
+                                          <IconActionButton
+                                            label='Recusar'
+                                            tone='danger'
+                                            disabled={
+                                              isActing || actingKey !== null
+                                            }
+                                            onClick={() =>
+                                              void rejectParticipant(
+                                                participant.poolId,
+                                                participant.userId,
+                                              )
+                                            }
+                                          >
+                                            <X className='size-4' aria-hidden />
+                                          </IconActionButton>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <IconActionButton
+                                            label='Copiar link'
+                                            tone='link'
+                                            onClick={() =>
+                                              void copyInviteLink(
+                                                participant.inviteCode,
+                                              )
+                                            }
+                                          >
+                                            <Link2 className='size-4' />
+                                          </IconActionButton>
+                                          <IconActionButton
+                                            label='Copiar código'
+                                            tone='copy'
+                                            onClick={() =>
+                                              void copyInviteCode(
+                                                participant.inviteCode,
+                                              )
+                                            }
+                                          >
+                                            <Copy className='size-4' />
+                                          </IconActionButton>
+                                        </>
+                                      )}
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })}
+            </Accordion>
+            <ListPagination
+              pagination={pagination}
+              itemLabel='participantes'
+            />
+          </>
         )}
       </CardContent>
     </Card>

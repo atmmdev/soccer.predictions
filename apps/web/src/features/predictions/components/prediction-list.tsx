@@ -3,7 +3,9 @@
 import { useState } from 'react';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { ListPagination } from '@/components/ui/list-pagination';
 import { PageLoading } from '@/components/ui/page-loading';
+import { useClientPagination } from '@/hooks/use-client-pagination';
 
 import { usePredictionList } from '../hooks/use-prediction-list';
 import type { SubmitPredictionFormData } from '../schemas/submit-prediction.schema';
@@ -24,6 +26,16 @@ export function PredictionList() {
   const [predictionsDialogOpen, setPredictionsDialogOpen] = useState(false);
   const [viewPredictionsFixture, setViewPredictionsFixture] =
     useState<PredictionFixtureItem | null>(null);
+
+  const pagination = useClientPagination(searchFilters.filteredFixtures, {
+    resetKey: [
+      searchFilters.search,
+      searchFilters.status,
+      searchFilters.poolName,
+      searchFilters.selectedDate,
+      searchFilters.participantSearch,
+    ].join('|'),
+  });
 
   function handlePredict(fixture: PredictionFixtureItem) {
     if (!fixture.isOwnPrediction || !canEditPrediction(fixture)) {
@@ -113,15 +125,16 @@ export function PredictionList() {
           ) : (
             <>
               <PredictionMobileList
-                rows={searchFilters.filteredFixtures}
+                rows={pagination.pageItems}
                 onPredict={handlePredict}
                 onViewAllPredictions={handleViewAllPredictions}
               />
               <PredictionTable
-                rows={searchFilters.filteredFixtures}
+                rows={pagination.pageItems}
                 onPredict={handlePredict}
                 onViewAllPredictions={handleViewAllPredictions}
               />
+              <ListPagination pagination={pagination} itemLabel='jogos' />
             </>
           )}
         </CardContent>

@@ -1,7 +1,9 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { ListPagination } from '@/components/ui/list-pagination';
 import { PageLoading } from '@/components/ui/page-loading';
+import { useClientPagination } from '@/hooks/use-client-pagination';
 
 import { useRankingList } from '../hooks/use-ranking-list';
 import { RankingFilters } from './filters/ranking-filters';
@@ -10,6 +12,16 @@ import { RankingTable } from './table/ranking-table';
 export function RankingList() {
   const { searchFilters, tableState, isLoading, error, reloadRankings } =
     useRankingList();
+
+  const pagination = useClientPagination(tableState.rows, {
+    resetKey: [
+      searchFilters.search,
+      searchFilters.poolName,
+      searchFilters.scoringRule,
+      tableState.sortKey,
+      tableState.sortDir,
+    ].join('|'),
+  });
 
   return (
     <Card className='min-w-0 overflow-hidden shadow-sm'>
@@ -42,14 +54,20 @@ export function RankingList() {
             </button>
           </div>
         ) : (
-          <RankingTable
-            rows={tableState.rows}
-            isPoolSelected={searchFilters.isPoolSelected}
-            scoringRule={searchFilters.scoringRule}
-            sortKey={tableState.sortKey}
-            sortDir={tableState.sortDir}
-            onSort={tableState.toggleSort}
-          />
+          <>
+            <RankingTable
+              rows={pagination.pageItems}
+              isPoolSelected={searchFilters.isPoolSelected}
+              scoringRule={searchFilters.scoringRule}
+              sortKey={tableState.sortKey}
+              sortDir={tableState.sortDir}
+              onSort={tableState.toggleSort}
+            />
+            <ListPagination
+              pagination={pagination}
+              itemLabel='participantes'
+            />
+          </>
         )}
       </CardContent>
     </Card>

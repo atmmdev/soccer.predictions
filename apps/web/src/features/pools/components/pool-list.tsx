@@ -3,10 +3,12 @@
 import { useState } from 'react';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { ListPagination } from '@/components/ui/list-pagination';
 import { PageLoading } from '@/components/ui/page-loading';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getStoredUser } from '@/features/auth/lib/auth-storage';
 import { canParticipateInPools } from '@/features/auth/lib/role-access';
+import { useClientPagination } from '@/hooks/use-client-pagination';
 import {
   lineTabTriggerClassName,
   lineTabsListClassName,
@@ -120,6 +122,15 @@ function MyPoolsSection({
   | 'searchFilters'
   | 'tableState'
 >) {
+  const pagination = useClientPagination(tableState.rows, {
+    resetKey: [
+      searchFilters.search,
+      searchFilters.status,
+      tableState.sortKey,
+      tableState.sortDir,
+    ].join('|'),
+  });
+
   return (
     <>
       <PoolFilters
@@ -146,14 +157,17 @@ function MyPoolsSection({
           </button>
         </div>
       ) : (
-        <PoolTable
-          rows={tableState.rows}
-          sortKey={tableState.sortKey}
-          sortDir={tableState.sortDir}
-          onSort={tableState.toggleSort}
-          onUpdatePool={updatePool}
-          onStatusChange={updatePoolStatus}
-        />
+        <>
+          <PoolTable
+            rows={pagination.pageItems}
+            sortKey={tableState.sortKey}
+            sortDir={tableState.sortDir}
+            onSort={tableState.toggleSort}
+            onUpdatePool={updatePool}
+            onStatusChange={updatePoolStatus}
+          />
+          <ListPagination pagination={pagination} itemLabel='bolões' />
+        </>
       )}
     </>
   );

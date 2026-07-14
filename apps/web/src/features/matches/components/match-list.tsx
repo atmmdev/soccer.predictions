@@ -1,7 +1,9 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { ListPagination } from '@/components/ui/list-pagination';
 import { PageLoading } from '@/components/ui/page-loading';
+import { useClientPagination } from '@/hooks/use-client-pagination';
 
 import { useMatchList } from '../hooks/use-match-list';
 import { MatchFilters } from './filters/match-filters';
@@ -9,6 +11,16 @@ import { MatchTable } from './table/match-table';
 
 export function MatchList() {
   const { searchFilters, isLoading, error, reloadFixtures } = useMatchList();
+
+  const pagination = useClientPagination(searchFilters.filteredFixtures, {
+    resetKey: [
+      searchFilters.search,
+      searchFilters.status,
+      searchFilters.championshipName,
+      searchFilters.dateFrom,
+      searchFilters.dateTo,
+    ].join('|'),
+  });
 
   return (
     <Card className='min-w-0 overflow-hidden shadow-sm'>
@@ -43,7 +55,10 @@ export function MatchList() {
             </button>
           </div>
         ) : (
-          <MatchTable rows={searchFilters.filteredFixtures} />
+          <>
+            <MatchTable rows={pagination.pageItems} />
+            <ListPagination pagination={pagination} itemLabel='jogos' />
+          </>
         )}
       </CardContent>
     </Card>
