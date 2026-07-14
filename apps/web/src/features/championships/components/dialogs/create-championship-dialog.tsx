@@ -1,6 +1,6 @@
 'use client';
 
-import { Download } from 'lucide-react';
+import { Download, Loader2Icon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -22,7 +22,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { NativeSelect } from '@/components/ui/native-select';
 import {
   Select,
   SelectContent,
@@ -39,6 +38,15 @@ import { ChampionshipActiveSwitch } from './championship-active-switch';
 
 interface CreateChampionshipDialogProps {
   onCreate: (data: CreateChampionshipFormData) => boolean | Promise<boolean>;
+}
+
+function SelectLoadingValue({ label }: { label: string }) {
+  return (
+    <span className='text-muted-foreground inline-flex items-center gap-2'>
+      <Loader2Icon className='size-4 shrink-0 animate-spin' aria-hidden />
+      {label}
+    </span>
+  );
 }
 
 export function CreateChampionshipDialog({
@@ -59,6 +67,10 @@ export function CreateChampionshipDialog({
   } = useImportChampionshipCascade(form, open);
 
   function handleOpenChange(nextOpen: boolean) {
+    if (isSubmitting) {
+      return;
+    }
+
     setOpen(nextOpen);
 
     if (!nextOpen) {
@@ -113,17 +125,15 @@ export function CreateChampionshipDialog({
                       field.onChange(value);
                       resetLeagueCascade();
                     }}
-                    disabled={isLoadingCountries}
+                    disabled={isLoadingCountries || isSubmitting}
                   >
                     <FormControl>
-                      <SelectTrigger className='h-11 w-full'>
-                        <SelectValue
-                          placeholder={
-                            isLoadingCountries
-                              ? 'Carregando países...'
-                              : 'Selecione o país'
-                          }
-                        />
+                      <SelectTrigger size='lg' className='w-full'>
+                        {isLoadingCountries ? (
+                          <SelectLoadingValue label='Carregando países...' />
+                        ) : (
+                          <SelectValue placeholder='Selecione o país' />
+                        )}
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -149,28 +159,43 @@ export function CreateChampionshipDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Campeonato</FormLabel>
-                  <FormControl>
-                    <NativeSelect
-                      value={field.value > 0 ? field.value.toString() : ''}
-                      onChange={event =>
-                        field.onChange(Number(event.target.value))
-                      }
-                      disabled={!selectedCountry || isLoadingLeagues}
-                    >
-                      <option value='' disabled>
-                        {!selectedCountry
-                          ? 'Selecione um país primeiro'
-                          : isLoadingLeagues
-                            ? 'Carregando campeonatos...'
-                            : 'Selecione o campeonato'}
-                      </option>
+                  <Select
+                    value={field.value > 0 ? field.value.toString() : undefined}
+                    onValueChange={value => field.onChange(Number(value))}
+                    disabled={
+                      !selectedCountry ||
+                      isLoadingCountries ||
+                      isLoadingLeagues ||
+                      isSubmitting
+                    }
+                  >
+                    <FormControl>
+                      <SelectTrigger size='lg' className='w-full'>
+                        {isLoadingCountries ||
+                        (selectedCountry && isLoadingLeagues) ? (
+                          <SelectLoadingValue label='Carregando campeonatos...' />
+                        ) : (
+                          <SelectValue
+                            placeholder={
+                              !selectedCountry
+                                ? 'Selecione um país primeiro'
+                                : 'Selecione o campeonato'
+                            }
+                          />
+                        )}
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
                       {filteredLeagues.map(league => (
-                        <option key={league.leagueId} value={league.leagueId}>
+                        <SelectItem
+                          key={league.leagueId}
+                          value={league.leagueId.toString()}
+                        >
                           {league.name}
-                        </option>
+                        </SelectItem>
                       ))}
-                    </NativeSelect>
-                  </FormControl>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -182,21 +207,35 @@ export function CreateChampionshipDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Temporada</FormLabel>
-                  <FormControl>
-                    <NativeSelect
-                      value={field.value.toString()}
-                      onChange={event =>
-                        field.onChange(Number(event.target.value))
-                      }
-                      disabled={!selectedCountry || isLoadingLeagues}
-                    >
+                  <Select
+                    value={field.value.toString()}
+                    onValueChange={value => field.onChange(Number(value))}
+                    disabled={
+                      !selectedCountry ||
+                      isLoadingCountries ||
+                      isLoadingLeagues ||
+                      availableSeasons.length === 0 ||
+                      isSubmitting
+                    }
+                  >
+                    <FormControl>
+                      <SelectTrigger size='lg' className='w-full'>
+                        {isLoadingCountries ||
+                        (selectedCountry && isLoadingLeagues) ? (
+                          <SelectLoadingValue label='Carregando temporadas...' />
+                        ) : (
+                          <SelectValue placeholder='Selecione a temporada' />
+                        )}
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
                       {availableSeasons.map(season => (
-                        <option key={season} value={season}>
+                        <SelectItem key={season} value={season.toString()}>
                           {season}
-                        </option>
+                        </SelectItem>
                       ))}
-                    </NativeSelect>
-                  </FormControl>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -218,13 +257,32 @@ export function CreateChampionshipDialog({
                 variant='outline'
                 type='button'
                 onClick={() => handleOpenChange(false)}
+                disabled={isSubmitting}
               >
                 Cancelar
               </Button>
               <Button type='submit' disabled={isSubmitting}>
-                {isSubmitting ? 'Importando...' : 'Importar'}
+                {isSubmitting ? (
+                  <>
+                    <Loader2Icon className='size-4 animate-spin' aria-hidden />
+                    Importando...
+                  </>
+                ) : (
+                  'Importar'
+                )}
               </Button>
             </div>
+
+            {isSubmitting ? (
+              <p
+                role='status'
+                aria-live='polite'
+                className='rounded-lg border border-amber-500 bg-amber-200 px-3 py-2 text-center text-sm text-black'
+              >
+                Aguarde a criação do campeonato. Isso pode levar alguns
+                segundos...
+              </p>
+            ) : null}
           </form>
         </Form>
       </DialogContent>

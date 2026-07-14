@@ -5,25 +5,45 @@ interface CountryFlagProps {
   className?: string;
 }
 
-function resolveFlagSrc(flag?: string, code?: string): string | null {
-  const normalizedCode = code?.trim().toLowerCase().replace(/_/g, '-');
+/** football-data.org area codes (mostly alpha-3) → flagcdn alpha-2 */
+const AREA_CODE_TO_FLAGCDN: Record<string, string> = {
+  BRA: 'br',
+  ENG: 'gb-eng',
+  FRA: 'fr',
+  DEU: 'de',
+  ITA: 'it',
+  NLD: 'nl',
+  POR: 'pt',
+  ESP: 'es',
+  EUR: 'eu',
+  SAM: 'un',
+  INT: 'un',
+  ARG: 'ar',
+  USA: 'us',
+  MEX: 'mx',
+  BEL: 'be',
+  TUR: 'tr',
+};
 
-  if (normalizedCode) {
-    return `https://flagcdn.com/w40/${normalizedCode}.png`;
+function resolveFlagSrc(flag?: string, code?: string): string | null {
+  if (flag?.startsWith('http://') || flag?.startsWith('https://')) {
+    return flag;
   }
 
-  if (!flag) {
+  const normalizedCode = code?.trim().toUpperCase().replace(/_/g, '-');
+
+  if (!normalizedCode) {
     return null;
   }
 
-  if (flag.startsWith('http://') || flag.startsWith('https://')) {
-    const match = flag.match(/\/flags\/([a-z0-9-]+)\.svg$/i);
+  const mapped = AREA_CODE_TO_FLAGCDN[normalizedCode];
 
-    if (match?.[1]) {
-      return `https://flagcdn.com/w40/${match[1].toLowerCase()}.png`;
-    }
+  if (mapped) {
+    return `https://flagcdn.com/w40/${mapped}.png`;
+  }
 
-    return flag;
+  if (/^[A-Z]{2}(-[A-Z0-9]+)?$/i.test(normalizedCode)) {
+    return `https://flagcdn.com/w40/${normalizedCode.toLowerCase()}.png`;
   }
 
   return null;
