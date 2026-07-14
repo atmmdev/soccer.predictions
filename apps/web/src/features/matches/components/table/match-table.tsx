@@ -31,13 +31,12 @@ export function MatchTable({ rows }: MatchTableProps) {
 
   return (
     <div className='overflow-x-auto'>
-      <Table>
+      <Table className='bg-white border border-gray-200'>
         <TableHeader>
           <TableRow className='hover:bg-transparent'>
-            <TableHead className='text-muted-foreground text-xs'>Data</TableHead>
-            <TableHead className='text-muted-foreground text-xs'>Status</TableHead>
-            <TableHead className='text-muted-foreground text-xs'>Jogo</TableHead>
-            <TableHead className='text-muted-foreground text-xs'>
+            <TableHead className='text-muted-foreground text-xs text-center'>Data</TableHead>
+            <TableHead className='text-muted-foreground text-xs text-center w-1/6'>Jogo</TableHead>
+            <TableHead className='text-muted-foreground text-xs text-center'>
               Campeonato
             </TableHead>
             <TableHead className='text-muted-foreground text-center text-xs'>
@@ -46,6 +45,7 @@ export function MatchTable({ rows }: MatchTableProps) {
             <TableHead className='text-muted-foreground text-center text-xs'>
               Resultado Oficial
             </TableHead>
+          <TableHead className='text-muted-foreground text-xs text-center'>Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

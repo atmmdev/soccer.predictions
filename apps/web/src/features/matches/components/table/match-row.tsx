@@ -17,12 +17,10 @@ interface MatchRowProps {
 export function MatchRow({ fixture }: MatchRowProps) {
   return (
     <TableRow>
-      <TableCell className={dateTimeTableCellClassName}>
+      <TableCell className={dateTimeTableCellClassName + ' text-center'}>
         <DateTimeDisplay value={fixture.date} />
       </TableCell>
-      <TableCell>
-        <MatchStatusBadge status={fixture.status} />
-      </TableCell>
+      
       <TableCell className='text-xs'>
         <MatchTeamsStack
           homeTeam={fixture.homeTeam}
@@ -31,7 +29,7 @@ export function MatchRow({ fixture }: MatchRowProps) {
           awayTeamLogo={fixture.awayTeamLogo}
         />
       </TableCell>
-      <TableCell className='text-muted-foreground text-xs'>
+      <TableCell className='text-muted-foreground text-xs text-center'>
         {fixture.championshipName}
       </TableCell>
       <TableCell className='text-center text-xs'>
@@ -44,6 +42,9 @@ export function MatchRow({ fixture }: MatchRowProps) {
             away: fixture.officialAwayScore,
           }}
         />
+      </TableCell>
+      <TableCell className='text-center'>
+        <MatchStatusBadge status={fixture.status} />
       </TableCell>
     </TableRow>
   );

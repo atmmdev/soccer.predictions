@@ -55,7 +55,7 @@ export function MatchFilters({
           <Search className='text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2' />
           <Input
             placeholder='Buscar por time ou campeonato...'
-            className='pl-9'
+            className='pl-9 bg-white'
             value={search}
             onChange={event => onSearchChange(event.target.value)}
           />
@@ -64,7 +64,7 @@ export function MatchFilters({
         <NativeSelect
           value={championshipName}
           onChange={event => onChampionshipNameChange(event.target.value)}
-          className={filterSelectMdClassName}
+          className={filterSelectMdClassName + ' bg-white'}
         >
           <option value='ALL'>Todos os campeonatos</option>
           {championshipOptions.map(name => (
@@ -79,7 +79,7 @@ export function MatchFilters({
           onChange={event =>
             onStatusChange(event.target.value as MatchFilterStatus)
           }
-          className={filterSelectSmClassName}
+          className={filterSelectSmClassName + ' bg-white'}
         >
           <option value='ALL'>Todos</option>
           <option value='SCHEDULED'>Agendado</option>
@@ -92,7 +92,7 @@ export function MatchFilters({
           type='date'
           aria-label='Data inicial'
           title='Data inicial'
-          className={filterDateInputClassName}
+          className={filterDateInputClassName + ' bg-white'}
           value={dateFrom}
           onChange={event => onDateFromChange(event.target.value)}
         />
@@ -102,7 +102,7 @@ export function MatchFilters({
           type='date'
           aria-label='Data final'
           title='Data final'
-          className={filterDateInputClassName}
+          className={filterDateInputClassName + ' bg-white'}
           min={dateFrom || undefined}
           value={dateTo}
           onChange={event => onDateToChange(event.target.value)}
@@ -113,15 +113,6 @@ export function MatchFilters({
           disabled={!hasActiveFilters}
         />
       </div>
-
-      <p className='text-muted-foreground px-2 text-xs xl:ml-auto'>
-        <span
-          className={resultCount === 0 ? 'text-red-500' : 'text-primary'}
-        >
-          {resultCount} jogo{resultCount !== 1 ? 's' : ''} encontrado
-          {resultCount !== 1 ? 's' : ''}
-        </span>
-      </p>
     </>
   );
 }
