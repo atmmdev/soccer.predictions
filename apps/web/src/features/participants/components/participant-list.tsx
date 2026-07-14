@@ -148,7 +148,17 @@ export function ParticipantList() {
         </div>
 
         <p className='text-muted-foreground px-1 text-xs'>
-          {filters.filteredParticipants.length} participante(s) encontrado(s)
+          {filters.summary.people}{' '}
+          {filters.summary.people === 1 ? 'participante' : 'participantes'} ·{' '}
+          {filters.summary.pools}{' '}
+          {filters.summary.pools === 1 ? 'bolão' : 'bolões'}
+          {/* ·{' '} {filters.summary.memberships}{' '}
+          {filters.summary.memberships === 1
+            ? 'participação'
+            : 'participações'}
+          {filters.summary.memberships !== filters.summary.people
+            ? ' (a mesma pessoa pode aparecer em mais de um bolão)'
+            : ''} */}
         </p>
 
         {isLoading ? (

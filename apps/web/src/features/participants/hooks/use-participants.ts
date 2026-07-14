@@ -154,6 +154,21 @@ export function useParticipantFilters(participants: PoolParticipant[]) {
     });
   }, [participants, poolName, search, status]);
 
+  const summary = useMemo(() => {
+    const uniquePeople = new Set(
+      filteredParticipants.map(item => item.userId),
+    ).size;
+    const uniquePools = new Set(
+      filteredParticipants.map(item => item.poolId),
+    ).size;
+
+    return {
+      memberships: filteredParticipants.length,
+      people: uniquePeople,
+      pools: uniquePools,
+    };
+  }, [filteredParticipants]);
+
   const hasActiveFilters =
     search.trim().length > 0 || poolName !== 'ALL' || status !== 'ALL';
 
@@ -172,6 +187,7 @@ export function useParticipantFilters(participants: PoolParticipant[]) {
     setStatus,
     poolOptions,
     filteredParticipants,
+    summary,
     hasActiveFilters,
     clearFilters,
     pendingCount,

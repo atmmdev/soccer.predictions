@@ -20,7 +20,8 @@ export const pageMeta: Record<string, PageMeta> = {
   },
   '/participants': {
     title: 'Participantes',
-    subtitle: 'Gerencie quem participa dos seus bolões',
+    subtitle:
+      'Gerencie quem participa dos seus bolões — cada linha é uma pessoa em um bolão',
   },
   '/matches': {
     title: 'Jogos',
