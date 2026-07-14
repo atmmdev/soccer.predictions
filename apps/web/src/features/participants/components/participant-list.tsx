@@ -92,15 +92,15 @@ export function ParticipantList() {
     <Card className='overflow-visible shadow-sm'>
       <CardContent className='space-y-4 pt-4'>
         {filters.pendingCount > 0 ? (
-          <div className='flex flex-col gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-zinc-700 sm:flex-row sm:items-center sm:justify-between'>
+          <div className='flex flex-col gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-zinc-700 sm:flex-row sm:items-center sm:justify-between'>
             <p>
               Você tem {filters.pendingCount} pedido(s) de acesso aguardando
               aprovação.
             </p>
             <Button
               type='button'
-              size='sm'
-              variant='outline'
+              size='xs'
+              variant='soft'
               onClick={() => filters.setStatus('PENDING')}
             >
               Ver pendentes
