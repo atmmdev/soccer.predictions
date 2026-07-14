@@ -1,19 +1,43 @@
 'use client';
 
-import { Copy, Link2, Loader2Icon, Search } from 'lucide-react';
+import {
+  Check,
+  CheckCircle2,
+  Clock3,
+  Copy,
+  Link2,
+  Loader2Icon,
+  MoreVertical,
+  Search,
+  Users,
+  X,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ClearFiltersButton } from '@/components/ui/clear-filters-button';
 import {
   DateTimeDisplay,
   dateTimeTableCellClassName,
 } from '@/components/ui/datetime-display';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
 import { PageLoading } from '@/components/ui/page-loading';
+import { StatusBadge } from '@/components/ui/status-badge';
 import {
   Table,
   TableBody,
@@ -22,17 +46,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  filterSearchFieldClassName,
-  filterSelectMdClassName,
-  filterSelectSmClassName,
-  filterToolbarClassName,
-} from '@/lib/filter-styles';
+  lineTabTriggerClassName,
+  lineTabsListClassName,
+} from '@/lib/line-tabs';
 import { buildJoinPoolUrl } from '@/lib/join-pool-url';
+import { cn } from '@/lib/utils';
 
 import {
   useParticipantFilters,
   useParticipants,
+  type ParticipantRoleTab,
 } from '../hooks/use-participants';
 import type { PoolParticipant } from '../types/participant';
 
@@ -41,21 +66,36 @@ function ParticipantStatusBadge({
 }: {
   status: PoolParticipant['status'];
 }) {
-  const label =
-    status === 'ACTIVE'
-      ? 'Ativo'
-      : status === 'PENDING'
-        ? 'Pendente'
-        : 'Inativo';
+  if (status === 'ACTIVE') {
+    return (
+      <StatusBadge tone='success' className='gap-1'>
+        <CheckCircle2 className='size-3' aria-hidden />
+        Ativo
+      </StatusBadge>
+    );
+  }
 
-  const variant =
-    status === 'ACTIVE'
-      ? 'default'
-      : status === 'PENDING'
-        ? 'secondary'
-        : 'outline';
+  if (status === 'PENDING') {
+    return (
+      <StatusBadge tone='warning' className='gap-1'>
+        <Clock3 className='size-3' aria-hidden />
+        Pendente
+      </StatusBadge>
+    );
+  }
 
-  return <Badge variant={variant}>{label}</Badge>;
+  return <StatusBadge tone='neutral'>Inativo</StatusBadge>;
+}
+
+function initialsFromName(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) {
+    return '?';
+  }
+  if (parts.length === 1) {
+    return parts[0]!.slice(0, 1).toUpperCase();
+  }
+  return `${parts[0]!.slice(0, 1)}${parts[parts.length - 1]!.slice(0, 1)}`.toUpperCase();
 }
 
 async function copyInviteLink(inviteCode: string) {
@@ -76,6 +116,21 @@ async function copyInviteCode(inviteCode: string) {
   }
 }
 
+function TabCount({ value, active }: { value: number; active: boolean }) {
+  return (
+    <span
+      className={cn(
+        'ml-1 inline-flex size-5 items-center justify-center rounded-full text-[10px] font-semibold',
+        active
+          ? 'bg-primary text-primary-foreground'
+          : 'bg-muted text-muted-foreground',
+      )}
+    >
+      {value}
+    </span>
+  );
+}
+
 export function ParticipantList() {
   const {
     participants,
@@ -87,6 +142,18 @@ export function ParticipantList() {
     rejectParticipant,
   } = useParticipants();
   const filters = useParticipantFilters(participants);
+
+  const accordionKey = [
+    filters.search,
+    filters.roleTab,
+    filters.sort,
+    filters.status,
+    filters.groupedParticipants.map(group => group.userId).join(','),
+  ].join('|');
+
+  const defaultOpenUserIds = filters.groupedParticipants
+    .filter(group => group.pendingCount > 0)
+    .map(group => String(group.userId));
 
   return (
     <Card className='overflow-visible shadow-sm'>
@@ -108,58 +175,88 @@ export function ParticipantList() {
           </div>
         ) : null}
 
-        <div className={filterToolbarClassName}>
-          <div className={filterSearchFieldClassName}>
-            <Search className='text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2' />
-            <Input
-              placeholder='Buscar por nome, e-mail ou bolão...'
-              className='pl-9'
-              value={filters.search}
-              onChange={event => filters.setSearch(event.target.value)}
-            />
+        <div className='flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between'>
+          <Tabs
+            value={filters.roleTab}
+            onValueChange={value =>
+              filters.setRoleTab(value as ParticipantRoleTab)
+            }
+          >
+            <TabsList variant='line' className={lineTabsListClassName}>
+              <TabsTrigger
+                value='ALL'
+                className={cn(lineTabTriggerClassName, 'items-center gap-1.5')}
+              >
+                Todos
+                <TabCount
+                  value={filters.tabCounts.all}
+                  active={filters.roleTab === 'ALL'}
+                />
+              </TabsTrigger>
+              <TabsTrigger
+                value='OWNER'
+                className={cn(lineTabTriggerClassName, 'items-center gap-1.5')}
+              >
+                Sou dono
+                <TabCount
+                  value={filters.tabCounts.owner}
+                  active={filters.roleTab === 'OWNER'}
+                />
+              </TabsTrigger>
+              <TabsTrigger
+                value='MEMBER'
+                className={cn(lineTabTriggerClassName, 'items-center gap-1.5')}
+              >
+                Participo
+                <TabCount
+                  value={filters.tabCounts.member}
+                  active={filters.roleTab === 'MEMBER'}
+                />
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          <div className='flex flex-col gap-2 sm:flex-row sm:items-center'>
+            <div className='relative min-w-0 flex-1 sm:w-56'>
+              <Search className='text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2' />
+              <Input
+                placeholder='Buscar participantes...'
+                className='pl-9'
+                value={filters.search}
+                onChange={event => filters.setSearch(event.target.value)}
+              />
+            </div>
+            <NativeSelect
+              value={filters.sort}
+              onChange={event =>
+                filters.setSort(
+                  event.target.value as 'recent' | 'name-asc' | 'name-desc',
+                )
+              }
+              className='w-full sm:w-40'
+            >
+              <option value='recent'>Mais recentes</option>
+              <option value='name-asc'>Nome A–Z</option>
+              <option value='name-desc'>Nome Z–A</option>
+            </NativeSelect>
           </div>
-          <NativeSelect
-            value={filters.poolName}
-            onChange={event => filters.setPoolName(event.target.value)}
-            className={filterSelectMdClassName}
-          >
-            <option value='ALL'>Todos os bolões</option>
-            {filters.poolOptions.map(pool => (
-              <option key={pool} value={pool}>
-                {pool}
-              </option>
-            ))}
-          </NativeSelect>
-          <NativeSelect
-            value={filters.status}
-            onChange={event => filters.setStatus(event.target.value)}
-            className={filterSelectSmClassName}
-          >
-            <option value='ALL'>Todos os status</option>
-            <option value='ACTIVE'>Ativos</option>
-            <option value='PENDING'>Pendentes</option>
-            <option value='INACTIVE'>Inativos</option>
-          </NativeSelect>
-          <ClearFiltersButton
-            onClick={filters.clearFilters}
-            disabled={!filters.hasActiveFilters}
-            className='w-full sm:w-auto'
-          />
         </div>
 
-        <p className='text-muted-foreground px-1 text-xs'>
-          {filters.summary.people}{' '}
-          {filters.summary.people === 1 ? 'participante' : 'participantes'} ·{' '}
-          {filters.summary.pools}{' '}
-          {filters.summary.pools === 1 ? 'bolão' : 'bolões'}
-          {/* ·{' '} {filters.summary.memberships}{' '}
-          {filters.summary.memberships === 1
-            ? 'participação'
-            : 'participações'}
-          {filters.summary.memberships !== filters.summary.people
-            ? ' (a mesma pessoa pode aparecer em mais de um bolão)'
-            : ''} */}
-        </p>
+        {filters.status !== 'ALL' ? (
+          <div className='flex items-center gap-2 px-1'>
+            <Badge variant='secondary'>
+              Filtro: {filters.status === 'PENDING' ? 'Pendentes' : filters.status === 'ACTIVE' ? 'Ativos' : 'Inativos'}
+            </Badge>
+            <Button
+              type='button'
+              size='xs'
+              variant='ghost'
+              onClick={() => filters.setStatus('ALL')}
+            >
+              Limpar
+            </Button>
+          </div>
+        ) : null}
 
         {isLoading ? (
           <PageLoading compact label='Carregando participantes...' />
@@ -174,123 +271,261 @@ export function ParticipantList() {
               Tentar novamente
             </button>
           </div>
-        ) : filters.filteredParticipants.length === 0 ? (
+        ) : filters.groupedParticipants.length === 0 ? (
           <div className='flex items-center justify-center py-12'>
             <p className='text-muted-foreground text-sm'>
               Nenhum participante encontrado.
             </p>
           </div>
         ) : (
-          <div className='overflow-x-auto'>
-            <Table>
-              <TableHeader>
-                <TableRow className='hover:bg-transparent'>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>E-mail</TableHead>
-                  <TableHead>Bolão</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className='text-center'>Palpites</TableHead>
-                  <TableHead>Entrada</TableHead>
-                  <TableHead className='text-right'>Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filters.filteredParticipants.map(participant => {
-                  const actionKey = `${participant.poolId}:${participant.userId}`;
-                  const isActing = actingKey === actionKey;
+          <Accordion
+            key={accordionKey}
+            type='multiple'
+            defaultValue={defaultOpenUserIds}
+            className='gap-3'
+          >
+            {filters.groupedParticipants.map(group => {
+              const value = String(group.userId);
+              const poolsLabel =
+                group.memberships.length === 1
+                  ? '1 bolão'
+                  : `${group.memberships.length} bolões`;
 
-                  return (
-                    <TableRow key={participant.id}>
-                      <TableCell className='font-medium'>
-                        {participant.name}
-                        {participant.isOwner ? (
-                          <Badge variant='outline' className='ml-2 text-xs'>
-                            Dono
+              return (
+                <AccordionItem
+                  key={value}
+                  value={value}
+                  className={cn(
+                    'rounded-xl border bg-card px-3 shadow-sm transition-colors not-last:border-b-0',
+                    'data-open:border-primary data-open:ring-1 data-open:ring-primary/25',
+                  )}
+                >
+                  <AccordionTrigger className='items-center gap-2 py-3.5 hover:no-underline'>
+                    <div className='flex min-w-0 flex-1 items-center gap-3 pr-2'>
+                      <Avatar size='default' className='bg-primary/10'>
+                        <AvatarFallback className='bg-primary/10 text-xs font-semibold text-primary'>
+                          {initialsFromName(group.name)}
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div className='min-w-0 flex-1 text-left'>
+                        <div className='flex flex-wrap items-center gap-2'>
+                          <span className='truncate font-semibold text-zinc-900'>
+                            {group.name}
+                          </span>
+                          {group.isOwnerAnywhere ? (
+                            <Badge
+                              variant='secondary'
+                              className='bg-primary/10 text-primary'
+                            >
+                              Dono
+                            </Badge>
+                          ) : null}
+                          <Badge variant='outline' className='font-normal'>
+                            {poolsLabel}
                           </Badge>
-                        ) : null}
-                      </TableCell>
-                      <TableCell>{participant.email}</TableCell>
-                      <TableCell>{participant.poolName}</TableCell>
-                      <TableCell>
-                        <ParticipantStatusBadge status={participant.status} />
-                      </TableCell>
-                      <TableCell className='text-center'>
-                        {participant.predictionsCount}
-                      </TableCell>
-                      <TableCell className={dateTimeTableCellClassName}>
-                        <DateTimeDisplay value={participant.joinedAt} />
-                      </TableCell>
-                      <TableCell className='text-right'>
-                        {participant.status === 'PENDING' &&
-                        !participant.isOwner ? (
-                          <div className='flex justify-end gap-1'>
-                            <Button
-                              type='button'
-                              size='sm'
-                              disabled={isActing || actingKey !== null}
-                              onClick={() =>
-                                void approveParticipant(
-                                  participant.poolId,
-                                  participant.userId,
-                                )
-                              }
-                            >
-                              {isActing ? (
-                                <Loader2Icon
-                                  className='size-4 animate-spin'
-                                  aria-hidden
-                                />
-                              ) : null}
-                              Aprovar
-                            </Button>
-                            <Button
-                              type='button'
-                              size='sm'
-                              variant='outline'
-                              disabled={isActing || actingKey !== null}
-                              onClick={() =>
-                                void rejectParticipant(
-                                  participant.poolId,
-                                  participant.userId,
-                                )
-                              }
-                            >
-                              Recusar
-                            </Button>
-                          </div>
-                        ) : (
-                          <div className='flex justify-end gap-1'>
-                            <Button
-                              type='button'
-                              size='icon'
-                              variant='ghost'
-                              title='Copiar link'
-                              onClick={() =>
-                                void copyInviteLink(participant.inviteCode)
-                              }
-                            >
-                              <Link2 className='size-4' />
-                            </Button>
-                            <Button
-                              type='button'
-                              size='icon'
-                              variant='ghost'
-                              title='Copiar código'
-                              onClick={() =>
-                                void copyInviteCode(participant.inviteCode)
-                              }
-                            >
-                              <Copy className='size-4' />
-                            </Button>
-                          </div>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
+                        </div>
+                        <p className='text-muted-foreground truncate text-xs font-normal'>
+                          {group.email}
+                        </p>
+                      </div>
+                    </div>
+                  </AccordionTrigger>
+
+                  <AccordionContent className='pb-3'>
+                    <div className='overflow-x-auto rounded-lg border bg-zinc-50/70'>
+                      <Table>
+                        <TableHeader>
+                          <TableRow className='hover:bg-transparent'>
+                            <TableHead className='text-[11px] tracking-wide uppercase'>
+                              Bolão
+                            </TableHead>
+                            <TableHead className='text-[11px] tracking-wide uppercase'>
+                              Status
+                            </TableHead>
+                            <TableHead className='text-center text-[11px] tracking-wide uppercase'>
+                              Palpites
+                            </TableHead>
+                            <TableHead className='text-[11px] tracking-wide uppercase'>
+                              Entrada
+                            </TableHead>
+                            <TableHead className='text-right text-[11px] tracking-wide uppercase'>
+                              Ações
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {group.memberships.map(participant => {
+                            const actionKey = `${participant.poolId}:${participant.userId}`;
+                            const isActing = actingKey === actionKey;
+                            const canModerate =
+                              participant.status === 'PENDING' &&
+                              !participant.isOwner;
+
+                            return (
+                              <TableRow
+                                key={participant.id}
+                                className='bg-transparent'
+                              >
+                                <TableCell>
+                                  <div className='flex items-center gap-2 font-medium'>
+                                    <Users
+                                      className='text-muted-foreground size-4 shrink-0'
+                                      aria-hidden
+                                    />
+                                    <span>{participant.poolName}</span>
+                                    {participant.isOwner ? (
+                                      <Badge
+                                        variant='secondary'
+                                        className='bg-primary/10 text-xs text-primary'
+                                      >
+                                        Dono
+                                      </Badge>
+                                    ) : null}
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <ParticipantStatusBadge
+                                    status={participant.status}
+                                  />
+                                </TableCell>
+                                <TableCell className='text-center tabular-nums'>
+                                  {participant.predictionsCount}
+                                </TableCell>
+                                <TableCell
+                                  className={dateTimeTableCellClassName}
+                                >
+                                  <DateTimeDisplay
+                                    value={participant.joinedAt}
+                                  />
+                                </TableCell>
+                                <TableCell className='text-right'>
+                                  <div className='flex items-center justify-end gap-1'>
+                                    {canModerate ? (
+                                      <>
+                                        <Button
+                                          type='button'
+                                          size='sm'
+                                          disabled={
+                                            isActing || actingKey !== null
+                                          }
+                                          onClick={() =>
+                                            void approveParticipant(
+                                              participant.poolId,
+                                              participant.userId,
+                                            )
+                                          }
+                                        >
+                                          {isActing ? (
+                                            <Loader2Icon
+                                              className='size-4 animate-spin'
+                                              aria-hidden
+                                            />
+                                          ) : (
+                                            <Check
+                                              className='size-4'
+                                              aria-hidden
+                                            />
+                                          )}
+                                          Aprovar
+                                        </Button>
+                                        <Button
+                                          type='button'
+                                          size='sm'
+                                          variant='outline'
+                                          className='text-destructive hover:text-destructive'
+                                          disabled={
+                                            isActing || actingKey !== null
+                                          }
+                                          onClick={() =>
+                                            void rejectParticipant(
+                                              participant.poolId,
+                                              participant.userId,
+                                            )
+                                          }
+                                        >
+                                          <X className='size-4' aria-hidden />
+                                          Recusar
+                                        </Button>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Button
+                                          type='button'
+                                          size='icon-sm'
+                                          variant='ghost'
+                                          title='Copiar link'
+                                          onClick={() =>
+                                            void copyInviteLink(
+                                              participant.inviteCode,
+                                            )
+                                          }
+                                        >
+                                          <Link2 className='size-4' />
+                                        </Button>
+                                        <Button
+                                          type='button'
+                                          size='icon-sm'
+                                          variant='ghost'
+                                          title='Copiar código'
+                                          onClick={() =>
+                                            void copyInviteCode(
+                                              participant.inviteCode,
+                                            )
+                                          }
+                                        >
+                                          <Copy className='size-4' />
+                                        </Button>
+                                      </>
+                                    )}
+
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <Button
+                                          type='button'
+                                          size='icon-sm'
+                                          variant='ghost'
+                                          aria-label='Mais ações'
+                                        >
+                                          <MoreVertical className='size-4' />
+                                        </Button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align='end'>
+                                        <DropdownMenuItem
+                                          onClick={() =>
+                                            void copyInviteLink(
+                                              participant.inviteCode,
+                                            )
+                                          }
+                                        >
+                                          <Link2 />
+                                          Copiar link do bolão
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                          onClick={() =>
+                                            void copyInviteCode(
+                                              participant.inviteCode,
+                                            )
+                                          }
+                                        >
+                                          <Copy />
+                                          Copiar código
+                                        </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
+          </Accordion>
         )}
       </CardContent>
     </Card>

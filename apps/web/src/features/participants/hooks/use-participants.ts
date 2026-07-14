@@ -115,6 +115,80 @@ export function useParticipants() {
   };
 }
 
+export type ParticipantRoleTab = 'ALL' | 'OWNER' | 'MEMBER';
+export type ParticipantSort = 'recent' | 'name-asc' | 'name-desc';
+
+export type ParticipantGroup = {
+  userId: number;
+  name: string;
+  email: string;
+  memberships: PoolParticipant[];
+  pendingCount: number;
+  isOwnerAnywhere: boolean;
+  latestJoinedAt: string;
+};
+
+function groupParticipants(
+  items: PoolParticipant[],
+): ParticipantGroup[] {
+  const byUser = new Map<number, ParticipantGroup>();
+
+  for (const participant of items) {
+    const existing = byUser.get(participant.userId);
+    if (existing) {
+      existing.memberships.push(participant);
+      if (participant.status === 'PENDING') {
+        existing.pendingCount += 1;
+      }
+      if (participant.isOwner) {
+        existing.isOwnerAnywhere = true;
+      }
+      if (participant.joinedAt > existing.latestJoinedAt) {
+        existing.latestJoinedAt = participant.joinedAt;
+      }
+      continue;
+    }
+
+    byUser.set(participant.userId, {
+      userId: participant.userId,
+      name: participant.name,
+      email: participant.email,
+      memberships: [participant],
+      pendingCount: participant.status === 'PENDING' ? 1 : 0,
+      isOwnerAnywhere: participant.isOwner,
+      latestJoinedAt: participant.joinedAt,
+    });
+  }
+
+  return [...byUser.values()].map(group => ({
+    ...group,
+    memberships: [...group.memberships].sort((a, b) => {
+      if (a.status === 'PENDING' && b.status !== 'PENDING') return -1;
+      if (a.status !== 'PENDING' && b.status === 'PENDING') return 1;
+      return a.poolName.localeCompare(b.poolName, 'pt-BR');
+    }),
+  }));
+}
+
+function sortGroups(
+  groups: ParticipantGroup[],
+  sort: ParticipantSort,
+): ParticipantGroup[] {
+  return [...groups].sort((a, b) => {
+    if (sort === 'recent') {
+      if (a.pendingCount > 0 && b.pendingCount === 0) return -1;
+      if (a.pendingCount === 0 && b.pendingCount > 0) return 1;
+      return b.latestJoinedAt.localeCompare(a.latestJoinedAt);
+    }
+
+    if (sort === 'name-desc') {
+      return b.name.localeCompare(a.name, 'pt-BR');
+    }
+
+    return a.name.localeCompare(b.name, 'pt-BR');
+  });
+}
+
 export function useParticipantFilters(participants: PoolParticipant[]) {
   const pendingCount = useMemo(
     () => participants.filter(item => item.status === 'PENDING').length,
@@ -122,71 +196,111 @@ export function useParticipantFilters(participants: PoolParticipant[]) {
   );
 
   const [search, setSearch] = useState('');
-  const [poolName, setPoolName] = useState('ALL');
+  const [roleTab, setRoleTab] = useState<ParticipantRoleTab>('ALL');
+  const [sort, setSort] = useState<ParticipantSort>('recent');
   const [status, setStatus] = useState('ALL');
 
-  const poolOptions = useMemo(
-    () => [...new Set(participants.map(item => item.poolName))].sort(),
-    [participants],
-  );
-
-  const filteredParticipants = useMemo(() => {
+  const searchedParticipants = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    return participants.filter(participant => {
-      if (poolName !== 'ALL' && participant.poolName !== poolName) {
-        return false;
-      }
+    if (!query) {
+      return participants;
+    }
 
-      if (status !== 'ALL' && participant.status !== status) {
-        return false;
-      }
-
-      if (!query) {
-        return true;
-      }
-
-      return (
+    return participants.filter(
+      participant =>
         participant.name.toLowerCase().includes(query) ||
         participant.email.toLowerCase().includes(query) ||
-        participant.poolName.toLowerCase().includes(query)
-      );
+        participant.poolName.toLowerCase().includes(query),
+    );
+  }, [participants, search]);
+
+  const allGroups = useMemo(
+    () => groupParticipants(searchedParticipants),
+    [searchedParticipants],
+  );
+
+  const tabCounts = useMemo(
+    () => ({
+      all: allGroups.length,
+      owner: allGroups.filter(group => group.isOwnerAnywhere).length,
+      member: allGroups.filter(group => !group.isOwnerAnywhere).length,
+    }),
+    [allGroups],
+  );
+
+  const groupedParticipants = useMemo(() => {
+    const roleFiltered = allGroups.filter(group => {
+      if (roleTab === 'OWNER') {
+        return group.isOwnerAnywhere;
+      }
+      if (roleTab === 'MEMBER') {
+        return !group.isOwnerAnywhere;
+      }
+      return true;
     });
-  }, [participants, poolName, search, status]);
+
+    const statusFiltered =
+      status === 'ALL'
+        ? roleFiltered
+        : roleFiltered
+            .map(group => {
+              const memberships = group.memberships.filter(
+                membership => membership.status === status,
+              );
+
+              return {
+                ...group,
+                memberships,
+                pendingCount: memberships.filter(
+                  membership => membership.status === 'PENDING',
+                ).length,
+              };
+            })
+            .filter(group => group.memberships.length > 0);
+
+    return sortGroups(statusFiltered, sort);
+  }, [allGroups, roleTab, sort, status]);
 
   const summary = useMemo(() => {
-    const uniquePeople = new Set(
-      filteredParticipants.map(item => item.userId),
-    ).size;
+    const memberships = groupedParticipants.reduce(
+      (total, group) => total + group.memberships.length,
+      0,
+    );
     const uniquePools = new Set(
-      filteredParticipants.map(item => item.poolId),
+      groupedParticipants.flatMap(group =>
+        group.memberships.map(item => item.poolId),
+      ),
     ).size;
 
     return {
-      memberships: filteredParticipants.length,
-      people: uniquePeople,
+      memberships,
+      people: groupedParticipants.length,
       pools: uniquePools,
     };
-  }, [filteredParticipants]);
+  }, [groupedParticipants]);
 
   const hasActiveFilters =
-    search.trim().length > 0 || poolName !== 'ALL' || status !== 'ALL';
+    search.trim().length > 0 || roleTab !== 'ALL' || status !== 'ALL';
 
   const clearFilters = useCallback(() => {
     setSearch('');
-    setPoolName('ALL');
+    setRoleTab('ALL');
     setStatus('ALL');
+    setSort('recent');
   }, []);
 
   return {
     search,
     setSearch,
-    poolName,
-    setPoolName,
+    roleTab,
+    setRoleTab,
+    sort,
+    setSort,
     status,
     setStatus,
-    poolOptions,
-    filteredParticipants,
+    tabCounts,
+    groupedParticipants,
     summary,
     hasActiveFilters,
     clearFilters,
