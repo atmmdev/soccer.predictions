@@ -27,7 +27,6 @@ interface MatchFiltersProps {
   dateTo: string;
   onDateToChange: (value: string) => void;
   championshipOptions: string[];
-  resultCount: number;
   hasActiveFilters: boolean;
   onClearFilters: () => void;
 }
@@ -44,7 +43,6 @@ export function MatchFilters({
   dateTo,
   onDateToChange,
   championshipOptions,
-  resultCount,
   hasActiveFilters,
   onClearFilters,
 }: MatchFiltersProps) {

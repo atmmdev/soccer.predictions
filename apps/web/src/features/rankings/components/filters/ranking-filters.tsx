@@ -23,7 +23,6 @@ interface RankingFiltersProps {
   scoringRule: RankingScoringRuleFilter;
   onScoringRuleChange: (value: RankingScoringRuleFilter) => void;
   championshipName: string | null;
-  resultCount: number;
   isPoolSelected: boolean;
   hasActiveFilters: boolean;
   onClearFilters: () => void;
@@ -38,7 +37,6 @@ export function RankingFilters({
   scoringRule,
   onScoringRuleChange,
   championshipName,
-  resultCount,
   isPoolSelected,
   hasActiveFilters,
   onClearFilters,

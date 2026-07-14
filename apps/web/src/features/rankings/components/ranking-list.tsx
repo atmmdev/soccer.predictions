@@ -33,7 +33,6 @@ export function RankingList() {
         scoringRule={searchFilters.scoringRule}
         onScoringRuleChange={searchFilters.setScoringRule}
         championshipName={searchFilters.selectedChampionshipName}
-        resultCount={tableState.rows.length}
         isPoolSelected={searchFilters.isPoolSelected}
         hasActiveFilters={searchFilters.hasActiveFilters}
         onClearFilters={searchFilters.clearFilters}

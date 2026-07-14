@@ -104,15 +104,6 @@ export function useDashboardData() {
     [ownFixtures],
   );
 
-  const allMatches = useMemo(
-    () =>
-      [...upcomingFixtures]
-        .sort(compareFixturesForDashboard)
-        .slice(0, MATCHES_LIMIT)
-        .map(mapPredictionToDashboardMatch),
-    [upcomingFixtures],
-  );
-
   const matchCounts = useMemo(() => {
     const live = ownFixtures.filter(
       fixture => fixture.matchStatus === 'LIVE',
@@ -244,7 +235,6 @@ export function useDashboardData() {
     stats,
     topRanking,
     activePools,
-    allMatches,
     matchCounts,
     filterMatches,
     reload: () => {

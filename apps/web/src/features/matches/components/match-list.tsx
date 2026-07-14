@@ -1,6 +1,5 @@
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
 import { ListPagination } from '@/components/ui/list-pagination';
 import { PageLoading } from '@/components/ui/page-loading';
 import { useClientPagination } from '@/hooks/use-client-pagination';
@@ -36,7 +35,6 @@ export function MatchList() {
         dateTo={searchFilters.dateTo}
         onDateToChange={searchFilters.setDateTo}
         championshipOptions={searchFilters.championshipOptions}
-        resultCount={searchFilters.filteredFixtures.length}
         hasActiveFilters={searchFilters.hasActiveFilters}
         onClearFilters={searchFilters.clearFilters}
       />

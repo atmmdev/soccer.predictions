@@ -2,7 +2,6 @@
 
 import { useCallback, useMemo, useState } from 'react';
 
-import { SCORING_ACHIEVEMENT_LABELS } from '../constants/scoring-rule-filters';
 import type {
   RankingEntry,
   RankingScoringRuleFilter,
@@ -65,9 +64,6 @@ export function useRankingSearchFilters(entries: RankingEntry[]) {
     );
   }, [entries, isPoolSelected, poolName]);
 
-  const activeScoringRuleLabel =
-    scoringRule === 'ALL' ? null : SCORING_ACHIEVEMENT_LABELS[scoringRule];
-
   return {
     search,
     setSearch,
@@ -77,7 +73,6 @@ export function useRankingSearchFilters(entries: RankingEntry[]) {
     setScoringRule,
     poolOptions,
     selectedChampionshipName,
-    activeScoringRuleLabel,
     filteredEntries,
     isPoolSelected,
     hasActiveFilters,

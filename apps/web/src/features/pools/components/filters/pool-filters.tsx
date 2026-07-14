@@ -13,7 +13,6 @@ interface PoolFiltersProps {
   onSearchChange: (value: string) => void;
   status: string;
   onStatusChange: (value: string) => void;
-  resultCount: number;
   hasActiveFilters: boolean;
   onClearFilters: () => void;
   onCreatePool: (data: CreatePoolFormData) => boolean | Promise<boolean>;
@@ -24,7 +23,6 @@ export function PoolFilters({
   onSearchChange,
   status,
   onStatusChange,
-  resultCount,
   hasActiveFilters,
   onClearFilters,
   onCreatePool,
