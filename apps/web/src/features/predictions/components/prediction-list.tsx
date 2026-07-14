@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 
-import { Card, CardContent } from '@/components/ui/card';
 import { ListPagination } from '@/components/ui/list-pagination';
 import { PageLoading } from '@/components/ui/page-loading';
 import { useClientPagination } from '@/hooks/use-client-pagination';
@@ -80,65 +79,63 @@ export function PredictionList() {
 
   return (
     <>
-      <Card className='min-w-0 overflow-hidden shadow-sm'>
-        <CardContent className='min-w-0 space-y-4 pt-4'>
-          <PredictionFilters
-            search={searchFilters.search}
-            onSearchChange={searchFilters.setSearch}
-            status={searchFilters.status}
-            onStatusChange={searchFilters.setStatus}
-            poolName={searchFilters.poolName}
-            onPoolNameChange={searchFilters.setPoolName}
-            poolOptions={searchFilters.poolOptions}
-            showDateFilter={searchFilters.enableDateFilter}
-            selectedDate={searchFilters.selectedDate}
-            onSelectedDateChange={searchFilters.setSelectedDate}
-            showParticipantFilter={searchFilters.enableParticipantFilter}
-            participantSearch={searchFilters.participantSearch}
-            onParticipantSearchChange={searchFilters.setParticipantSearch}
-            resultCount={searchFilters.filteredFixtures.length}
-            hasActiveFilters={searchFilters.hasActiveFilters}
-            onClearFilters={searchFilters.clearFilters}
-          />
-          {isLoading ? (
-            <PageLoading compact label='Carregando palpites...' />
-          ) : error ? (
-            <div className='flex flex-col items-center justify-center gap-3 py-12'>
-              <p className='text-destructive text-sm text-center'>{error}</p>
-              <button
-                type='button'
-                className='text-primary text-sm underline'
-                onClick={() => void reloadFixtures()}
-              >
-                Tentar novamente
-              </button>
-            </div>
-          ) : searchFilters.filteredFixtures.length === 0 ? (
-            <div className='flex items-center justify-center py-12'>
-              <p className='text-muted-foreground text-sm text-center'>
-                Nenhum jogo encontrado com os filtros selecionados.
-                <br />
-                Tente limpar a busca e usar &quot;Todos&quot; nos filtros de bolão e
-                palpite.
-              </p>
-            </div>
-          ) : (
-            <>
-              <PredictionMobileList
-                rows={pagination.pageItems}
-                onPredict={handlePredict}
-                onViewAllPredictions={handleViewAllPredictions}
-              />
-              <PredictionTable
-                rows={pagination.pageItems}
-                onPredict={handlePredict}
-                onViewAllPredictions={handleViewAllPredictions}
-              />
-              <ListPagination pagination={pagination} itemLabel='jogos' />
-            </>
-          )}
-        </CardContent>
-      </Card>
+      <div className='flex min-w-0 flex-col gap-4'>
+        <PredictionFilters
+          search={searchFilters.search}
+          onSearchChange={searchFilters.setSearch}
+          status={searchFilters.status}
+          onStatusChange={searchFilters.setStatus}
+          poolName={searchFilters.poolName}
+          onPoolNameChange={searchFilters.setPoolName}
+          poolOptions={searchFilters.poolOptions}
+          showDateFilter={searchFilters.enableDateFilter}
+          selectedDate={searchFilters.selectedDate}
+          onSelectedDateChange={searchFilters.setSelectedDate}
+          showParticipantFilter={searchFilters.enableParticipantFilter}
+          participantSearch={searchFilters.participantSearch}
+          onParticipantSearchChange={searchFilters.setParticipantSearch}
+          hasActiveFilters={searchFilters.hasActiveFilters}
+          onClearFilters={searchFilters.clearFilters}
+        />
+
+        {isLoading ? (
+          <PageLoading compact label='Carregando palpites...' />
+        ) : error ? (
+          <div className='flex flex-col items-center justify-center gap-3 py-12'>
+            <p className='text-destructive text-center text-sm'>{error}</p>
+            <button
+              type='button'
+              className='text-primary text-sm underline'
+              onClick={() => void reloadFixtures()}
+            >
+              Tentar novamente
+            </button>
+          </div>
+        ) : searchFilters.filteredFixtures.length === 0 ? (
+          <div className='flex items-center justify-center py-12'>
+            <p className='text-muted-foreground text-center text-sm'>
+              Nenhum jogo encontrado com os filtros selecionados.
+              <br />
+              Tente limpar a busca e usar &quot;Todos&quot; nos filtros de bolão e
+              palpite.
+            </p>
+          </div>
+        ) : (
+          <>
+            <PredictionMobileList
+              rows={pagination.pageItems}
+              onPredict={handlePredict}
+              onViewAllPredictions={handleViewAllPredictions}
+            />
+            <PredictionTable
+              rows={pagination.pageItems}
+              onPredict={handlePredict}
+              onViewAllPredictions={handleViewAllPredictions}
+            />
+            <ListPagination pagination={pagination} itemLabel='jogos' />
+          </>
+        )}
+      </div>
 
       <SubmitPredictionDialog
         fixture={selectedFixture}

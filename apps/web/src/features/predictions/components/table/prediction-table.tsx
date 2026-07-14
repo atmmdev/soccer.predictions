@@ -36,27 +36,37 @@ export function PredictionTable({
 
   return (
     <div className='hidden min-w-0 overflow-hidden xl:block [&_[data-slot=table-container]]:overflow-x-hidden [&_[data-slot=table-head]]:px-1.5 [&_[data-slot=table-cell]]:px-1.5'>
-      <Table className='table-fixed'>
+      <Table className='table-fixed border border-gray-200 bg-white'>
         <TableHeader>
           <TableRow className='hover:bg-transparent'>
-            <TableHead className={predictionTableHeadClass('w-[6.5rem]')}>Data</TableHead>
-            <TableHead className={predictionTableHeadClass('min-w-[9rem]')}>Jogo</TableHead>
+            <TableHead
+              className={predictionTableHeadClass('w-[6.5rem] text-center')}
+            >
+              Data
+            </TableHead>
+            <TableHead
+              className={predictionTableHeadClass('min-w-[9rem] text-center')}
+            >
+              Jogo
+            </TableHead>
             <TableHead
               className={predictionTableHeadClass(
-                predictionTableColumns.championship,
+                `${predictionTableColumns.championship} text-center`,
               )}
             >
               Campeonato
             </TableHead>
             <TableHead
-              className={predictionTableHeadClass(predictionTableColumns.pool)}
+              className={predictionTableHeadClass(
+                `${predictionTableColumns.pool} text-center`,
+              )}
             >
               Bolão
             </TableHead>
             {showParticipantColumn ? (
               <TableHead
                 className={predictionTableHeadClass(
-                  predictionTableColumns.participant,
+                  `${predictionTableColumns.participant} text-center`,
                 )}
               >
                 Participante
@@ -83,10 +93,16 @@ export function PredictionTable({
             >
               Resultado Oficial
             </TableHead>
-            <TableHead className={predictionTableHeadClass('w-[5rem] text-center')}>
+            <TableHead
+              className={predictionTableHeadClass('w-[5rem] text-center')}
+            >
               Palpite
             </TableHead>
-            <TableHead className={predictionTableHeadClass('w-[6.5rem]')}>Status</TableHead>
+            <TableHead
+              className={predictionTableHeadClass('w-[6.5rem] text-center')}
+            >
+              Status
+            </TableHead>
             <TableHead
               className={predictionTableHeadClass(
                 `${predictionTableColumns.points} text-center`,
@@ -101,7 +117,9 @@ export function PredictionTable({
             >
               Prazo
             </TableHead>
-            <TableHead className={predictionTableHeadClass('w-[8.5rem] text-right')}>
+            <TableHead
+              className={predictionTableHeadClass('w-[8.5rem] text-right')}
+            >
               Ações
             </TableHead>
           </TableRow>

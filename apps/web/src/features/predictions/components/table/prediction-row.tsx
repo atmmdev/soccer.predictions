@@ -1,9 +1,9 @@
 'use client';
 
-import { Pencil, Target } from 'lucide-react';
+import { Ban, Eye, Lock, Pencil, Target } from 'lucide-react';
 
 import { StatusBadge } from '@/components/ui/status-badge';
-import { TableActionBadge } from '@/components/ui/table-action-badge';
+import { IconActionButton } from '@/components/ui/icon-action-button';
 import {
   ScoreStack,
   PointsBadge,
@@ -25,7 +25,6 @@ import {
   getPredictionActionLabel,
   getPredictionStatusLabel,
   getPredictionUiState,
-  predictionActionTone,
   predictionStatusTone,
 } from '../../utils/prediction-ui-state';
 import { canEditPrediction } from '../../utils/prediction-window';
@@ -51,12 +50,9 @@ export function PredictionRow({
   const canEdit =
     fixture.isOwnPrediction && canEditPrediction(fixture, now);
   const statusTone = predictionStatusTone[uiState];
-  const actionTone = predictionActionTone[uiState];
   const actionLabel = fixture.isOwnPrediction
     ? getPredictionActionLabel(uiState, hasPrediction)
     : '—';
-  const ActionIcon =
-    canEdit && hasPrediction ? Pencil : canEdit ? Target : undefined;
   const officialScores = getOfficialScoresFromFixture(fixture);
   const predictionScores = getPredictionScoresFromFixture(fixture.prediction);
   const hasOfficial = hasCompleteScore(officialScores);
@@ -65,7 +61,7 @@ export function PredictionRow({
 
   return (
     <TableRow>
-      <TableCell className={dateTimeTableCellClassName}>
+      <TableCell className={`${dateTimeTableCellClassName} text-center`}>
         <DateTimeDisplay value={fixture.date} />
       </TableCell>
       <TableCell className='max-w-[9rem] text-xs whitespace-normal xl:max-w-[10rem] 2xl:max-w-none'>
@@ -77,20 +73,20 @@ export function PredictionRow({
         />
       </TableCell>
       <TableCell
-        className={`text-muted-foreground max-w-[7rem] truncate text-xs ${predictionTableColumns.championship}`}
+        className={`text-muted-foreground max-w-[7rem] truncate text-center text-xs ${predictionTableColumns.championship}`}
         title={fixture.championshipName}
       >
         {fixture.championshipName}
       </TableCell>
       <TableCell
-        className={`text-muted-foreground max-w-[6rem] truncate text-xs ${predictionTableColumns.pool}`}
+        className={`text-muted-foreground max-w-[6rem] truncate text-center text-xs ${predictionTableColumns.pool}`}
         title={fixture.poolName}
       >
         {fixture.poolName}
       </TableCell>
       {showParticipantColumn ? (
         <TableCell
-          className={`max-w-[7rem] truncate text-xs font-medium ${predictionTableColumns.participant}`}
+          className={`max-w-[7rem] truncate text-center text-xs font-medium ${predictionTableColumns.participant}`}
           title={fixture.participantName}
         >
           {fixture.participantName}
@@ -126,7 +122,7 @@ export function PredictionRow({
           <span className='text-base font-bold text-muted-foreground'>—</span>
         )}
       </TableCell>
-      <TableCell>
+      <TableCell className='text-center'>
         <StatusBadge tone={statusTone}>
           {getPredictionStatusLabel(uiState)}
         </StatusBadge>
@@ -143,23 +139,39 @@ export function PredictionRow({
         <PredictionCountdown fixture={fixture} now={now} />
       </TableCell>
       <TableCell className='text-right'>
-        <div className='flex flex-col items-end gap-1.5'>
-          <button
-            type='button'
-            className='text-primary text-xs hover:underline'
+        <div className='flex items-center justify-end gap-0.5'>
+          <IconActionButton
+            label='Ver palpites'
+            tone='link'
             onClick={() => onViewAllPredictions(fixture)}
           >
-            Ver palpites
-          </button>
+            <Eye className='size-4' />
+          </IconActionButton>
           {fixture.isOwnPrediction ? (
-            <TableActionBadge
-              tone={actionTone}
-              icon={ActionIcon}
+            <IconActionButton
+              label={actionLabel}
+              tone={
+                canEdit
+                  ? hasPrediction
+                    ? 'edit'
+                    : 'success'
+                  : uiState === 'FINISHED'
+                    ? 'mute'
+                    : 'danger'
+              }
               disabled={!canEdit}
               onClick={() => onPredict(fixture)}
             >
-              {actionLabel}
-            </TableActionBadge>
+              {canEdit && hasPrediction ? (
+                <Pencil className='size-4' />
+              ) : canEdit ? (
+                <Target className='size-4' />
+              ) : uiState === 'FINISHED' ? (
+                <Lock className='size-4' />
+              ) : (
+                <Ban className='size-4' />
+              )}
+            </IconActionButton>
           ) : null}
         </div>
       </TableCell>

@@ -1,9 +1,9 @@
 'use client';
 
-import { Pencil, Target } from 'lucide-react';
+import { Ban, Eye, Lock, Pencil, Target } from 'lucide-react';
 
 import { StatusBadge } from '@/components/ui/status-badge';
-import { TableActionBadge } from '@/components/ui/table-action-badge';
+import { IconActionButton } from '@/components/ui/icon-action-button';
 import {
   FixtureScoreComparison,
   MatchTeamsStack,
@@ -22,7 +22,6 @@ import {
   getPredictionActionLabel,
   getPredictionStatusLabel,
   getPredictionUiState,
-  predictionActionTone,
   predictionStatusTone,
 } from '../utils/prediction-ui-state';
 import { canEditPrediction } from '../utils/prediction-window';
@@ -47,12 +46,9 @@ export function PredictionMobileCard({
   const canEdit =
     fixture.isOwnPrediction && canEditPrediction(fixture, now);
   const statusTone = predictionStatusTone[uiState];
-  const actionTone = predictionActionTone[uiState];
   const actionLabel = fixture.isOwnPrediction
     ? getPredictionActionLabel(uiState, hasPrediction)
     : '—';
-  const ActionIcon =
-    canEdit && hasPrediction ? Pencil : canEdit ? Target : undefined;
 
   return (
     <article className='border-border space-y-3 rounded-lg border p-4 shadow-sm'>
@@ -116,23 +112,39 @@ export function PredictionMobileCard({
         </div>
       </dl>
 
-      <div className='flex flex-wrap items-center justify-end gap-2'>
-        <button
-          type='button'
-          className='text-primary text-xs hover:underline'
+      <div className='flex items-center justify-end gap-0.5'>
+        <IconActionButton
+          label='Ver palpites'
+          tone='link'
           onClick={() => onViewAllPredictions(fixture)}
         >
-          Ver palpites
-        </button>
+          <Eye className='size-4' />
+        </IconActionButton>
         {fixture.isOwnPrediction ? (
-          <TableActionBadge
-            tone={actionTone}
-            icon={ActionIcon}
+          <IconActionButton
+            label={actionLabel}
+            tone={
+              canEdit
+                ? hasPrediction
+                  ? 'edit'
+                  : 'success'
+                : uiState === 'FINISHED'
+                  ? 'mute'
+                  : 'danger'
+            }
             disabled={!canEdit}
             onClick={() => onPredict(fixture)}
           >
-            {actionLabel}
-          </TableActionBadge>
+            {canEdit && hasPrediction ? (
+              <Pencil className='size-4' />
+            ) : canEdit ? (
+              <Target className='size-4' />
+            ) : uiState === 'FINISHED' ? (
+              <Lock className='size-4' />
+            ) : (
+              <Ban className='size-4' />
+            )}
+          </IconActionButton>
         ) : null}
       </div>
     </article>

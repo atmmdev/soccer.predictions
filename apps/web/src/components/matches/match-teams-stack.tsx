@@ -31,11 +31,7 @@ export function TeamCrest({
   const hasEmoji = Boolean(logo && !hasImage);
 
   return (
-    <span
-      className={
-        className ?? 'inline-flex min-w-0 items-center gap-1.5'
-      }
-    >
+    <span className={className ?? 'inline-flex min-w-0 items-center gap-1.5'}>
       {hasImage ? (
         <img
           src={logo!}
@@ -88,6 +84,8 @@ interface MatchTeamsInlineProps {
   awayTeam: string;
   homeTeamLogo?: string | null;
   awayTeamLogo?: string | null;
+  homeScore?: number | null;
+  awayScore?: number | null;
   className?: string;
   size?: number;
 }
@@ -97,9 +95,22 @@ export function MatchTeamsInline({
   awayTeam,
   homeTeamLogo,
   awayTeamLogo,
+  homeScore = null,
+  awayScore = null,
   className,
   size = 20,
 }: MatchTeamsInlineProps) {
+  const hasScore = homeScore !== null && awayScore !== null;
+  const scoreNode = hasScore ? (
+    <span className='inline-flex items-center gap-1.5 tabular-nums'>
+      <span className='font-semibold text-3xl'>{homeScore}</span>
+      <span className='text-muted-foreground font-normal'>x</span>
+      <span className='font-semibold text-3xl'>{awayScore}</span>
+    </span>
+  ) : (
+    <span className='text-muted-foreground font-normal'>x</span>
+  );
+
   return (
     <div
       className={
@@ -108,7 +119,7 @@ export function MatchTeamsInline({
       }
     >
       <TeamCrest name={homeTeam} logo={homeTeamLogo} size={size} />
-      <span className='text-muted-foreground font-normal'>x</span>
+      {scoreNode}
       <TeamCrest name={awayTeam} logo={awayTeamLogo} size={size} />
     </div>
   );

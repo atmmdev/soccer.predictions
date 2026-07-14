@@ -94,29 +94,36 @@ export function FixturePredictionsDialog({
     };
   }, [fixture, open]);
 
+  const officialScores = fixture
+    ? getOfficialScoresFromFixture(fixture)
+    : { home: null, away: null };
+  const hasOfficial = hasCompleteScore(officialScores);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-w-3xl overflow-visible sm:max-w-3xl'>
-        <DialogHeader>
-          <DialogTitle className='pr-8 leading-snug'>
+      <DialogContent className='w-fit max-w-[calc(100%-2rem)] overflow-visible sm:max-w-none'>
+        <DialogHeader className='gap-3 pr-8'>
+          {fixture ? (
+            <DialogDescription className='text-xs'>
+              {fixture.poolName} · Rodada {fixture.round}
+            </DialogDescription>
+          ) : null}
+          <DialogTitle className='leading-snug'>
             {fixture ? (
               <MatchTeamsInline
                 homeTeam={fixture.homeTeam}
                 awayTeam={fixture.awayTeam}
                 homeTeamLogo={fixture.homeTeamLogo}
                 awayTeamLogo={fixture.awayTeamLogo}
-                className='text-base font-semibold'
+                homeScore={fixture.officialHomeScore}
+                awayScore={fixture.officialAwayScore}
+                className='flex items-center justify-center gap-3 text-base font-semibold'
                 size={22}
               />
             ) : (
               'Palpites do jogo'
             )}
           </DialogTitle>
-          {fixture ? (
-            <DialogDescription>
-              {fixture.poolName} · Rodada {fixture.round}
-            </DialogDescription>
-          ) : null}
         </DialogHeader>
 
         {isLoading ? (
@@ -128,41 +135,36 @@ export function FixturePredictionsDialog({
             Nenhum participante encontrado neste bolão.
           </p>
         ) : (
-          <div className='min-w-0 overflow-hidden [&_[data-slot=table-container]]:overflow-visible [&_[data-slot=table-head]]:px-1 [&_[data-slot=table-cell]]:px-1'>
-            <Table className='table-fixed'>
+          <div className='mx-auto w-fit max-w-full overflow-x-auto'>
+            <Table>
               <TableHeader>
                 <TableRow className='hover:bg-transparent'>
-                  <TableHead className='text-muted-foreground w-[34%] text-xs'>
+                  <TableHead className='text-muted-foreground min-w-[10rem] text-xs'>
                     Participante
                   </TableHead>
-                  <TableHead className='text-muted-foreground w-[10%] text-center text-xs'>
-                    Pos.
+                  <TableHead className='text-muted-foreground px-4 text-center text-xs'>
+                    Posição
                   </TableHead>
-                  <TableHead className='text-muted-foreground w-[14%] text-center text-xs leading-tight whitespace-normal'>
-                    Resultado
-                  </TableHead>
-                  <TableHead className='text-muted-foreground w-[20%] text-center text-xs'>
+                  <TableHead className='text-muted-foreground px-4 text-center text-xs'>
                     Palpite
                   </TableHead>
-                  <TableHead className='text-muted-foreground w-[12%] text-center text-xs'>
+                  <TableHead className='text-muted-foreground px-4 text-center text-xs'>
                     Pts
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {rows.map(row => {
-                  const rowOfficialScores = getOfficialScoresFromFixture(row);
                   const predictionScores = getPredictionScoresFromFixture(
                     row.prediction,
                   );
                   const hasPrediction =
                     predictionScores !== null &&
                     hasCompleteScore(predictionScores);
-                  const rowHasOfficial = hasCompleteScore(rowOfficialScores);
 
                   return (
                     <TableRow key={row.participantId}>
-                      <TableCell className='max-w-0 truncate text-xs font-medium'>
+                      <TableCell className='max-w-[14rem] truncate text-xs font-medium'>
                         <span title={row.participantName}>
                           {row.participantName}
                         </span>
@@ -179,30 +181,23 @@ export function FixturePredictionsDialog({
                         </div>
                       </TableCell>
                       <TableCell className='text-center'>
-                        <ScoreStack
-                          scores={rowOfficialScores}
-                          compareWith={
-                            rowHasOfficial && hasPrediction
-                              ? predictionScores
-                              : undefined
-                          }
-                          highlight={rowHasOfficial && hasPrediction}
-                        />
-                      </TableCell>
-                      <TableCell className='text-center'>
-                        {hasPrediction ? (
+                        <div className='flex justify-center'>
                           <ScoreStack
-                            scores={predictionScores}
-                            compareWith={
-                              rowHasOfficial ? rowOfficialScores : undefined
+                            scores={
+                              predictionScores ?? { home: null, away: null }
                             }
-                            highlight={rowHasOfficial}
+                            compareWith={
+                              hasOfficial && hasPrediction
+                                ? officialScores
+                                : undefined
+                            }
+                            highlight={hasOfficial && hasPrediction}
+                            homeTeam={fixture?.homeTeam}
+                            awayTeam={fixture?.awayTeam}
+                            homeTeamLogo={fixture?.homeTeamLogo}
+                            awayTeamLogo={fixture?.awayTeamLogo}
                           />
-                        ) : (
-                          <span className='text-base font-bold text-muted-foreground'>
-                            —
-                          </span>
-                        )}
+                        </div>
                       </TableCell>
                       <TableCell className='text-center'>
                         <div className='flex justify-center'>

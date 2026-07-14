@@ -20,7 +20,6 @@ export function MatchRow({ fixture }: MatchRowProps) {
       <TableCell className={dateTimeTableCellClassName + ' text-center'}>
         <DateTimeDisplay value={fixture.date} />
       </TableCell>
-      
       <TableCell className='text-xs'>
         <MatchTeamsStack
           homeTeam={fixture.homeTeam}
