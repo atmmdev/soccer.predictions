@@ -6,10 +6,11 @@ import { PoolStatusBadge } from './pool-status-badge';
 
 interface PoolRowProps {
   pool: Pool;
+  onEdit: (pool: Pool) => void;
   onStatusChange: (poolId: number, status: PoolStatus) => Promise<boolean>;
 }
 
-export function PoolRow({ pool, onStatusChange }: PoolRowProps) {
+export function PoolRow({ pool, onEdit, onStatusChange }: PoolRowProps) {
   return (
     <TableRow>
       <TableCell className='font-medium'>{pool.name}</TableCell>
@@ -21,7 +22,11 @@ export function PoolRow({ pool, onStatusChange }: PoolRowProps) {
         <PoolStatusBadge status={pool.status} />
       </TableCell>
       <TableCell className='text-right'>
-        <PoolActions pool={pool} onStatusChange={onStatusChange} />
+        <PoolActions
+          pool={pool}
+          onEdit={onEdit}
+          onStatusChange={onStatusChange}
+        />
       </TableCell>
     </TableRow>
   );

@@ -16,6 +16,7 @@ import { JwtAuthGuard } from '../../../identity/infrastructure/http/jwt-auth.gua
 import type { AuthUser } from '../../../identity/application/types/auth-user.js';
 import { CreatePoolDto } from '../../application/dtos/create-pool.dto.js';
 import { JoinPoolDto } from '../../application/dtos/join-pool.dto.js';
+import { UpdatePoolDto } from '../../application/dtos/update-pool.dto.js';
 import { UpdatePoolStatusDto } from '../../application/dtos/update-pool-status.dto.js';
 import { PoolService } from '../../application/services/pool.service.js';
 
@@ -89,5 +90,15 @@ export class PoolsController {
     @CurrentUser() user: AuthUser,
   ) {
     return this.poolService.updateStatus(id, dto, user);
+  }
+
+  @Patch(':id')
+  @UseGuards(PoolAccessGuard, PoolOwnerGuard)
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdatePoolDto,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.poolService.update(id, dto, user);
   }
 }

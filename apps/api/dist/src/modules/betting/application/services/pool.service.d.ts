@@ -3,6 +3,7 @@ import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 import type { AuthUser } from '../../../identity/application/types/auth-user.js';
 import type { CreatePoolDto } from '../dtos/create-pool.dto.js';
 import type { JoinPoolDto } from '../dtos/join-pool.dto.js';
+import type { UpdatePoolDto } from '../dtos/update-pool.dto.js';
 import type { UpdatePoolStatusDto } from '../dtos/update-pool-status.dto.js';
 export interface PoolListItem {
     id: number;
@@ -56,6 +57,7 @@ export declare class PoolService {
     create(dto: CreatePoolDto, user: AuthUser): Promise<CreatePoolResult>;
     join(dto: JoinPoolDto, user: AuthUser): Promise<PoolListItem>;
     updateStatus(poolId: number, dto: UpdatePoolStatusDto, user: AuthUser): Promise<PoolListItem>;
+    update(poolId: number, dto: UpdatePoolDto, user: AuthUser): Promise<PoolListItem>;
     private resolvePoolOwner;
     private loadPoolListItem;
     private findAccessiblePool;

@@ -23,8 +23,16 @@ type PoolsTab = 'mine' | 'available';
 export function PoolList() {
   const canDiscover = canParticipateInPools(getStoredUser()?.role);
   const [tab, setTab] = useState<PoolsTab>('mine');
-  const { isLoading, error, reloadPools, createPool, updatePoolStatus, searchFilters, tableState } =
-    usePoolList();
+  const {
+    isLoading,
+    error,
+    reloadPools,
+    createPool,
+    updatePool,
+    updatePoolStatus,
+    searchFilters,
+    tableState,
+  } = usePoolList();
   const discoverState = useDiscoverablePools(canDiscover);
 
   return (
@@ -57,6 +65,7 @@ export function PoolList() {
                 error={error}
                 reloadPools={reloadPools}
                 createPool={createPool}
+                updatePool={updatePool}
                 updatePoolStatus={updatePoolStatus}
                 searchFilters={searchFilters}
                 tableState={tableState}
@@ -80,6 +89,7 @@ export function PoolList() {
             error={error}
             reloadPools={reloadPools}
             createPool={createPool}
+            updatePool={updatePool}
             updatePoolStatus={updatePoolStatus}
             searchFilters={searchFilters}
             tableState={tableState}
@@ -95,6 +105,7 @@ function MyPoolsSection({
   error,
   reloadPools,
   createPool,
+  updatePool,
   updatePoolStatus,
   searchFilters,
   tableState,
@@ -104,6 +115,7 @@ function MyPoolsSection({
   | 'error'
   | 'reloadPools'
   | 'createPool'
+  | 'updatePool'
   | 'updatePoolStatus'
   | 'searchFilters'
   | 'tableState'
@@ -139,6 +151,7 @@ function MyPoolsSection({
           sortKey={tableState.sortKey}
           sortDir={tableState.sortDir}
           onSort={tableState.toggleSort}
+          onUpdatePool={updatePool}
           onStatusChange={updatePoolStatus}
         />
       )}

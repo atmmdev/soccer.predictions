@@ -30,7 +30,7 @@ export function PoolScoringRules({
           </p>
           <p className='text-muted-foreground text-xs'>
             Valores pré-preenchidos conforme o padrão do bolão. Confirme ou
-            edite antes de criar.
+            edite conforme necessário.
           </p>
         </div>
 

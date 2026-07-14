@@ -1,6 +1,6 @@
 'use client';
 
-import { Copy, Link2, MoreVertical } from 'lucide-react';
+import { Pencil, Copy, Link2, MoreVertical } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -18,10 +18,15 @@ import type { Pool, PoolStatus } from '../../types/pool';
 
 interface PoolActionsProps {
   pool: Pool;
+  onEdit: (pool: Pool) => void;
   onStatusChange: (poolId: number, status: PoolStatus) => Promise<boolean>;
 }
 
-export function PoolActions({ pool, onStatusChange }: PoolActionsProps) {
+export function PoolActions({
+  pool,
+  onEdit,
+  onStatusChange,
+}: PoolActionsProps) {
   const canManage =
     pool.isOwner || getStoredUser()?.role === 'SUPER_ADMIN';
 
@@ -77,6 +82,10 @@ export function PoolActions({ pool, onStatusChange }: PoolActionsProps) {
         {canManage && pool.status !== 'CLOSED' ? (
           <>
             <DropdownMenuSeparator />
+            <DropdownMenuItem className='text-xs' onClick={() => onEdit(pool)}>
+              <Pencil className='size-4' />
+              Editar bolão
+            </DropdownMenuItem>
             {pool.status === 'ACTIVE' ? (
               <DropdownMenuItem
                 className='text-xs'

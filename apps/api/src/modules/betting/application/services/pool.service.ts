@@ -14,6 +14,7 @@ import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 import type { AuthUser } from '../../../identity/application/types/auth-user.js';
 import type { CreatePoolDto } from '../dtos/create-pool.dto.js';
 import type { JoinPoolDto } from '../dtos/join-pool.dto.js';
+import type { UpdatePoolDto } from '../dtos/update-pool.dto.js';
 import type { UpdatePoolStatusDto } from '../dtos/update-pool-status.dto.js';
 import { generateInviteCode } from '../utils/generate-invite-code.js';
 import { assertCanParticipateInPools } from '../../../../shared/auth/pool-participation.js';
@@ -370,6 +371,28 @@ export class PoolService {
     await this.prisma.pool.update({
       where: { id: poolId },
       data: { status: dto.status },
+    });
+
+    return this.loadPoolListItem(poolId, user.id, user.role);
+  }
+
+  async update(
+    poolId: number,
+    dto: UpdatePoolDto,
+    user: AuthUser,
+  ): Promise<PoolListItem> {
+    const pool = await this.findAccessiblePool(poolId, user);
+
+    if (pool.status === 'CLOSED') {
+      throw new ConflictException('Bolão encerrado não pode ser editado');
+    }
+
+    await this.prisma.pool.update({
+      where: { id: poolId },
+      data: {
+        name: dto.name.trim(),
+        scoring: dto.scoring as Prisma.InputJsonValue,
+      },
     });
 
     return this.loadPoolListItem(poolId, user.id, user.role);

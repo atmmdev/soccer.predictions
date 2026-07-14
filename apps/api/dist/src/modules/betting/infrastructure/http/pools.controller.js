@@ -20,6 +20,7 @@ const current_user_decorator_js_1 = require("../../../identity/infrastructure/ht
 const jwt_auth_guard_js_1 = require("../../../identity/infrastructure/http/jwt-auth.guard.js");
 const create_pool_dto_js_1 = require("../../application/dtos/create-pool.dto.js");
 const join_pool_dto_js_1 = require("../../application/dtos/join-pool.dto.js");
+const update_pool_dto_js_1 = require("../../application/dtos/update-pool.dto.js");
 const update_pool_status_dto_js_1 = require("../../application/dtos/update-pool-status.dto.js");
 const pool_service_js_1 = require("../../application/services/pool.service.js");
 let PoolsController = class PoolsController {
@@ -53,6 +54,9 @@ let PoolsController = class PoolsController {
     }
     updateStatus(id, dto, user) {
         return this.poolService.updateStatus(id, dto, user);
+    }
+    update(id, dto, user) {
+        return this.poolService.update(id, dto, user);
     }
 };
 exports.PoolsController = PoolsController;
@@ -133,6 +137,16 @@ __decorate([
     __metadata("design:paramtypes", [Number, update_pool_status_dto_js_1.UpdatePoolStatusDto, Object]),
     __metadata("design:returntype", void 0)
 ], PoolsController.prototype, "updateStatus", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    (0, common_1.UseGuards)(pool_access_guard_js_1.PoolAccessGuard, pool_owner_guard_js_1.PoolOwnerGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, current_user_decorator_js_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, update_pool_dto_js_1.UpdatePoolDto, Object]),
+    __metadata("design:returntype", void 0)
+], PoolsController.prototype, "update", null);
 exports.PoolsController = PoolsController = __decorate([
     (0, common_1.Controller)('pools'),
     (0, common_1.UseGuards)(jwt_auth_guard_js_1.JwtAuthGuard),

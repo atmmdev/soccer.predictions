@@ -140,6 +140,25 @@ export async function joinPoolRequest(inviteCode: string): Promise<PoolResponse>
   return response.json() as Promise<PoolResponse>;
 }
 
+export async function updatePoolRequest(
+  poolId: number,
+  payload: {
+    name: string;
+    scoring: PoolScoringConfig;
+  },
+): Promise<PoolResponse> {
+  const response = await authFetch(`${API_URL}/pools/${poolId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseApiError(response));
+  }
+
+  return response.json() as Promise<PoolResponse>;
+}
+
 export async function updatePoolStatusRequest(
   poolId: number,
   status: PoolResponse['status'],
