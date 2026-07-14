@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { TableCell, TableRow } from '@/components/ui/table';
+import { PositionBadge } from '@/features/dashboard/rankings/components/position-badge';
 import { cn } from '@/lib/utils';
 
 import { RANKING_STAT_COLUMNS } from '../../constants/ranking-columns';
@@ -10,7 +11,6 @@ import type {
   RankingScoringRuleFilter,
 } from '../../types/ranking-entry';
 import {
-  getPositionAccentClass,
   getRankingStatValue,
 } from '../../utils/ranking-stats';
 
@@ -33,18 +33,17 @@ function getInitials(name: string) {
 export function RankingRow({
   entry,
   position,
-  totalRows,
+  totalRows: _totalRows,
   scoringRule,
 }: RankingRowProps) {
   return (
     <TableRow
-      className={cn(
-        entry.isCurrentUser && 'bg-primary/5 hover:bg-primary/10',
-        getPositionAccentClass(position, totalRows),
-      )}
+      className={cn(entry.isCurrentUser && 'bg-primary/5 hover:bg-primary/10')}
     >
-      <TableCell className='w-10 px-2 text-center text-sm'>
-        {position}
+      <TableCell className='w-14 px-2 text-center'>
+        <div className='flex items-center justify-center'>
+          <PositionBadge position={position} />
+        </div>
       </TableCell>
       <TableCell className='min-w-[180px] px-3'>
         <div className='flex items-center gap-2.5'>
@@ -54,13 +53,15 @@ export function RankingRow({
             </AvatarFallback>
           </Avatar>
           <div className='min-w-0'>
-            <span className='block truncate font-medium'>{entry.name}</span>
+            <span className='block truncate font-medium'>
+              {entry.name} {' '}
+              {entry.isCurrentUser ? (
+                <span className='text-primary text-xs font-medium'>Você</span>
+              ) : null}
+            </span>
             <span className='text-muted-foreground block truncate text-xs'>
               {entry.email}
             </span>
-            {entry.isCurrentUser ? (
-              <span className='text-primary text-xs font-medium'>Você</span>
-            ) : null}
           </div>
         </div>
       </TableCell>

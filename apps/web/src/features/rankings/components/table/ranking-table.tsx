@@ -26,6 +26,8 @@ interface RankingTableProps {
   sortKey: RankingSortKey;
   sortDir: SortDirection;
   onSort: (key: RankingSortKey) => void;
+  positionOffset?: number;
+  totalRows?: number;
 }
 
 export function RankingTable({
@@ -35,6 +37,8 @@ export function RankingTable({
   sortKey,
   sortDir,
   onSort,
+  positionOffset = 0,
+  totalRows,
 }: RankingTableProps) {
   if (!isPoolSelected) {
     return (
@@ -68,10 +72,10 @@ export function RankingTable({
   return (
     <div className='overflow-hidden'>
       <div className='overflow-x-auto'>
-        <Table className='min-w-[720px]'>
+        <Table className='min-w-[720px] bg-white'>
           <TableHeader>
             <TableRow className='hover:bg-transparent'>
-              <TableHead className='text-muted-foreground w-10 px-2 text-center text-xs'>
+              <TableHead className='text-muted-foreground w-14 px-2 text-center text-xs'>
                 #
               </TableHead>
               <TableHead className='text-muted-foreground min-w-[180px] px-3 text-left text-xs'>
@@ -114,8 +118,8 @@ export function RankingTable({
               <RankingRow
                 key={`${entry.poolId}-${entry.id}`}
                 entry={entry}
-                position={index + 1}
-                totalRows={rows.length}
+                position={positionOffset + index + 1}
+                totalRows={totalRows ?? rows.length}
                 scoringRule={scoringRule}
               />
             ))}

@@ -50,7 +50,7 @@ export function RankingFilters({
           <Search className='text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2' />
           <Input
             placeholder='Buscar participante...'
-            className='pl-9'
+            className='pl-9 bg-white'
             value={search}
             disabled={!isPoolSelected}
             onChange={event => onSearchChange(event.target.value)}
@@ -60,7 +60,7 @@ export function RankingFilters({
         <NativeSelect
           value={poolName}
           onChange={event => onPoolNameChange(event.target.value)}
-          className={filterSelectMdClassName}
+          className={filterSelectMdClassName + ' bg-white'}
         >
           <option value=''>Selecione um bolão</option>
           {poolOptions.map(name => (
@@ -77,7 +77,7 @@ export function RankingFilters({
               event.target.value as RankingScoringRuleFilter,
             )
           }
-          className='w-full xl:w-64'
+          className='w-full xl:w-64 bg-white'
           aria-label='Regra de pontuação'
           disabled={!isPoolSelected}
         >
@@ -105,21 +105,6 @@ export function RankingFilters({
         ) : (
           <span />
         )}
-
-        <p className='text-muted-foreground text-xs xl:ml-auto'>
-          {isPoolSelected ? (
-            <span
-              className={resultCount === 0 ? 'text-red-500' : 'text-primary'}
-            >
-              {resultCount} participante{resultCount !== 1 ? 's' : ''} no
-              ranking
-            </span>
-          ) : (
-            <span className='text-muted-foreground'>
-              Selecione um bolão para ver o ranking
-            </span>
-          )}
-        </p>
       </div>
     </>
   );

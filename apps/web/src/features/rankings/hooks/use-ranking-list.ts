@@ -7,7 +7,10 @@ import { useRankings } from './use-rankings';
 export function useRankingList() {
   const { entries, isLoading, error, reloadRankings } = useRankings();
   const searchFilters = useRankingSearchFilters(entries);
-  const tableState = useRankingTable(searchFilters.filteredEntries);
+  const tableState = useRankingTable(
+    searchFilters.filteredEntries,
+    searchFilters.scoringRule,
+  );
 
   return {
     searchFilters,

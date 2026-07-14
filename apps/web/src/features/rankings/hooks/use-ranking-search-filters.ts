@@ -7,9 +7,6 @@ import type {
   RankingEntry,
   RankingScoringRuleFilter,
 } from '../types/ranking-entry';
-import {
-  matchesScoringRuleFilter,
-} from '../utils/ranking-scoring';
 
 const DEFAULT_POOL = '';
 const DEFAULT_SCORING_RULE: RankingScoringRuleFilter = 'ALL';
@@ -46,20 +43,16 @@ export function useRankingSearchFilters(entries: RankingEntry[]) {
 
     const normalizedSearch = search.trim().toLowerCase();
 
-    const filtered = entries.filter(entry => {
+    return entries.filter(entry => {
       const matchesSearch =
         normalizedSearch.length === 0 ||
         entry.name.toLowerCase().includes(normalizedSearch);
 
       const matchesPool = entry.poolName === poolName;
 
-      const matchesScoringRule = matchesScoringRuleFilter(entry, scoringRule);
-
-      return matchesSearch && matchesPool && matchesScoringRule;
+      return matchesSearch && matchesPool;
     });
-
-    return filtered;
-  }, [entries, isPoolSelected, poolName, scoringRule, search]);
+  }, [entries, isPoolSelected, poolName, search]);
 
   const selectedChampionshipName = useMemo(() => {
     if (!isPoolSelected) {

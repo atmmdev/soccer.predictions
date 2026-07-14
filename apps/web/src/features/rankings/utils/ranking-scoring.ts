@@ -11,17 +11,6 @@ export function getAchievementCount(
   return entry.scoringAchievements[rule];
 }
 
-export function matchesScoringRuleFilter(
-  entry: RankingEntry,
-  scoringRule: RankingScoringRuleFilter,
-): boolean {
-  if (scoringRule === 'ALL') {
-    return true;
-  }
-
-  return getAchievementCount(entry, scoringRule) > 0;
-}
-
 export function compareByScoringRule(
   a: RankingEntry,
   b: RankingEntry,

@@ -1,9 +1,12 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-import type { RankingEntry } from '../types/ranking-entry';
 import type { RankingStatKey } from '../constants/ranking-columns';
+import type {
+  RankingEntry,
+  RankingScoringRuleFilter,
+} from '../types/ranking-entry';
 import { getRankingStatValue } from '../utils/ranking-stats';
 
 export type RankingSortKey = 'name' | 'points' | RankingStatKey;
@@ -25,9 +28,23 @@ function compareEntries(
   }
 }
 
-export function useRankingTable(entries: RankingEntry[]) {
+export function useRankingTable(
+  entries: RankingEntry[],
+  scoringRule: RankingScoringRuleFilter = 'ALL',
+) {
   const [sortKey, setSortKey] = useState<RankingSortKey>('points');
   const [sortDir, setSortDir] = useState<SortDirection>('desc');
+
+  useEffect(() => {
+    if (scoringRule === 'ALL') {
+      setSortKey('points');
+      setSortDir('desc');
+      return;
+    }
+
+    setSortKey(scoringRule);
+    setSortDir('desc');
+  }, [scoringRule]);
 
   const rows = useMemo(() => {
     const safeEntries = Array.isArray(entries) ? entries : [];
@@ -35,7 +52,16 @@ export function useRankingTable(entries: RankingEntry[]) {
     return [...safeEntries].sort((a, b) => {
       const comparison = compareEntries(a, b, sortKey);
 
-      return sortDir === 'asc' ? comparison : -comparison;
+      if (comparison !== 0) {
+        return sortDir === 'asc' ? comparison : -comparison;
+      }
+
+      // Stable tie-breakers when sorting by a scoring rule column.
+      if (b.points !== a.points) {
+        return b.points - a.points;
+      }
+
+      return a.name.localeCompare(b.name, 'pt-BR');
     });
   }, [entries, sortDir, sortKey]);
 
