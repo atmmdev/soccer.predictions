@@ -27,6 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { PageLoading } from '@/components/ui/page-loading';
 
 import { fetchPredictionsByFixtureRequest } from '../../services/prediction-api.service';
 import type { PredictionFixtureItem } from '../../types/prediction-fixture';
@@ -119,9 +120,7 @@ export function FixturePredictionsDialog({
         </DialogHeader>
 
         {isLoading ? (
-          <p className='text-muted-foreground py-8 text-center text-sm'>
-            Carregando palpites...
-          </p>
+          <PageLoading compact label='Carregando palpites...' />
         ) : error ? (
           <p className='text-destructive py-8 text-center text-sm'>{error}</p>
         ) : rows.length === 0 ? (

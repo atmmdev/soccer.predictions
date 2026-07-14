@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { PageLoading } from '@/components/ui/page-loading';
 import {
   Table,
   TableBody,
@@ -37,11 +38,7 @@ export function DashboardContent() {
   const matches = filterMatches(matchTab);
 
   if (isLoading) {
-    return (
-      <div className='flex items-center justify-center py-16'>
-        <p className='text-muted-foreground text-sm'>Carregando dashboard...</p>
-      </div>
-    );
+    return <PageLoading label='Carregando dashboard...' />;
   }
 
   if (error) {

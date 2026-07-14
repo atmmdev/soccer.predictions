@@ -15,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { PageLoading } from '@/components/ui/page-loading';
 import { getAccessToken } from '@/features/auth/lib/auth-storage';
 import { fetchMeRequest } from '@/features/auth/services/auth.service';
 import type { AuthUser, UserRole } from '@/features/auth/types/auth';
@@ -67,11 +68,7 @@ export function ProfilePage() {
   }, []);
 
   if (isLoading) {
-    return (
-      <div className='flex items-center justify-center py-12'>
-        <p className='text-muted-foreground text-sm'>Carregando perfil...</p>
-      </div>
-    );
+    return <PageLoading label='Carregando perfil...' />;
   }
 
   if (error || !user) {

@@ -11,6 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RegisterDto = void 0;
 const class_validator_1 = require("class-validator");
+const class_transformer_1 = require("class-transformer");
+const full_name_js_1 = require("../utils/full-name.js");
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+$/;
 class RegisterDto {
     name;
@@ -19,9 +21,13 @@ class RegisterDto {
 }
 exports.RegisterDto = RegisterDto;
 __decorate([
+    (0, class_transformer_1.Transform)(({ value }) => typeof value === 'string' ? (0, full_name_js_1.normalizeFullName)(value) : value),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MinLength)(2),
     (0, class_validator_1.MaxLength)(120),
+    (0, class_validator_1.Matches)(full_name_js_1.FULL_NAME_PATTERN, {
+        message: 'Informe nome e sobrenome',
+    }),
     __metadata("design:type", String)
 ], RegisterDto.prototype, "name", void 0);
 __decorate([

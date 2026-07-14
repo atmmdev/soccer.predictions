@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { PageLoading } from '@/components/ui/page-loading';
 
 import { usePredictionList } from '../hooks/use-prediction-list';
 import type { SubmitPredictionFormData } from '../schemas/submit-prediction.schema';
@@ -88,11 +89,7 @@ export function PredictionList() {
             onClearFilters={searchFilters.clearFilters}
           />
           {isLoading ? (
-            <div className='flex items-center justify-center py-12'>
-              <p className='text-muted-foreground text-sm'>
-                Carregando palpites...
-              </p>
-            </div>
+            <PageLoading compact label='Carregando palpites...' />
           ) : error ? (
             <div className='flex flex-col items-center justify-center gap-3 py-12'>
               <p className='text-destructive text-sm text-center'>{error}</p>

@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/datetime-display';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
+import { PageLoading } from '@/components/ui/page-loading';
 import {
   Table,
   TableBody,
@@ -127,11 +128,7 @@ export function ParticipantList() {
         </p>
 
         {isLoading ? (
-          <div className='flex items-center justify-center py-12'>
-            <p className='text-muted-foreground text-sm'>
-              Carregando participantes...
-            </p>
-          </div>
+          <PageLoading compact label='Carregando participantes...' />
         ) : error ? (
           <div className='flex flex-col items-center justify-center gap-3 py-12'>
             <p className='text-destructive text-center text-sm'>{error}</p>

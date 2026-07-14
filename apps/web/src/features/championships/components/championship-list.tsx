@@ -1,6 +1,7 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { PageLoading } from '@/components/ui/page-loading';
 
 import { useChampionshipList } from '../hooks/use-championship-list';
 import { ChampionshipFilters } from './filters/championship-filters';
@@ -40,11 +41,7 @@ export function ChampionshipList() {
           onCreateChampionship={createChampionship}
         />
         {isLoading ? (
-          <div className='flex items-center justify-center py-12'>
-            <p className='text-muted-foreground text-sm'>
-              Carregando campeonatos...
-            </p>
-          </div>
+          <PageLoading compact label='Carregando campeonatos...' />
         ) : error ? (
           <div className='flex flex-col items-center justify-center gap-3 py-12'>
             <p className='text-destructive text-center text-sm'>{error}</p>

@@ -1,6 +1,7 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { PageLoading } from '@/components/ui/page-loading';
 
 import { useMatchList } from '../hooks/use-match-list';
 import { MatchFilters } from './filters/match-filters';
@@ -29,9 +30,7 @@ export function MatchList() {
           onClearFilters={searchFilters.clearFilters}
         />
         {isLoading ? (
-          <div className='flex items-center justify-center py-12'>
-            <p className='text-muted-foreground text-sm'>Carregando jogos...</p>
-          </div>
+          <PageLoading compact label='Carregando jogos...' />
         ) : error ? (
           <div className='flex flex-col items-center justify-center gap-3 py-12'>
             <p className='text-destructive text-center text-sm'>{error}</p>

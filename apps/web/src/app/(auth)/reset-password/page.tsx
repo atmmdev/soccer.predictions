@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 
+import { PageLoading } from '@/components/ui/page-loading';
 import { AuthShell } from '@/features/auth/components/auth-shell';
 import { ResetPasswordForm } from '@/features/auth/components/reset-password-form';
 
@@ -12,13 +13,7 @@ export const metadata: Metadata = {
 export default function ResetPasswordPage() {
   return (
     <AuthShell>
-      <Suspense
-        fallback={
-          <p className='text-muted-foreground text-center text-sm'>
-            Carregando...
-          </p>
-        }
-      >
+      <Suspense fallback={<PageLoading compact label='Carregando...' />}>
         <ResetPasswordForm />
       </Suspense>
     </AuthShell>

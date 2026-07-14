@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
+import { PageLoading } from '@/components/ui/page-loading';
 import { saveAuthSession } from '@/features/auth/lib/auth-storage';
 import { fetchMeRequest } from '@/features/auth/services/auth.service';
 
@@ -44,7 +45,5 @@ export function OAuthCallbackHandler() {
     void completeOAuth();
   }, [router, searchParams]);
 
-  return (
-    <p className='text-muted-foreground text-center text-sm'>{message}</p>
-  );
+  return <PageLoading compact label={message} />;
 }

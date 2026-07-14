@@ -1,6 +1,7 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { PageLoading } from '@/components/ui/page-loading';
 
 import { useRankingList } from '../hooks/use-ranking-list';
 import { RankingFilters } from './filters/ranking-filters';
@@ -28,11 +29,7 @@ export function RankingList() {
           onClearFilters={searchFilters.clearFilters}
         />
         {isLoading ? (
-          <div className='flex items-center justify-center py-12'>
-            <p className='text-muted-foreground text-sm'>
-              Carregando ranking...
-            </p>
-          </div>
+          <PageLoading compact label='Carregando ranking...' />
         ) : error ? (
           <div className='flex flex-col items-center justify-center gap-3 py-12'>
             <p className='text-destructive text-center text-sm'>{error}</p>

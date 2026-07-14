@@ -1,6 +1,7 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { PageLoading } from '@/components/ui/page-loading';
 
 import { usePoolList } from '../hooks/use-pool-list';
 import { PoolFilters } from './filters/pool-filters';
@@ -24,9 +25,7 @@ export function PoolList() {
           onCreatePool={createPool}
         />
         {isLoading ? (
-          <div className='flex items-center justify-center py-12'>
-            <p className='text-muted-foreground text-sm'>Carregando bolões...</p>
-          </div>
+          <PageLoading compact label='Carregando bolões...' />
         ) : error ? (
           <div className='flex flex-col items-center justify-center gap-3 py-12'>
             <p className='text-destructive text-sm text-center'>{error}</p>

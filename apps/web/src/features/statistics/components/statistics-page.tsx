@@ -12,6 +12,7 @@ import {
 import { TbPercentage } from 'react-icons/tb';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageLoading } from '@/components/ui/page-loading';
 import { usePredictions } from '@/features/predictions/hooks/use-predictions';
 import { usePools } from '@/features/pools/hooks/use-pools';
 import { useRankings } from '@/features/rankings/hooks/use-rankings';
@@ -120,11 +121,7 @@ export function StatisticsPage() {
   }, [predictionsState.fixtures, poolsState.pools, rankingsState.entries]);
 
   if (isLoading) {
-    return (
-      <div className='flex items-center justify-center py-12'>
-        <p className='text-muted-foreground text-sm'>Carregando estatísticas...</p>
-      </div>
-    );
+    return <PageLoading label='Carregando estatísticas...' />;
   }
 
   if (error) {

@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
+import { PageLoading } from '@/components/ui/page-loading';
 import { getFetchErrorMessage } from '@/lib/api-client';
 import { getStoredUser } from '@/features/auth/lib/auth-storage';
 import { canParticipateInPools } from '@/features/auth/lib/role-access';
@@ -111,12 +112,12 @@ export function JoinPoolView() {
   }
 
   return (
-    <div className='flex flex-col items-center justify-center gap-3 py-16 text-center'>
-      <p className='text-muted-foreground text-sm'>
-        {state === 'success'
+    <PageLoading
+      label={
+        state === 'success'
           ? 'Redirecionando para seus bolões...'
-          : `Entrando no bolão com código ${inviteCode}...`}
-      </p>
-    </div>
+          : `Entrando no bolão com código ${inviteCode}...`
+      }
+    />
   );
 }
