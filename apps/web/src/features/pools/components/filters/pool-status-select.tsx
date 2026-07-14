@@ -14,7 +14,7 @@ export function PoolStatusSelect({ value, onChange }: PoolStatusSelectProps) {
     <NativeSelect
       value={value}
       onChange={event => onChange(event.target.value)}
-      className={cn(poolSelectClassName, filterSelectSmClassName)}
+      className={cn(poolSelectClassName, filterSelectSmClassName)  + ' bg-white'}
     >
       <option value='all'>Todos</option>
       <option value='active'>Ativo</option>

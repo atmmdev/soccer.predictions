@@ -35,7 +35,7 @@ export function PoolFilters({
         <PoolSearch
           value={search}
           onChange={onSearchChange}
-          className='xl:min-w-[200px] xl:flex-1'
+          className='xl:min-w-[200px] xl:flex-1 bg-white'
         />
         <PoolStatusSelect value={status} onChange={onStatusChange} />
         <ClearFiltersButton
@@ -44,15 +44,6 @@ export function PoolFilters({
         />
         <CreatePoolDialog onCreate={onCreatePool} />
       </div>
-
-      <p className='text-muted-foreground px-2 text-xs xl:ml-auto'>
-        <span
-          className={resultCount === 0 ? 'text-red-500' : 'text-primary'}
-        >
-          {resultCount} Bol{resultCount !== 1 ? 'ões' : 'ão'} encontrado
-          {resultCount !== 1 ? 's' : ''}
-        </span>
-      </p>
     </>
   );
 }

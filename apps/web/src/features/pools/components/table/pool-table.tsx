@@ -52,7 +52,7 @@ export function PoolTable({
   return (
     <>
       <div className='overflow-x-auto'>
-        <Table>
+        <Table className='bg-white'>
           <TableHeader>
             <TableRow className='hover:bg-transparent'>
               <PoolSortableHead

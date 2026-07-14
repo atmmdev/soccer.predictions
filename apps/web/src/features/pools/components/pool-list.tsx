@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 
-import { Card, CardContent } from '@/components/ui/card';
 import { ListPagination } from '@/components/ui/list-pagination';
 import { PageLoading } from '@/components/ui/page-loading';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -13,6 +12,7 @@ import {
   lineTabTriggerClassName,
   lineTabsListClassName,
 } from '@/lib/line-tabs';
+import { cn } from '@/lib/utils';
 
 import { useDiscoverablePools } from '../hooks/use-discoverable-pools';
 import { usePoolList } from '../hooks/use-pool-list';
@@ -21,6 +21,21 @@ import { PoolFilters } from './filters/pool-filters';
 import { PoolTable } from './table/pool-table';
 
 type PoolsTab = 'mine' | 'available';
+
+function TabCount({ value, active }: { value: number; active: boolean }) {
+  return (
+    <span
+      className={cn(
+        'ml-1 inline-flex size-5 items-center justify-center rounded-full text-[10px] font-semibold',
+        active
+          ? 'bg-primary text-primary-foreground'
+          : 'bg-muted text-muted-foreground',
+      )}
+    >
+      {value}
+    </span>
+  );
+}
 
 export function PoolList() {
   const canDiscover = canParticipateInPools(getStoredUser()?.role);
@@ -38,67 +53,70 @@ export function PoolList() {
   const discoverState = useDiscoverablePools(canDiscover);
 
   return (
-    <Card className='overflow-visible shadow-sm'>
-      <CardContent className='space-y-4 pt-4'>
-        {canDiscover ? (
-          <Tabs
-            value={tab}
-            onValueChange={value => setTab(value as PoolsTab)}
-          >
-            <TabsList variant='line' className={lineTabsListClassName}>
-              <TabsTrigger value='mine' className={lineTabTriggerClassName}>
-                Meus bolões
-                {!isLoading ? ` (${tableState.rows.length})` : ''}
-              </TabsTrigger>
-              <TabsTrigger
-                value='available'
-                className={lineTabTriggerClassName}
-              >
-                Disponíveis
-                {!discoverState.isLoading
-                  ? ` (${discoverState.pools.length})`
-                  : ''}
-              </TabsTrigger>
-            </TabsList>
+    <>
+      {canDiscover ? (
+        <Tabs value={tab} onValueChange={value => setTab(value as PoolsTab)}>
+          <TabsList variant='line' className={lineTabsListClassName}>
+            <TabsTrigger
+              value='mine'
+              className={cn(lineTabTriggerClassName, 'items-center gap-1.5')}
+            >
+              Meus bolões
+              {!isLoading ? (
+                <TabCount value={tableState.rows.length} active={tab === 'mine'} />
+              ) : null}
+            </TabsTrigger>
+            <TabsTrigger
+              value='available'
+              className={cn(lineTabTriggerClassName, 'items-center gap-1.5')}
+            >
+              Disponíveis
+              {!discoverState.isLoading ? (
+                <TabCount
+                  value={discoverState.pools.length}
+                  active={tab === 'available'}
+                />
+              ) : null}
+            </TabsTrigger>
+          </TabsList>
 
-            <TabsContent value='mine' className='mt-4 space-y-4'>
-              <MyPoolsSection
-                isLoading={isLoading}
-                error={error}
-                reloadPools={reloadPools}
-                createPool={createPool}
-                updatePool={updatePool}
-                updatePoolStatus={updatePoolStatus}
-                searchFilters={searchFilters}
-                tableState={tableState}
-              />
-            </TabsContent>
+          <TabsContent value='mine' className='mt-4 space-y-4'>
+            <MyPoolsSection
+              isLoading={isLoading}
+              error={error}
+              reloadPools={reloadPools}
+              createPool={createPool}
+              updatePool={updatePool}
+              updatePoolStatus={updatePoolStatus}
+              searchFilters={searchFilters}
+              tableState={tableState}
+            />
+          </TabsContent>
 
-            <TabsContent value='available' className='mt-4'>
-              <DiscoverablePoolsTable
-                pools={discoverState.pools}
-                isLoading={discoverState.isLoading}
-                error={discoverState.error}
-                requestingPoolId={discoverState.requestingPoolId}
-                onRetry={() => void discoverState.reloadPools()}
-                onRequestAccess={discoverState.requestAccess}
-              />
-            </TabsContent>
-          </Tabs>
-        ) : (
-          <MyPoolsSection
-            isLoading={isLoading}
-            error={error}
-            reloadPools={reloadPools}
-            createPool={createPool}
-            updatePool={updatePool}
-            updatePoolStatus={updatePoolStatus}
-            searchFilters={searchFilters}
-            tableState={tableState}
-          />
-        )}
-      </CardContent>
-    </Card>
+          <TabsContent value='available' className='mt-4'>
+            <DiscoverablePoolsTable
+              pools={discoverState.pools}
+              isLoading={discoverState.isLoading}
+              error={discoverState.error}
+              requestingPoolId={discoverState.requestingPoolId}
+              onRetry={() => void discoverState.reloadPools()}
+              onRequestAccess={discoverState.requestAccess}
+            />
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <MyPoolsSection
+          isLoading={isLoading}
+          error={error}
+          reloadPools={reloadPools}
+          createPool={createPool}
+          updatePool={updatePool}
+          updatePoolStatus={updatePoolStatus}
+          searchFilters={searchFilters}
+          tableState={tableState}
+        />
+      )}
+    </>
   );
 }
 
