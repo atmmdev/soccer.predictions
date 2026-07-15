@@ -1,8 +1,11 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
+import { getStoredUser } from '@/features/auth/lib/auth-storage';
+
 import { usePredictionSearchFilters } from './use-prediction-search-filters';
 import { usePredictions } from './use-predictions';
-import { getStoredUser } from '@/features/auth/lib/auth-storage';
 
 export function usePredictionList() {
   const {
@@ -12,7 +15,14 @@ export function usePredictionList() {
     reloadFixtures,
     submitPrediction,
   } = usePredictions();
-  const isSuperAdmin = getStoredUser()?.role === 'SUPER_ADMIN';
+  // Defer sessionStorage/cookie read until after mount to keep SSR and
+  // hydration markup identical (avoids React #418 on SUPER_ADMIN).
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+
+  useEffect(() => {
+    setIsSuperAdmin(getStoredUser()?.role === 'SUPER_ADMIN');
+  }, []);
+
   const searchFilters = usePredictionSearchFilters(fixtures, {
     enableDateFilter: isSuperAdmin,
     enableParticipantFilter: false,

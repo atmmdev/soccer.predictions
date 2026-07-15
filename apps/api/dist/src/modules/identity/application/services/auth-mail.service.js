@@ -31,11 +31,13 @@ let AuthMailService = AuthMailService_1 = class AuthMailService {
         return this.configService.getOrThrow('WEB_ORIGIN');
     }
     async sendWelcomeVerification(params) {
-        const verifyUrl = new URL('/verify-email', this.getWebOrigin());
+        const webOrigin = this.getWebOrigin();
+        const verifyUrl = new URL('/verify-email', webOrigin);
         verifyUrl.searchParams.set('token', params.rawToken);
         const template = (0, mail_templates_js_1.welcomeVerifyEmail)({
             name: params.name,
             verifyUrl: verifyUrl.toString(),
+            webOrigin,
         });
         await this.mailService.send({
             to: params.email,
@@ -45,11 +47,13 @@ let AuthMailService = AuthMailService_1 = class AuthMailService {
         await this.tryLogDispatch(params.userId, 'WELCOME_VERIFY');
     }
     async sendVerificationResend(params) {
-        const verifyUrl = new URL('/verify-email', this.getWebOrigin());
+        const webOrigin = this.getWebOrigin();
+        const verifyUrl = new URL('/verify-email', webOrigin);
         verifyUrl.searchParams.set('token', params.rawToken);
         const template = (0, mail_templates_js_1.welcomeVerifyEmail)({
             name: params.name,
             verifyUrl: verifyUrl.toString(),
+            webOrigin,
         });
         await this.mailService.send({
             to: params.email,
@@ -59,9 +63,11 @@ let AuthMailService = AuthMailService_1 = class AuthMailService {
         await this.tryLogDispatch(params.userId, 'VERIFICATION_RESEND');
     }
     async sendPasswordReset(params) {
+        const webOrigin = this.getWebOrigin();
         const template = (0, mail_templates_js_1.passwordResetEmail)({
             name: params.name,
             resetUrl: params.resetUrl,
+            webOrigin,
         });
         await this.mailService.send({
             to: params.email,
@@ -71,7 +77,10 @@ let AuthMailService = AuthMailService_1 = class AuthMailService {
         await this.tryLogDispatch(params.userId, 'PASSWORD_RESET');
     }
     async sendPasswordChanged(params) {
-        const template = (0, mail_templates_js_1.passwordChangedEmail)({ name: params.name });
+        const template = (0, mail_templates_js_1.passwordChangedEmail)({
+            name: params.name,
+            webOrigin: this.getWebOrigin(),
+        });
         await this.mailService.send({
             to: params.email,
             subject: template.subject,
@@ -93,10 +102,12 @@ let AuthMailService = AuthMailService_1 = class AuthMailService {
         if (alreadySent) {
             return false;
         }
-        const predictionsUrl = new URL('/predictions', this.getWebOrigin()).toString();
+        const webOrigin = this.getWebOrigin();
+        const predictionsUrl = new URL('/predictions', webOrigin).toString();
         const template = (0, mail_templates_js_1.predictionReminderEmail)({
             name: params.name,
             predictionsUrl,
+            webOrigin,
             fixtures: params.fixtures,
         });
         await this.mailService.send({

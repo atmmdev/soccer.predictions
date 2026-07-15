@@ -31,12 +31,14 @@ export class AuthMailService {
     name: string;
     rawToken: string;
   }): Promise<void> {
-    const verifyUrl = new URL('/verify-email', this.getWebOrigin());
+    const webOrigin = this.getWebOrigin();
+    const verifyUrl = new URL('/verify-email', webOrigin);
     verifyUrl.searchParams.set('token', params.rawToken);
 
     const template = welcomeVerifyEmail({
       name: params.name,
       verifyUrl: verifyUrl.toString(),
+      webOrigin,
     });
 
     await this.mailService.send({
@@ -54,12 +56,14 @@ export class AuthMailService {
     name: string;
     rawToken: string;
   }): Promise<void> {
-    const verifyUrl = new URL('/verify-email', this.getWebOrigin());
+    const webOrigin = this.getWebOrigin();
+    const verifyUrl = new URL('/verify-email', webOrigin);
     verifyUrl.searchParams.set('token', params.rawToken);
 
     const template = welcomeVerifyEmail({
       name: params.name,
       verifyUrl: verifyUrl.toString(),
+      webOrigin,
     });
 
     await this.mailService.send({
@@ -77,9 +81,11 @@ export class AuthMailService {
     name: string;
     resetUrl: string;
   }): Promise<void> {
+    const webOrigin = this.getWebOrigin();
     const template = passwordResetEmail({
       name: params.name,
       resetUrl: params.resetUrl,
+      webOrigin,
     });
 
     await this.mailService.send({
@@ -96,7 +102,10 @@ export class AuthMailService {
     email: string;
     name: string;
   }): Promise<void> {
-    const template = passwordChangedEmail({ name: params.name });
+    const template = passwordChangedEmail({
+      name: params.name,
+      webOrigin: this.getWebOrigin(),
+    });
 
     await this.mailService.send({
       to: params.email,
@@ -133,10 +142,12 @@ export class AuthMailService {
       return false;
     }
 
-    const predictionsUrl = new URL('/predictions', this.getWebOrigin()).toString();
+    const webOrigin = this.getWebOrigin();
+    const predictionsUrl = new URL('/predictions', webOrigin).toString();
     const template = predictionReminderEmail({
       name: params.name,
       predictionsUrl,
+      webOrigin,
       fixtures: params.fixtures,
     });
 
