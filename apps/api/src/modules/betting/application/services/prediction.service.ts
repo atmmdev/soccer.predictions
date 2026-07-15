@@ -72,6 +72,8 @@ export class PredictionService {
 
     await this.scoringService.syncPoolsScores(poolIds);
 
+    const listAllMembers = user.role === 'SUPER_ADMIN';
+
     const [fixtures, predictions, membersByPoolId, positions, earnedPointsByKey] =
       await Promise.all([
         this.prisma.fixture.findMany({
@@ -89,14 +91,17 @@ export class PredictionService {
         this.prisma.prediction.findMany({
           where: {
             poolId: { in: poolIds },
-            userId: user.id,
+            ...(listAllMembers ? {} : { userId: user.id }),
           },
         }),
         this.loadActiveMembersByPool(poolIds),
         this.rankingService.getPoolMemberPositions(poolIds, {
           syncScores: false,
         }),
-        this.loadEarnedPointsByKey(poolIds, user.id),
+        this.loadEarnedPointsByKey(
+          poolIds,
+          listAllMembers ? undefined : user.id,
+        ),
       ]);
 
     const predictionsByKey = new Map<string, Prediction>();
@@ -114,35 +119,40 @@ export class PredictionService {
       const poolFixtures = fixtures.filter(
         fixture => fixture.championshipId === pool.championshipId,
       );
-      const selfMember = (membersByPoolId.get(pool.id) ?? []).find(
-        member => member.id === user.id,
-      );
+      const members = membersByPoolId.get(pool.id) ?? [];
 
-      // Meus Palpites lista somente o participante logado; outros saem no modal "Ver palpites".
-      if (!selfMember) {
+      // SUPER_ADMIN: todos os participantes. Demais: só o próprio usuário.
+      // Outros participantes seguem disponíveis no modal "Ver palpites".
+      const membersToList = listAllMembers
+        ? members
+        : members.filter(member => member.id === user.id);
+
+      if (membersToList.length === 0) {
         continue;
       }
 
-      for (const fixture of poolFixtures) {
-        const prediction =
-          predictionsByKey.get(
-            `${pool.id}:${selfMember.id}:${fixture.id}`,
-          ) ?? null;
+      for (const member of membersToList) {
+        for (const fixture of poolFixtures) {
+          const prediction =
+            predictionsByKey.get(
+              `${pool.id}:${member.id}:${fixture.id}`,
+            ) ?? null;
 
-        rows.push(
-          this.toFixtureRow({
-            pool,
-            fixture,
-            member: selfMember,
-            userId: user.id,
-            prediction,
-            poolPosition: positions.get(`${pool.id}:${selfMember.id}`) ?? 0,
-            earnedPoints:
-              earnedPointsByKey.get(
-                `${pool.id}:${selfMember.id}:${fixture.id}`,
-              ) ?? null,
-          }),
-        );
+          rows.push(
+            this.toFixtureRow({
+              pool,
+              fixture,
+              member,
+              userId: user.id,
+              prediction,
+              poolPosition: positions.get(`${pool.id}:${member.id}`) ?? 0,
+              earnedPoints:
+                earnedPointsByKey.get(
+                  `${pool.id}:${member.id}:${fixture.id}`,
+                ) ?? null,
+            }),
+          );
+        }
       }
     }
 
@@ -154,7 +164,13 @@ export class PredictionService {
         return dateDiff;
       }
 
-      return left.poolName.localeCompare(right.poolName);
+      const poolDiff = left.poolName.localeCompare(right.poolName);
+
+      if (poolDiff !== 0) {
+        return poolDiff;
+      }
+
+      return left.participantName.localeCompare(right.participantName);
     });
   }
 
