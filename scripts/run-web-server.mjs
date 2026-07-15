@@ -1,7 +1,8 @@
-import { spawn } from 'node:child_process';
+import { execSync, spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { createRequire } from 'node:module';
+import net from 'node:net';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -10,9 +11,13 @@ const rootDir = path.join(scriptDir, '..');
 const webDir = path.join(rootDir, 'apps/web');
 const apiDir = path.join(rootDir, 'apps/api');
 const apiMain = path.join(apiDir, 'dist', 'src', 'main.js');
-const apiPort = process.env.API_INTERNAL_PORT ?? '3001';
+const apiPort = Number(process.env.API_INTERNAL_PORT ?? '3001');
 const port = Number(process.env.PORT || 3000);
 const hostname = '0.0.0.0';
+
+/** @type {import('node:child_process').ChildProcess | null} */
+let apiProcess = null;
+let shuttingDown = false;
 
 console.log('[startup] Soccer Predictions booting...');
 console.log(`[startup] PORT=${port} NODE_ENV=${process.env.NODE_ENV ?? '(not set)'}`);
@@ -46,7 +51,57 @@ function resolveDatabaseUrl() {
   }
 }
 
-function startApi() {
+function isPortFree(listenPort) {
+  return new Promise(resolve => {
+    const probe = net.createServer();
+
+    probe.once('error', () => resolve(false));
+    probe.once('listening', () => {
+      probe.close(() => resolve(true));
+    });
+
+    probe.listen(listenPort, '127.0.0.1');
+  });
+}
+
+/** Free leftover Nest processes from previous Hostinger restarts. */
+function freeApiPort(listenPort) {
+  try {
+    execSync(`fuser -k ${listenPort}/tcp`, { stdio: 'ignore' });
+    console.log(`[api] Freed port ${listenPort} via fuser`);
+    return;
+  } catch {
+    // fuser may be unavailable
+  }
+
+  try {
+    execSync(
+      `sh -c 'pids=$(lsof -t -iTCP:${listenPort} -sTCP:LISTEN 2>/dev/null); [ -n "$pids" ] && kill -TERM $pids'`,
+      { stdio: 'ignore' },
+    );
+    console.log(`[api] Freed port ${listenPort} via lsof`);
+  } catch {
+    // nothing listening / tools missing
+  }
+}
+
+async function ensureApiPortAvailable(listenPort) {
+  if (await isPortFree(listenPort)) {
+    return;
+  }
+
+  console.warn(`[api] Port ${listenPort} already in use — freeing leftover process`);
+  freeApiPort(listenPort);
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  if (!(await isPortFree(listenPort))) {
+    console.error(
+      `[api] Port ${listenPort} still busy after cleanup. NestAPI will fail to bind.`,
+    );
+  }
+}
+
+async function startApi() {
   if (!existsSync(apiMain)) {
     console.error(`[api] Build not found: ${apiMain}`);
     return;
@@ -59,20 +114,57 @@ function startApi() {
     return;
   }
 
+  await ensureApiPortAvailable(apiPort);
+
   console.log(`[api] Starting on port ${apiPort}...`);
 
-  spawn(process.execPath, [apiMain], {
+  // Keep Nest as a child of this process (not detached) so Hostinger
+  // restarts tear down the API with the parent and avoid EADDRINUSE.
+  apiProcess = spawn(process.execPath, [apiMain], {
     cwd: apiDir,
     env: {
       ...process.env,
       DATABASE_URL: databaseUrl,
-      PORT: apiPort,
+      PORT: String(apiPort),
       NODE_ENV: process.env.NODE_ENV ?? 'production',
     },
     stdio: 'inherit',
-    detached: true,
-  }).unref();
+  });
+
+  apiProcess.on('exit', (code, signal) => {
+    apiProcess = null;
+
+    if (shuttingDown) {
+      return;
+    }
+
+    console.error(
+      `[api] Process exited unexpectedly (code=${code}, signal=${signal})`,
+    );
+  });
 }
+
+function shutdown(signal) {
+  if (shuttingDown) {
+    return;
+  }
+
+  shuttingDown = true;
+  console.log(`[startup] Received ${signal}, shutting down...`);
+
+  if (apiProcess && !apiProcess.killed) {
+    apiProcess.kill('SIGTERM');
+  }
+
+  server.close(() => {
+    process.exit(0);
+  });
+
+  setTimeout(() => process.exit(0), 3000).unref();
+}
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
 
 const require = createRequire(path.join(webDir, 'package.json'));
 const next = require('next');
@@ -103,7 +195,7 @@ server.listen(port, hostname, () => {
 
 async function bootNext() {
   try {
-    startApi();
+    await startApi();
 
     console.log('[startup] Preparing Next.js...');
     const app = next({ dev: false, dir: webDir });
