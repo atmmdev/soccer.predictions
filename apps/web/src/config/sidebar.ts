@@ -50,7 +50,7 @@ export const mainNav: SidebarItem[] = [
     icon: ShieldQuestionMark,
   },
   {
-    title: 'Ranking',
+    title: 'Classificação',
     url: '/rankings',
     icon: FaRankingStar,
   },

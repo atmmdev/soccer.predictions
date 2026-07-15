@@ -9,7 +9,7 @@ export interface RankingColumnDefinition {
 }
 
 export const RANKING_STAT_COLUMNS: RankingColumnDefinition[] = [
-  { key: 'predictionsCount', sigla: 'PJ', label: 'Palpites jogados' },
+  { key: 'predictionsCount', sigla: 'PR', label: 'Palpites realizados' },
   { key: 'exactScore', sigla: 'PE', label: 'Placar exato' },
   { key: 'winnerScore', sigla: 'PV', label: 'Gols do time vencedor' },
   { key: 'loserScore', sigla: 'PP', label: 'Gols do time perdedor' },

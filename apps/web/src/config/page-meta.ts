@@ -31,7 +31,7 @@ export const pageMeta: Record<string, PageMeta> = {
     subtitle: 'Registre e revise seus palpites',
   },
   '/rankings': {
-    title: 'Ranking',
+    title: 'Classificação',
     subtitle: 'Classificação dos participantes',
   },
   '/statistics': {
