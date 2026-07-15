@@ -17,17 +17,22 @@ const common_1 = require("@nestjs/common");
 const forgot_password_dto_js_1 = require("../../application/dtos/forgot-password.dto.js");
 const login_dto_js_1 = require("../../application/dtos/login.dto.js");
 const register_dto_js_1 = require("../../application/dtos/register.dto.js");
+const resend_verification_dto_js_1 = require("../../application/dtos/resend-verification.dto.js");
 const reset_password_dto_js_1 = require("../../application/dtos/reset-password.dto.js");
+const verify_email_dto_js_1 = require("../../application/dtos/verify-email.dto.js");
 const auth_service_js_1 = require("../../application/services/auth.service.js");
+const email_verification_service_js_1 = require("../../application/services/email-verification.service.js");
 const password_reset_service_js_1 = require("../../application/services/password-reset.service.js");
 const current_user_decorator_js_1 = require("./current-user.decorator.js");
 const jwt_auth_guard_js_1 = require("./jwt-auth.guard.js");
 let AuthController = class AuthController {
     authService;
     passwordResetService;
-    constructor(authService, passwordResetService) {
+    emailVerificationService;
+    constructor(authService, passwordResetService, emailVerificationService) {
         this.authService = authService;
         this.passwordResetService = passwordResetService;
+        this.emailVerificationService = emailVerificationService;
     }
     register(dto) {
         return this.authService.register(dto);
@@ -40,6 +45,12 @@ let AuthController = class AuthController {
     }
     resetPassword(dto) {
         return this.passwordResetService.resetPassword(dto);
+    }
+    verifyEmail(dto) {
+        return this.emailVerificationService.verifyEmail(dto);
+    }
+    resendVerification(dto) {
+        return this.emailVerificationService.resendVerification(dto);
     }
     me(user) {
         return { user };
@@ -75,6 +86,20 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "resetPassword", null);
 __decorate([
+    (0, common_1.Post)('verify-email'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [verify_email_dto_js_1.VerifyEmailDto]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "verifyEmail", null);
+__decorate([
+    (0, common_1.Post)('resend-verification'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [resend_verification_dto_js_1.ResendVerificationDto]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "resendVerification", null);
+__decorate([
     (0, common_1.Get)('me'),
     (0, common_1.UseGuards)(jwt_auth_guard_js_1.JwtAuthGuard),
     __param(0, (0, current_user_decorator_js_1.CurrentUser)()),
@@ -85,6 +110,7 @@ __decorate([
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_js_1.AuthService,
-        password_reset_service_js_1.PasswordResetService])
+        password_reset_service_js_1.PasswordResetService,
+        email_verification_service_js_1.EmailVerificationService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

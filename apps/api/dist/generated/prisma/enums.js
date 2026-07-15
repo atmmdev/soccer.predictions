@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ScoringAchievementType = exports.CupPhase = exports.PoolUserStatus = exports.PoolStatus = exports.FixtureStatus = exports.ChampionshipStatus = exports.ChampionshipType = exports.UserRole = exports.AuthProvider = void 0;
+exports.EmailDispatchType = exports.ScoringAchievementType = exports.CupPhase = exports.PoolUserStatus = exports.PoolStatus = exports.FixtureStatus = exports.ChampionshipStatus = exports.ChampionshipType = exports.UserRole = exports.AuthProvider = void 0;
 exports.AuthProvider = {
     LOCAL: 'LOCAL',
     GOOGLE: 'GOOGLE',
@@ -53,5 +53,12 @@ exports.ScoringAchievementType = {
     DRAW_WITHOUT_EXACT_SCORE: 'DRAW_WITHOUT_EXACT_SCORE',
     PLAYER_GOAL: 'PLAYER_GOAL',
     PLAYER_HAT_TRICK: 'PLAYER_HAT_TRICK'
+};
+exports.EmailDispatchType = {
+    WELCOME_VERIFY: 'WELCOME_VERIFY',
+    PASSWORD_RESET: 'PASSWORD_RESET',
+    PASSWORD_CHANGED: 'PASSWORD_CHANGED',
+    PREDICTION_REMINDER: 'PREDICTION_REMINDER',
+    VERIFICATION_RESEND: 'VERIFICATION_RESEND'
 };
 //# sourceMappingURL=enums.js.map

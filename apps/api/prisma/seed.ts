@@ -45,6 +45,7 @@ async function main(): Promise<void> {
         password: passwordHash,
         role: user.role,
         authProvider: 'LOCAL',
+        emailVerifiedAt: new Date(),
       },
       create: {
         email: user.email,
@@ -52,6 +53,7 @@ async function main(): Promise<void> {
         password: passwordHash,
         role: user.role,
         authProvider: 'LOCAL',
+        emailVerifiedAt: new Date(),
       },
     });
   }

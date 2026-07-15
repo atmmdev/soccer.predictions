@@ -13,6 +13,8 @@ export declare const AnyNull: import("@prisma/client-runtime-utils").AnyNullClas
 export declare const ModelName: {
     readonly User: "User";
     readonly PasswordResetToken: "PasswordResetToken";
+    readonly EmailVerificationToken: "EmailVerificationToken";
+    readonly EmailDispatchLog: "EmailDispatchLog";
     readonly League: "League";
     readonly Championship: "Championship";
     readonly Team: "Team";
@@ -39,6 +41,7 @@ export declare const UserScalarFieldEnum: {
     readonly authProvider: "authProvider";
     readonly providerId: "providerId";
     readonly role: "role";
+    readonly emailVerifiedAt: "emailVerifiedAt";
     readonly createdAt: "createdAt";
     readonly updatedAt: "updatedAt";
 };
@@ -52,6 +55,23 @@ export declare const PasswordResetTokenScalarFieldEnum: {
     readonly createdAt: "createdAt";
 };
 export type PasswordResetTokenScalarFieldEnum = (typeof PasswordResetTokenScalarFieldEnum)[keyof typeof PasswordResetTokenScalarFieldEnum];
+export declare const EmailVerificationTokenScalarFieldEnum: {
+    readonly id: "id";
+    readonly userId: "userId";
+    readonly tokenHash: "tokenHash";
+    readonly expiresAt: "expiresAt";
+    readonly usedAt: "usedAt";
+    readonly createdAt: "createdAt";
+};
+export type EmailVerificationTokenScalarFieldEnum = (typeof EmailVerificationTokenScalarFieldEnum)[keyof typeof EmailVerificationTokenScalarFieldEnum];
+export declare const EmailDispatchLogScalarFieldEnum: {
+    readonly id: "id";
+    readonly userId: "userId";
+    readonly type: "type";
+    readonly dayKey: "dayKey";
+    readonly createdAt: "createdAt";
+};
+export type EmailDispatchLogScalarFieldEnum = (typeof EmailDispatchLogScalarFieldEnum)[keyof typeof EmailDispatchLogScalarFieldEnum];
 export declare const LeagueScalarFieldEnum: {
     readonly id: "id";
     readonly externalId: "externalId";
@@ -185,6 +205,14 @@ export declare const PasswordResetTokenOrderByRelevanceFieldEnum: {
     readonly tokenHash: "tokenHash";
 };
 export type PasswordResetTokenOrderByRelevanceFieldEnum = (typeof PasswordResetTokenOrderByRelevanceFieldEnum)[keyof typeof PasswordResetTokenOrderByRelevanceFieldEnum];
+export declare const EmailVerificationTokenOrderByRelevanceFieldEnum: {
+    readonly tokenHash: "tokenHash";
+};
+export type EmailVerificationTokenOrderByRelevanceFieldEnum = (typeof EmailVerificationTokenOrderByRelevanceFieldEnum)[keyof typeof EmailVerificationTokenOrderByRelevanceFieldEnum];
+export declare const EmailDispatchLogOrderByRelevanceFieldEnum: {
+    readonly dayKey: "dayKey";
+};
+export type EmailDispatchLogOrderByRelevanceFieldEnum = (typeof EmailDispatchLogOrderByRelevanceFieldEnum)[keyof typeof EmailDispatchLogOrderByRelevanceFieldEnum];
 export declare const LeagueOrderByRelevanceFieldEnum: {
     readonly name: "name";
     readonly country: "country";

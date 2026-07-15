@@ -14,6 +14,7 @@ const betting_module_js_1 = require("./modules/betting/betting.module.js");
 const health_module_js_1 = require("./modules/health/health.module.js");
 const identity_module_js_1 = require("./modules/identity/identity.module.js");
 const sports_module_js_1 = require("./modules/sports/sports.module.js");
+const mail_module_js_1 = require("./shared/mail/mail.module.js");
 const prisma_module_js_1 = require("./shared/prisma/prisma.module.js");
 let AppModule = class AppModule {
 };
@@ -24,6 +25,7 @@ exports.AppModule = AppModule = __decorate([
             config_1.ConfigModule.forRoot({ isGlobal: true }),
             schedule_1.ScheduleModule.forRoot(),
             prisma_module_js_1.PrismaModule,
+            mail_module_js_1.MailModule,
             health_module_js_1.HealthModule,
             identity_module_js_1.IdentityModule,
             sports_module_js_1.SportsModule,

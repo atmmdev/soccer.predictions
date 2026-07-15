@@ -2,7 +2,6 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -19,18 +18,21 @@ import {
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 
-import { saveAuthSession } from '../lib/auth-storage';
 import {
   registerSchema,
   type RegisterFormData,
 } from '../schemas/register.schema';
-import { registerRequest } from '../services/auth.service';
+import {
+  registerRequest,
+  resendVerificationRequest,
+} from '../services/auth.service';
 import { normalizeFullName } from '../utils/full-name';
 import { SocialAuthButtons } from './social-auth-buttons';
 
 export function RegisterForm() {
-  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [isResending, setIsResending] = useState(false);
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -51,9 +53,14 @@ export function RegisterForm() {
         email: data.email,
         password: data.password,
       });
-      saveAuthSession(response.accessToken, response.user);
-      toast.success('Conta criada com sucesso!');
-      router.push('/dashboard');
+
+      if ('requiresEmailVerification' in response) {
+        setPendingEmail(response.email);
+        toast.success('Conta criada! Confira seu e-mail.');
+        return;
+      }
+
+      toast.error('Resposta inesperada ao criar conta');
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : 'Erro ao criar conta',
@@ -61,6 +68,59 @@ export function RegisterForm() {
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  async function handleResend() {
+    if (!pendingEmail) {
+      return;
+    }
+
+    setIsResending(true);
+    try {
+      const response = await resendVerificationRequest(pendingEmail);
+      toast.success(response.message);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Erro ao reenviar e-mail',
+      );
+    } finally {
+      setIsResending(false);
+    }
+  }
+
+  if (pendingEmail) {
+    return (
+      <div className='space-y-6'>
+        <div className='space-y-2'>
+          <h1 className='text-2xl font-semibold tracking-tight'>
+            Confirme seu e-mail
+          </h1>
+          <p className='text-muted-foreground text-sm leading-relaxed'>
+            Enviamos um link de validação para{' '}
+            <span className='text-foreground font-medium'>{pendingEmail}</span>.
+            Abra o e-mail e confirme para poder entrar.
+          </p>
+          <p className='text-muted-foreground text-xs leading-relaxed'>
+            Em desenvolvimento, com e-mail desativado, o link também aparece no
+            terminal da API.
+          </p>
+        </div>
+
+        <Button
+          type='button'
+          size='lg'
+          className='h-11 w-full'
+          disabled={isResending}
+          onClick={() => void handleResend()}
+        >
+          {isResending ? 'Reenviando...' : 'Reenviar e-mail'}
+        </Button>
+
+        <Button asChild variant='outline' size='lg' className='h-11 w-full'>
+          <Link href='/login'>Ir para entrar</Link>
+        </Button>
+      </div>
+    );
   }
 
   return (

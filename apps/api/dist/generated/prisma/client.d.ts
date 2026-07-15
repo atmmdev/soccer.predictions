@@ -8,6 +8,8 @@ export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts exten
 export { Prisma };
 export type User = Prisma.UserModel;
 export type PasswordResetToken = Prisma.PasswordResetTokenModel;
+export type EmailVerificationToken = Prisma.EmailVerificationTokenModel;
+export type EmailDispatchLog = Prisma.EmailDispatchLogModel;
 export type League = Prisma.LeagueModel;
 export type Championship = Prisma.ChampionshipModel;
 export type Team = Prisma.TeamModel;

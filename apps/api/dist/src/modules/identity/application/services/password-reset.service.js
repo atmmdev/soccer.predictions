@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var PasswordResetService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PasswordResetService = void 0;
 const common_1 = require("@nestjs/common");
@@ -15,17 +16,18 @@ const config_1 = require("@nestjs/config");
 const node_crypto_1 = require("node:crypto");
 const bcryptjs_1 = require("bcryptjs");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
-const password_reset_email_service_js_1 = require("./password-reset-email.service.js");
+const auth_mail_service_js_1 = require("./auth-mail.service.js");
 const PASSWORD_SALT_ROUNDS = 10;
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000;
-let PasswordResetService = class PasswordResetService {
+let PasswordResetService = PasswordResetService_1 = class PasswordResetService {
     prisma;
     configService;
-    emailService;
-    constructor(prisma, configService, emailService) {
+    authMailService;
+    logger = new common_1.Logger(PasswordResetService_1.name);
+    constructor(prisma, configService, authMailService) {
         this.prisma = prisma;
         this.configService = configService;
-        this.emailService = emailService;
+        this.authMailService = authMailService;
     }
     async requestReset(dto) {
         const user = await this.prisma.user.findUnique({
@@ -56,7 +58,12 @@ let PasswordResetService = class PasswordResetService {
         const webOrigin = this.configService.getOrThrow('WEB_ORIGIN');
         const resetUrl = new URL('/reset-password', webOrigin);
         resetUrl.searchParams.set('token', rawToken);
-        await this.emailService.sendResetLink(user.email, resetUrl.toString());
+        await this.authMailService.sendPasswordReset({
+            userId: user.id,
+            email: user.email,
+            name: user.name,
+            resetUrl: resetUrl.toString(),
+        });
         return this.genericSuccessMessage();
     }
     async resetPassword(dto) {
@@ -85,6 +92,16 @@ let PasswordResetService = class PasswordResetService {
                 data: { usedAt: new Date() },
             }),
         ]);
+        try {
+            await this.authMailService.sendPasswordChanged({
+                userId: resetToken.user.id,
+                email: resetToken.user.email,
+                name: resetToken.user.name,
+            });
+        }
+        catch (error) {
+            this.logger.warn(`Falha ao enviar e-mail de senha alterada para ${resetToken.user.email}: ${String(error)}`);
+        }
         return {
             message: 'Senha redefinida com sucesso. Você já pode entrar.',
         };
@@ -99,10 +116,10 @@ let PasswordResetService = class PasswordResetService {
     }
 };
 exports.PasswordResetService = PasswordResetService;
-exports.PasswordResetService = PasswordResetService = __decorate([
+exports.PasswordResetService = PasswordResetService = PasswordResetService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_js_1.PrismaService,
         config_1.ConfigService,
-        password_reset_email_service_js_1.PasswordResetEmailService])
+        auth_mail_service_js_1.AuthMailService])
 ], PasswordResetService);
 //# sourceMappingURL=password-reset.service.js.map

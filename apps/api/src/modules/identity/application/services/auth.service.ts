@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -15,17 +16,27 @@ import type {
   JwtPayload,
 } from '../types/auth-user.js';
 import type { OAuthProfile } from '../types/oauth-profile.js';
+import { EmailVerificationService } from './email-verification.service.js';
 
 const PASSWORD_SALT_ROUNDS = 10;
+
+export type RegisterResult =
+  | AuthResponse
+  | {
+      message: string;
+      requiresEmailVerification: true;
+      email: string;
+    };
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly emailVerificationService: EmailVerificationService,
   ) {}
 
-  async register(dto: RegisterDto): Promise<AuthResponse> {
+  async register(dto: RegisterDto): Promise<RegisterResult> {
     const existingUser = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
@@ -43,10 +54,18 @@ export class AuthService {
         password: passwordHash,
         authProvider: 'LOCAL',
         role: 'PARTICIPANT',
+        emailVerifiedAt: null,
       },
     });
 
-    return this.buildAuthResponse(user);
+    await this.emailVerificationService.createAndSendWelcomeVerification(user);
+
+    return {
+      message:
+        'Conta criada. Enviamos um e-mail para validar seu endereço antes de entrar.',
+      requiresEmailVerification: true,
+      email: user.email,
+    };
   }
 
   async login(dto: LoginDto): Promise<AuthResponse> {
@@ -70,6 +89,14 @@ export class AuthService {
       throw new UnauthorizedException('Credenciais inválidas');
     }
 
+    if (user.authProvider === 'LOCAL' && !user.emailVerifiedAt) {
+      throw new ForbiddenException({
+        code: 'EMAIL_NOT_VERIFIED',
+        message:
+          'E-mail ainda não validado. Verifique sua caixa de entrada ou reenvie o link.',
+      });
+    }
+
     return this.buildAuthResponse(user);
   }
 
@@ -82,6 +109,13 @@ export class AuthService {
     });
 
     if (existingOAuthUser) {
+      if (!existingOAuthUser.emailVerifiedAt) {
+        const verified = await this.prisma.user.update({
+          where: { id: existingOAuthUser.id },
+          data: { emailVerifiedAt: new Date() },
+        });
+        return this.toAuthUser(verified);
+      }
       return this.toAuthUser(existingOAuthUser);
     }
 
@@ -98,6 +132,7 @@ export class AuthService {
             providerId: profile.providerId,
             name: existingEmailUser.name || profile.name,
             password: null,
+            emailVerifiedAt: existingEmailUser.emailVerifiedAt ?? new Date(),
           },
         });
 
@@ -116,6 +151,7 @@ export class AuthService {
         authProvider: profile.provider,
         providerId: profile.providerId,
         password: null,
+        emailVerifiedAt: new Date(),
       },
     });
 

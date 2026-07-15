@@ -3,23 +3,71 @@ import type { AuthResponse } from '../types/auth';
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api';
 
-async function parseError(response: Response): Promise<string> {
-  try {
-    const body = (await response.json()) as { message?: string | string[] };
+export class AuthApiError extends Error {
+  readonly code?: string;
+  readonly status: number;
 
-    if (Array.isArray(body.message)) {
-      return body.message[0] ?? 'Não foi possível concluir a operação';
+  constructor(message: string, status: number, code?: string) {
+    super(message);
+    this.name = 'AuthApiError';
+    this.status = status;
+    this.code = code;
+  }
+}
+
+async function parseError(response: Response): Promise<AuthApiError> {
+  try {
+    const body = (await response.json()) as {
+      message?: string | string[] | { code?: string; message?: string };
+      code?: string;
+      error?: string;
+    };
+
+    if (typeof body.code === 'string' && typeof body.message === 'string') {
+      return new AuthApiError(body.message, response.status, body.code);
     }
 
-    if (body.message) {
-      return body.message;
+    if (
+      body.message &&
+      typeof body.message === 'object' &&
+      !Array.isArray(body.message)
+    ) {
+      const nested = body.message;
+      return new AuthApiError(
+        nested.message ?? 'Não foi possível concluir a operação',
+        response.status,
+        nested.code ?? body.code,
+      );
+    }
+
+    if (Array.isArray(body.message)) {
+      return new AuthApiError(
+        body.message[0] ?? 'Não foi possível concluir a operação',
+        response.status,
+        body.code,
+      );
+    }
+
+    if (typeof body.message === 'string') {
+      return new AuthApiError(body.message, response.status, body.code);
     }
   } catch {
     // ignore parse errors
   }
 
-  return 'Não foi possível concluir a operação';
+  return new AuthApiError(
+    'Não foi possível concluir a operação',
+    response.status,
+  );
 }
+
+export type RegisterResponse =
+  | AuthResponse
+  | {
+      message: string;
+      requiresEmailVerification: true;
+      email: string;
+    };
 
 export async function loginRequest(payload: {
   email: string;
@@ -32,7 +80,7 @@ export async function loginRequest(payload: {
   });
 
   if (!response.ok) {
-    throw new Error(await parseError(response));
+    throw await parseError(response);
   }
 
   return response.json() as Promise<AuthResponse>;
@@ -42,7 +90,7 @@ export async function registerRequest(payload: {
   name: string;
   email: string;
   password: string;
-}): Promise<AuthResponse> {
+}): Promise<RegisterResponse> {
   const response = await fetch(`${API_URL}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -50,10 +98,10 @@ export async function registerRequest(payload: {
   });
 
   if (!response.ok) {
-    throw new Error(await parseError(response));
+    throw await parseError(response);
   }
 
-  return response.json() as Promise<AuthResponse>;
+  return response.json() as Promise<RegisterResponse>;
 }
 
 export async function fetchMeRequest(accessToken: string): Promise<AuthResponse['user']> {
@@ -64,7 +112,7 @@ export async function fetchMeRequest(accessToken: string): Promise<AuthResponse[
   });
 
   if (!response.ok) {
-    throw new Error(await parseError(response));
+    throw await parseError(response);
   }
 
   const body = (await response.json()) as { user: AuthResponse['user'] };
@@ -80,7 +128,7 @@ export async function forgotPasswordRequest(email: string): Promise<{ message: s
   });
 
   if (!response.ok) {
-    throw new Error(await parseError(response));
+    throw await parseError(response);
   }
 
   return response.json() as Promise<{ message: string }>;
@@ -97,7 +145,37 @@ export async function resetPasswordRequest(payload: {
   });
 
   if (!response.ok) {
-    throw new Error(await parseError(response));
+    throw await parseError(response);
+  }
+
+  return response.json() as Promise<{ message: string }>;
+}
+
+export async function verifyEmailRequest(token: string): Promise<AuthResponse> {
+  const response = await fetch(`${API_URL}/auth/verify-email`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token }),
+  });
+
+  if (!response.ok) {
+    throw await parseError(response);
+  }
+
+  return response.json() as Promise<AuthResponse>;
+}
+
+export async function resendVerificationRequest(
+  email: string,
+): Promise<{ message: string }> {
+  const response = await fetch(`${API_URL}/auth/resend-verification`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!response.ok) {
+    throw await parseError(response);
   }
 
   return response.json() as Promise<{ message: string }>;

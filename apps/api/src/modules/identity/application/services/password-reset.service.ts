@@ -1,27 +1,29 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createHash, randomBytes } from 'node:crypto';
-
 import { hash } from 'bcryptjs';
 
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 import type { ForgotPasswordDto } from '../dtos/forgot-password.dto.js';
 import type { ResetPasswordDto } from '../dtos/reset-password.dto.js';
-import { PasswordResetEmailService } from './password-reset-email.service.js';
+import { AuthMailService } from './auth-mail.service.js';
 
 const PASSWORD_SALT_ROUNDS = 10;
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000;
 
 @Injectable()
 export class PasswordResetService {
+  private readonly logger = new Logger(PasswordResetService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
-    private readonly emailService: PasswordResetEmailService,
+    private readonly authMailService: AuthMailService,
   ) {}
 
   async requestReset(dto: ForgotPasswordDto): Promise<{ message: string }> {
@@ -59,7 +61,12 @@ export class PasswordResetService {
     const resetUrl = new URL('/reset-password', webOrigin);
     resetUrl.searchParams.set('token', rawToken);
 
-    await this.emailService.sendResetLink(user.email, resetUrl.toString());
+    await this.authMailService.sendPasswordReset({
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      resetUrl: resetUrl.toString(),
+    });
 
     return this.genericSuccessMessage();
   }
@@ -98,6 +105,18 @@ export class PasswordResetService {
         data: { usedAt: new Date() },
       }),
     ]);
+
+    try {
+      await this.authMailService.sendPasswordChanged({
+        userId: resetToken.user.id,
+        email: resetToken.user.email,
+        name: resetToken.user.name,
+      });
+    } catch (error) {
+      this.logger.warn(
+        `Falha ao enviar e-mail de senha alterada para ${resetToken.user.email}: ${String(error)}`,
+      );
+    }
 
     return {
       message: 'Senha redefinida com sucesso. Você já pode entrar.',

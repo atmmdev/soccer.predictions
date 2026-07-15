@@ -61,7 +61,9 @@ export function ForgotPasswordForm() {
             {successMessage}
           </p>
           <p className='text-muted-foreground text-xs leading-relaxed'>
-            Em desenvolvimento, o link também aparece no terminal da API.
+            Se o e-mail não chegar em alguns minutos, confira a pasta de spam.
+            Em desenvolvimento (e-mail desativado), o link também aparece no
+            terminal da API.
           </p>
         </div>
 

@@ -14,13 +14,16 @@ const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const bcryptjs_1 = require("bcryptjs");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
+const email_verification_service_js_1 = require("./email-verification.service.js");
 const PASSWORD_SALT_ROUNDS = 10;
 let AuthService = class AuthService {
     prisma;
     jwtService;
-    constructor(prisma, jwtService) {
+    emailVerificationService;
+    constructor(prisma, jwtService, emailVerificationService) {
         this.prisma = prisma;
         this.jwtService = jwtService;
+        this.emailVerificationService = emailVerificationService;
     }
     async register(dto) {
         const existingUser = await this.prisma.user.findUnique({
@@ -37,9 +40,15 @@ let AuthService = class AuthService {
                 password: passwordHash,
                 authProvider: 'LOCAL',
                 role: 'PARTICIPANT',
+                emailVerifiedAt: null,
             },
         });
-        return this.buildAuthResponse(user);
+        await this.emailVerificationService.createAndSendWelcomeVerification(user);
+        return {
+            message: 'Conta criada. Enviamos um e-mail para validar seu endereço antes de entrar.',
+            requiresEmailVerification: true,
+            email: user.email,
+        };
     }
     async login(dto) {
         const user = await this.prisma.user.findUnique({
@@ -55,6 +64,12 @@ let AuthService = class AuthService {
         if (!passwordMatches) {
             throw new common_1.UnauthorizedException('Credenciais inválidas');
         }
+        if (user.authProvider === 'LOCAL' && !user.emailVerifiedAt) {
+            throw new common_1.ForbiddenException({
+                code: 'EMAIL_NOT_VERIFIED',
+                message: 'E-mail ainda não validado. Verifique sua caixa de entrada ou reenvie o link.',
+            });
+        }
         return this.buildAuthResponse(user);
     }
     async validateOAuthLogin(profile) {
@@ -65,6 +80,13 @@ let AuthService = class AuthService {
             },
         });
         if (existingOAuthUser) {
+            if (!existingOAuthUser.emailVerifiedAt) {
+                const verified = await this.prisma.user.update({
+                    where: { id: existingOAuthUser.id },
+                    data: { emailVerifiedAt: new Date() },
+                });
+                return this.toAuthUser(verified);
+            }
             return this.toAuthUser(existingOAuthUser);
         }
         if (profile.email) {
@@ -79,6 +101,7 @@ let AuthService = class AuthService {
                         providerId: profile.providerId,
                         name: existingEmailUser.name || profile.name,
                         password: null,
+                        emailVerifiedAt: existingEmailUser.emailVerifiedAt ?? new Date(),
                     },
                 });
                 return this.toAuthUser(linkedUser);
@@ -93,6 +116,7 @@ let AuthService = class AuthService {
                 authProvider: profile.provider,
                 providerId: profile.providerId,
                 password: null,
+                emailVerifiedAt: new Date(),
             },
         });
         return this.toAuthUser(user);
@@ -133,6 +157,7 @@ exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_js_1.PrismaService,
-        jwt_1.JwtService])
+        jwt_1.JwtService,
+        email_verification_service_js_1.EmailVerificationService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

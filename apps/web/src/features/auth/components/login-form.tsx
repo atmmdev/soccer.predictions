@@ -25,7 +25,11 @@ import {
   loginSchema,
   type LoginFormData,
 } from '../schemas/login.schema';
-import { loginRequest } from '../services/auth.service';
+import {
+  AuthApiError,
+  loginRequest,
+  resendVerificationRequest,
+} from '../services/auth.service';
 import { SocialAuthButtons } from './social-auth-buttons';
 
 export function LoginForm() {
@@ -33,6 +37,8 @@ export function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = resolveCallbackUrl(searchParams.get('callbackUrl'));
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
+  const [isResending, setIsResending] = useState(false);
 
   useEffect(() => {
     if (searchParams.get('reason') === 'session_expired') {
@@ -50,6 +56,7 @@ export function LoginForm() {
 
   async function onSubmit(data: LoginFormData) {
     setIsSubmitting(true);
+    setUnverifiedEmail(null);
 
     try {
       const response = await loginRequest(data);
@@ -57,11 +64,38 @@ export function LoginForm() {
       toast.success('Login realizado com sucesso!');
       router.push(callbackUrl);
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : 'Erro ao fazer login',
-      );
+      if (
+        error instanceof AuthApiError &&
+        (error.code === 'EMAIL_NOT_VERIFIED' ||
+          error.message.toLowerCase().includes('não validado'))
+      ) {
+        setUnverifiedEmail(data.email);
+        toast.error(error.message);
+      } else {
+        toast.error(
+          error instanceof Error ? error.message : 'Erro ao fazer login',
+        );
+      }
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  async function handleResend() {
+    if (!unverifiedEmail) {
+      return;
+    }
+
+    setIsResending(true);
+    try {
+      const response = await resendVerificationRequest(unverifiedEmail);
+      toast.success(response.message);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Erro ao reenviar e-mail',
+      );
+    } finally {
+      setIsResending(false);
     }
   }
 
@@ -123,6 +157,27 @@ export function LoginForm() {
               </FormItem>
             )}
           />
+
+          {unverifiedEmail ? (
+            <div className='bg-muted/50 space-y-3 rounded-lg border p-3'>
+              <p className='text-muted-foreground text-sm'>
+                Seu e-mail ainda não foi validado. Reenvie o link para{' '}
+                <span className='text-foreground font-medium'>
+                  {unverifiedEmail}
+                </span>
+                .
+              </p>
+              <Button
+                type='button'
+                variant='secondary'
+                className='w-full'
+                disabled={isResending}
+                onClick={() => void handleResend()}
+              >
+                {isResending ? 'Reenviando...' : 'Reenviar validação'}
+              </Button>
+            </div>
+          ) : null}
 
           <Button
             type='submit'

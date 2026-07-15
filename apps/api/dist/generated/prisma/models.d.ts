@@ -1,5 +1,7 @@
 export type * from './models/User.js';
 export type * from './models/PasswordResetToken.js';
+export type * from './models/EmailVerificationToken.js';
+export type * from './models/EmailDispatchLog.js';
 export type * from './models/League.js';
 export type * from './models/Championship.js';
 export type * from './models/Team.js';

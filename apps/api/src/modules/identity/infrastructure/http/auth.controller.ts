@@ -3,8 +3,11 @@ import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { ForgotPasswordDto } from '../../application/dtos/forgot-password.dto.js';
 import { LoginDto } from '../../application/dtos/login.dto.js';
 import { RegisterDto } from '../../application/dtos/register.dto.js';
+import { ResendVerificationDto } from '../../application/dtos/resend-verification.dto.js';
 import { ResetPasswordDto } from '../../application/dtos/reset-password.dto.js';
+import { VerifyEmailDto } from '../../application/dtos/verify-email.dto.js';
 import { AuthService } from '../../application/services/auth.service.js';
+import { EmailVerificationService } from '../../application/services/email-verification.service.js';
 import { PasswordResetService } from '../../application/services/password-reset.service.js';
 import type { AuthUser } from '../../application/types/auth-user.js';
 import { CurrentUser } from './current-user.decorator.js';
@@ -15,6 +18,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly passwordResetService: PasswordResetService,
+    private readonly emailVerificationService: EmailVerificationService,
   ) {}
 
   @Post('register')
@@ -35,6 +39,16 @@ export class AuthController {
   @Post('reset-password')
   resetPassword(@Body() dto: ResetPasswordDto) {
     return this.passwordResetService.resetPassword(dto);
+  }
+
+  @Post('verify-email')
+  verifyEmail(@Body() dto: VerifyEmailDto) {
+    return this.emailVerificationService.verifyEmail(dto);
+  }
+
+  @Post('resend-verification')
+  resendVerification(@Body() dto: ResendVerificationDto) {
+    return this.emailVerificationService.resendVerification(dto);
   }
 
   @Get('me')

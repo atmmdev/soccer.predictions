@@ -70,22 +70,33 @@ enum ScoringAchievementType {
   PLAYER_HAT_TRICK
 }
 
-model User {
-  id           Int          @id @default(autoincrement())
-  email        String       @unique
-  name         String
-  password     String?
-  authProvider AuthProvider @default(LOCAL)
-  providerId   String?
-  role         UserRole     @default(PARTICIPANT)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+enum EmailDispatchType {
+  WELCOME_VERIFY
+  PASSWORD_RESET
+  PASSWORD_CHANGED
+  PREDICTION_REMINDER
+  VERIFICATION_RESEND
+}
 
-  poolUsers    PoolUser[]
-  ownedPools   Pool[]       @relation("PoolOwner")
-  predictions  Prediction[]
-  pointHistory PointHistory[]
-  passwordResetTokens PasswordResetToken[]
+model User {
+  id              Int          @id @default(autoincrement())
+  email           String       @unique
+  name            String
+  password        String?
+  authProvider    AuthProvider @default(LOCAL)
+  providerId      String?
+  role            UserRole     @default(PARTICIPANT)
+  emailVerifiedAt DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  poolUsers               PoolUser[]
+  ownedPools              Pool[]       @relation("PoolOwner")
+  predictions             Prediction[]
+  pointHistory            PointHistory[]
+  passwordResetTokens     PasswordResetToken[]
+  emailVerificationTokens EmailVerificationToken[]
+  emailDispatchLogs       EmailDispatchLog[]
 
   @@unique([authProvider, providerId])
 }
@@ -101,6 +112,32 @@ model PasswordResetToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, expiresAt])
+}
+
+model EmailVerificationToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+}
+
+model EmailDispatchLog {
+  id        Int               @id @default(autoincrement())
+  userId    Int
+  type      EmailDispatchType
+  dayKey    String
+  createdAt DateTime          @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type, dayKey])
+  @@index([type, dayKey])
 }
 
 model League {

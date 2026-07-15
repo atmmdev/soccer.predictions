@@ -6,6 +6,7 @@ import { BettingModule } from './modules/betting/betting.module.js';
 import { HealthModule } from './modules/health/health.module.js';
 import { IdentityModule } from './modules/identity/identity.module.js';
 import { SportsModule } from './modules/sports/sports.module.js';
+import { MailModule } from './shared/mail/mail.module.js';
 import { PrismaModule } from './shared/prisma/prisma.module.js';
 
 @Module({
@@ -13,6 +14,7 @@ import { PrismaModule } from './shared/prisma/prisma.module.js';
     ConfigModule.forRoot({ isGlobal: true }),
     ScheduleModule.forRoot(),
     PrismaModule,
+    MailModule,
     HealthModule,
     IdentityModule,
     SportsModule,

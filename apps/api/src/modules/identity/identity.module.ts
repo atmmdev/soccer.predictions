@@ -5,9 +5,10 @@ import { PassportModule } from '@nestjs/passport';
 import 'dotenv/config';
 
 import { RolesGuard } from '../../shared/auth/roles.guard.js';
+import { AuthMailService } from './application/services/auth-mail.service.js';
 import { AuthService } from './application/services/auth.service.js';
+import { EmailVerificationService } from './application/services/email-verification.service.js';
 import { InstagramOAuthService } from './application/services/instagram-oauth.service.js';
-import { PasswordResetEmailService } from './application/services/password-reset-email.service.js';
 import { PasswordResetService } from './application/services/password-reset.service.js';
 import { UserService } from './application/services/user.service.js';
 import { AuthController } from './infrastructure/http/auth.controller.js';
@@ -44,12 +45,20 @@ const googleOAuthProviders: Provider[] = process.env.GOOGLE_CLIENT_ID
     UserService,
     InstagramOAuthService,
     PasswordResetService,
-    PasswordResetEmailService,
+    AuthMailService,
+    EmailVerificationService,
     JwtStrategy,
     JwtAuthGuard,
     RolesGuard,
     ...googleOAuthProviders,
   ],
-  exports: [AuthService, UserService, JwtModule, PassportModule, JwtAuthGuard],
+  exports: [
+    AuthService,
+    UserService,
+    AuthMailService,
+    JwtModule,
+    PassportModule,
+    JwtAuthGuard,
+  ],
 })
 export class IdentityModule {}

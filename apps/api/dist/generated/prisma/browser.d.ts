@@ -4,6 +4,8 @@ export * as $Enums from './enums.js';
 export * from './enums.js';
 export type User = Prisma.UserModel;
 export type PasswordResetToken = Prisma.PasswordResetTokenModel;
+export type EmailVerificationToken = Prisma.EmailVerificationTokenModel;
+export type EmailDispatchLog = Prisma.EmailDispatchLogModel;
 export type League = Prisma.LeagueModel;
 export type Championship = Prisma.ChampionshipModel;
 export type Team = Prisma.TeamModel;

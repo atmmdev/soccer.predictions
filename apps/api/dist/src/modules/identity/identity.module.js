@@ -13,9 +13,10 @@ const jwt_1 = require("@nestjs/jwt");
 const passport_1 = require("@nestjs/passport");
 require("dotenv/config");
 const roles_guard_js_1 = require("../../shared/auth/roles.guard.js");
+const auth_mail_service_js_1 = require("./application/services/auth-mail.service.js");
 const auth_service_js_1 = require("./application/services/auth.service.js");
+const email_verification_service_js_1 = require("./application/services/email-verification.service.js");
 const instagram_oauth_service_js_1 = require("./application/services/instagram-oauth.service.js");
-const password_reset_email_service_js_1 = require("./application/services/password-reset-email.service.js");
 const password_reset_service_js_1 = require("./application/services/password-reset.service.js");
 const user_service_js_1 = require("./application/services/user.service.js");
 const auth_controller_js_1 = require("./infrastructure/http/auth.controller.js");
@@ -53,13 +54,21 @@ exports.IdentityModule = IdentityModule = __decorate([
             user_service_js_1.UserService,
             instagram_oauth_service_js_1.InstagramOAuthService,
             password_reset_service_js_1.PasswordResetService,
-            password_reset_email_service_js_1.PasswordResetEmailService,
+            auth_mail_service_js_1.AuthMailService,
+            email_verification_service_js_1.EmailVerificationService,
             jwt_strategy_js_1.JwtStrategy,
             jwt_auth_guard_js_1.JwtAuthGuard,
             roles_guard_js_1.RolesGuard,
             ...googleOAuthProviders,
         ],
-        exports: [auth_service_js_1.AuthService, user_service_js_1.UserService, jwt_1.JwtModule, passport_1.PassportModule, jwt_auth_guard_js_1.JwtAuthGuard],
+        exports: [
+            auth_service_js_1.AuthService,
+            user_service_js_1.UserService,
+            auth_mail_service_js_1.AuthMailService,
+            jwt_1.JwtModule,
+            passport_1.PassportModule,
+            jwt_auth_guard_js_1.JwtAuthGuard,
+        ],
     })
 ], IdentityModule);
 //# sourceMappingURL=identity.module.js.map

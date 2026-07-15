@@ -60,3 +60,11 @@ export declare const ScoringAchievementType: {
     readonly PLAYER_HAT_TRICK: "PLAYER_HAT_TRICK";
 };
 export type ScoringAchievementType = (typeof ScoringAchievementType)[keyof typeof ScoringAchievementType];
+export declare const EmailDispatchType: {
+    readonly WELCOME_VERIFY: "WELCOME_VERIFY";
+    readonly PASSWORD_RESET: "PASSWORD_RESET";
+    readonly PASSWORD_CHANGED: "PASSWORD_CHANGED";
+    readonly PREDICTION_REMINDER: "PREDICTION_REMINDER";
+    readonly VERIFICATION_RESEND: "VERIFICATION_RESEND";
+};
+export type EmailDispatchType = (typeof EmailDispatchType)[keyof typeof EmailDispatchType];

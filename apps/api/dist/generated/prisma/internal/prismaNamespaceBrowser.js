@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InvitationOrderByRelevanceFieldEnum = exports.PoolOrderByRelevanceFieldEnum = exports.QueryMode = exports.JsonNullValueFilter = exports.TeamOrderByRelevanceFieldEnum = exports.ChampionshipOrderByRelevanceFieldEnum = exports.LeagueOrderByRelevanceFieldEnum = exports.PasswordResetTokenOrderByRelevanceFieldEnum = exports.UserOrderByRelevanceFieldEnum = exports.NullsOrder = exports.JsonNullValueInput = exports.NullableJsonNullValueInput = exports.SortOrder = exports.PointHistoryScalarFieldEnum = exports.PredictionScalarFieldEnum = exports.InvitationScalarFieldEnum = exports.PoolUserScalarFieldEnum = exports.PoolScalarFieldEnum = exports.FixtureScalarFieldEnum = exports.TeamScalarFieldEnum = exports.ChampionshipScalarFieldEnum = exports.LeagueScalarFieldEnum = exports.PasswordResetTokenScalarFieldEnum = exports.UserScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.Decimal = void 0;
+exports.InvitationOrderByRelevanceFieldEnum = exports.PoolOrderByRelevanceFieldEnum = exports.QueryMode = exports.JsonNullValueFilter = exports.TeamOrderByRelevanceFieldEnum = exports.ChampionshipOrderByRelevanceFieldEnum = exports.LeagueOrderByRelevanceFieldEnum = exports.EmailDispatchLogOrderByRelevanceFieldEnum = exports.EmailVerificationTokenOrderByRelevanceFieldEnum = exports.PasswordResetTokenOrderByRelevanceFieldEnum = exports.UserOrderByRelevanceFieldEnum = exports.NullsOrder = exports.JsonNullValueInput = exports.NullableJsonNullValueInput = exports.SortOrder = exports.PointHistoryScalarFieldEnum = exports.PredictionScalarFieldEnum = exports.InvitationScalarFieldEnum = exports.PoolUserScalarFieldEnum = exports.PoolScalarFieldEnum = exports.FixtureScalarFieldEnum = exports.TeamScalarFieldEnum = exports.ChampionshipScalarFieldEnum = exports.LeagueScalarFieldEnum = exports.EmailDispatchLogScalarFieldEnum = exports.EmailVerificationTokenScalarFieldEnum = exports.PasswordResetTokenScalarFieldEnum = exports.UserScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.Decimal = void 0;
 const runtime = __importStar(require("@prisma/client/runtime/index-browser"));
 exports.Decimal = runtime.Decimal;
 exports.NullTypes = {
@@ -47,6 +47,8 @@ exports.AnyNull = runtime.AnyNull;
 exports.ModelName = {
     User: 'User',
     PasswordResetToken: 'PasswordResetToken',
+    EmailVerificationToken: 'EmailVerificationToken',
+    EmailDispatchLog: 'EmailDispatchLog',
     League: 'League',
     Championship: 'Championship',
     Team: 'Team',
@@ -71,6 +73,7 @@ exports.UserScalarFieldEnum = {
     authProvider: 'authProvider',
     providerId: 'providerId',
     role: 'role',
+    emailVerifiedAt: 'emailVerifiedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
 };
@@ -80,6 +83,21 @@ exports.PasswordResetTokenScalarFieldEnum = {
     tokenHash: 'tokenHash',
     expiresAt: 'expiresAt',
     usedAt: 'usedAt',
+    createdAt: 'createdAt'
+};
+exports.EmailVerificationTokenScalarFieldEnum = {
+    id: 'id',
+    userId: 'userId',
+    tokenHash: 'tokenHash',
+    expiresAt: 'expiresAt',
+    usedAt: 'usedAt',
+    createdAt: 'createdAt'
+};
+exports.EmailDispatchLogScalarFieldEnum = {
+    id: 'id',
+    userId: 'userId',
+    type: 'type',
+    dayKey: 'dayKey',
     createdAt: 'createdAt'
 };
 exports.LeagueScalarFieldEnum = {
@@ -199,6 +217,12 @@ exports.UserOrderByRelevanceFieldEnum = {
 };
 exports.PasswordResetTokenOrderByRelevanceFieldEnum = {
     tokenHash: 'tokenHash'
+};
+exports.EmailVerificationTokenOrderByRelevanceFieldEnum = {
+    tokenHash: 'tokenHash'
+};
+exports.EmailDispatchLogOrderByRelevanceFieldEnum = {
+    dayKey: 'dayKey'
 };
 exports.LeagueOrderByRelevanceFieldEnum = {
     name: 'name',
