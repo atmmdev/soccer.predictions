@@ -27,3 +27,18 @@ export declare function predictionReminderEmail(params: {
         poolName: string;
     }>;
 }): MailTemplate;
+export declare function rankingUpdatedEmail(params: {
+    name: string;
+    poolName: string;
+    championshipName: string;
+    rankingsUrl: string;
+    webOrigin: string;
+    recipientPosition: number;
+    recipientPoints: number;
+    standings: Array<{
+        position: number;
+        name: string;
+        points: number;
+        isRecipient: boolean;
+    }>;
+}): MailTemplate;

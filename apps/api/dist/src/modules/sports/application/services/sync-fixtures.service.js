@@ -12,6 +12,7 @@ var SyncFixturesService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SyncFixturesService = void 0;
 const common_1 = require("@nestjs/common");
+const ranking_update_notification_service_js_1 = require("../../../betting/application/services/ranking-update-notification.service.js");
 const scoring_service_js_1 = require("../../../betting/application/services/scoring.service.js");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
 const football_data_client_js_1 = require("../../infrastructure/integrations/football-data.client.js");
@@ -20,11 +21,13 @@ let SyncFixturesService = SyncFixturesService_1 = class SyncFixturesService {
     prisma;
     footballDataClient;
     scoringService;
+    rankingUpdateNotificationService;
     logger = new common_1.Logger(SyncFixturesService_1.name);
-    constructor(prisma, footballDataClient, scoringService) {
+    constructor(prisma, footballDataClient, scoringService, rankingUpdateNotificationService) {
         this.prisma = prisma;
         this.footballDataClient = footballDataClient;
         this.scoringService = scoringService;
+        this.rankingUpdateNotificationService = rankingUpdateNotificationService;
     }
     async syncChampionship(championshipId) {
         const championship = await this.prisma.championship.findUnique({
@@ -46,6 +49,12 @@ let SyncFixturesService = SyncFixturesService_1 = class SyncFixturesService {
             updated += result.count;
         }
         await this.scoringService.syncScoresForChampionship(championshipId);
+        try {
+            await this.rankingUpdateNotificationService.notifyForChampionship(championshipId);
+        }
+        catch (error) {
+            this.logger.warn(`Falha ao enviar e-mails de classificação do championship=${championshipId}: ${String(error)}`);
+        }
         return updated;
     }
     async syncActiveChampionships(mode = 'all') {
@@ -109,6 +118,7 @@ exports.SyncFixturesService = SyncFixturesService = SyncFixturesService_1 = __de
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_js_1.PrismaService,
         football_data_client_js_1.FootballDataClient,
-        scoring_service_js_1.ScoringService])
+        scoring_service_js_1.ScoringService,
+        ranking_update_notification_service_js_1.RankingUpdateNotificationService])
 ], SyncFixturesService);
 //# sourceMappingURL=sync-fixtures.service.js.map

@@ -66,5 +66,6 @@ export declare const EmailDispatchType: {
     readonly PASSWORD_CHANGED: "PASSWORD_CHANGED";
     readonly PREDICTION_REMINDER: "PREDICTION_REMINDER";
     readonly VERIFICATION_RESEND: "VERIFICATION_RESEND";
+    readonly RANKING_UPDATED: "RANKING_UPDATED";
 };
 export type EmailDispatchType = (typeof EmailDispatchType)[keyof typeof EmailDispatchType];

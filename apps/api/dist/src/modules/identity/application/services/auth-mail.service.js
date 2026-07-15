@@ -124,6 +124,47 @@ let AuthMailService = AuthMailService_1 = class AuthMailService {
         });
         return true;
     }
+    async sendRankingUpdated(params) {
+        const dayKey = `${this.todayKeyAmericaSaoPaulo()}-pool-${params.poolId}`;
+        const alreadySent = await this.prisma.emailDispatchLog.findUnique({
+            where: {
+                userId_type_dayKey: {
+                    userId: params.userId,
+                    type: 'RANKING_UPDATED',
+                    dayKey,
+                },
+            },
+        });
+        if (alreadySent) {
+            return false;
+        }
+        const webOrigin = this.getWebOrigin();
+        const rankingsUrl = new URL('/rankings', webOrigin);
+        rankingsUrl.searchParams.set('poolId', String(params.poolId));
+        const template = (0, mail_templates_js_1.rankingUpdatedEmail)({
+            name: params.name,
+            poolName: params.poolName,
+            championshipName: params.championshipName,
+            rankingsUrl: rankingsUrl.toString(),
+            webOrigin,
+            recipientPosition: params.recipientPosition,
+            recipientPoints: params.recipientPoints,
+            standings: params.standings,
+        });
+        await this.mailService.send({
+            to: params.email,
+            subject: template.subject,
+            html: template.html,
+        });
+        await this.prisma.emailDispatchLog.create({
+            data: {
+                userId: params.userId,
+                type: 'RANKING_UPDATED',
+                dayKey,
+            },
+        });
+        return true;
+    }
     createRawToken() {
         return (0, node_crypto_1.randomBytes)(32).toString('hex');
     }

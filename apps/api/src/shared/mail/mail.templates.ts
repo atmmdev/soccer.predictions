@@ -177,3 +177,74 @@ export function predictionReminderEmail(params: {
 
   return { subject, html };
 }
+
+export function rankingUpdatedEmail(params: {
+  name: string;
+  poolName: string;
+  championshipName: string;
+  rankingsUrl: string;
+  webOrigin: string;
+  recipientPosition: number;
+  recipientPoints: number;
+  standings: Array<{
+    position: number;
+    name: string;
+    points: number;
+    isRecipient: boolean;
+  }>;
+}): MailTemplate {
+  const subject = `Classificação atualizada — ${params.poolName}`;
+  const medal = (position: number): string => {
+    if (position === 1) return '🥇';
+    if (position === 2) return '🥈';
+    if (position === 3) return '🥉';
+    return `${position}º`;
+  };
+
+  const rows = params.standings
+    .map((entry) => {
+      const bg = entry.isRecipient ? '#ecfdf5' : '#ffffff';
+      const weight = entry.isRecipient ? '700' : '400';
+      const nameColor = entry.isRecipient ? '#166534' : '#18181b';
+
+      return `<tr>
+        <td style="padding:10px 8px;border-bottom:1px solid #f4f4f5;font-size:14px;background:${bg};width:48px;text-align:center;font-weight:700;">
+          ${medal(entry.position)}
+        </td>
+        <td style="padding:10px 8px;border-bottom:1px solid #f4f4f5;font-size:14px;background:${bg};font-weight:${weight};color:${nameColor};">
+          ${entry.name}${entry.isRecipient ? ' <span style="font-size:11px;color:#16a34a;">(você)</span>' : ''}
+        </td>
+        <td style="padding:10px 8px;border-bottom:1px solid #f4f4f5;font-size:14px;background:${bg};text-align:right;font-weight:700;">
+          ${entry.points}
+        </td>
+      </tr>`;
+    })
+    .join('');
+
+  const html = wrapEmail({
+    title: 'Classificação atualizada',
+    webOrigin: params.webOrigin,
+    bodyHtml: `<p style="margin:0 0 12px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Olá, ${params.name}. A classificação do bolão
+      <strong>${params.poolName}</strong>
+      (${params.championshipName}) foi atualizada.
+    </p>
+    <p style="margin:0 0 16px;font-size:14px;line-height:1.5;color:#3f3f46;text-align:center;">
+      Sua posição agora:
+      <strong style="color:#16a34a;">${params.recipientPosition}º lugar</strong>
+      com <strong>${params.recipientPoints} pts</strong>
+    </p>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:8px 0 0;border:1px solid #e4e4e7;border-radius:8px;overflow:hidden;">
+      <tr>
+        <td style="padding:8px;background:#fafafa;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#71717a;width:48px;text-align:center;">Pos</td>
+        <td style="padding:8px;background:#fafafa;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#71717a;">Participante</td>
+        <td style="padding:8px;background:#fafafa;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#71717a;text-align:right;">Pts</td>
+      </tr>
+      ${rows}
+    </table>
+    ${ctaButton('Ver classificação completa', params.rankingsUrl)}
+    ${observationNote('Você recebe este e-mail por participar deste bolão.')}`,
+  });
+
+  return { subject, html };
+}

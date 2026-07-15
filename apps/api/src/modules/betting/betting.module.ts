@@ -8,6 +8,7 @@ import { ParticipantService } from './application/services/participant.service.j
 import { PoolService } from './application/services/pool.service.js';
 import { PredictionReminderService } from './application/services/prediction-reminder.service.js';
 import { PredictionService } from './application/services/prediction.service.js';
+import { RankingUpdateNotificationService } from './application/services/ranking-update-notification.service.js';
 import { RankingService } from './application/services/ranking.service.js';
 import { ScoringService } from './application/services/scoring.service.js';
 import { ParticipantsController } from './infrastructure/http/participants.controller.js';
@@ -27,10 +28,18 @@ import { PredictionReminderScheduler } from './infrastructure/jobs/prediction-re
     ParticipantService,
     PredictionReminderService,
     PredictionReminderScheduler,
+    RankingUpdateNotificationService,
     RolesGuard,
     PoolAccessGuard,
     PoolOwnerGuard,
   ],
-  exports: [PoolService, PredictionService, ScoringService, RankingService, ParticipantService],
+  exports: [
+    PoolService,
+    PredictionService,
+    ScoringService,
+    RankingService,
+    ParticipantService,
+    RankingUpdateNotificationService,
+  ],
 })
 export class BettingModule {}

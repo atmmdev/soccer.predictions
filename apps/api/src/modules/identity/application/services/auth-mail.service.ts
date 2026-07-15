@@ -7,6 +7,7 @@ import {
   passwordChangedEmail,
   passwordResetEmail,
   predictionReminderEmail,
+  rankingUpdatedEmail,
   welcomeVerifyEmail,
 } from '../../../../shared/mail/mail.templates.js';
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
@@ -161,6 +162,69 @@ export class AuthMailService {
       data: {
         userId: params.userId,
         type: 'PREDICTION_REMINDER',
+        dayKey,
+      },
+    });
+
+    return true;
+  }
+
+  async sendRankingUpdated(params: {
+    userId: number;
+    email: string;
+    name: string;
+    poolId: number;
+    poolName: string;
+    championshipName: string;
+    recipientPosition: number;
+    recipientPoints: number;
+    standings: Array<{
+      position: number;
+      name: string;
+      points: number;
+      isRecipient: boolean;
+    }>;
+  }): Promise<boolean> {
+    const dayKey = `${this.todayKeyAmericaSaoPaulo()}-pool-${params.poolId}`;
+    const alreadySent = await this.prisma.emailDispatchLog.findUnique({
+      where: {
+        userId_type_dayKey: {
+          userId: params.userId,
+          type: 'RANKING_UPDATED',
+          dayKey,
+        },
+      },
+    });
+
+    if (alreadySent) {
+      return false;
+    }
+
+    const webOrigin = this.getWebOrigin();
+    const rankingsUrl = new URL('/rankings', webOrigin);
+    rankingsUrl.searchParams.set('poolId', String(params.poolId));
+
+    const template = rankingUpdatedEmail({
+      name: params.name,
+      poolName: params.poolName,
+      championshipName: params.championshipName,
+      rankingsUrl: rankingsUrl.toString(),
+      webOrigin,
+      recipientPosition: params.recipientPosition,
+      recipientPoints: params.recipientPoints,
+      standings: params.standings,
+    });
+
+    await this.mailService.send({
+      to: params.email,
+      subject: template.subject,
+      html: template.html,
+    });
+
+    await this.prisma.emailDispatchLog.create({
+      data: {
+        userId: params.userId,
+        type: 'RANKING_UPDATED',
         dayKey,
       },
     });

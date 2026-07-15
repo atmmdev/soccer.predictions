@@ -42,6 +42,22 @@ export declare class AuthMailService {
             poolName: string;
         }>;
     }): Promise<boolean>;
+    sendRankingUpdated(params: {
+        userId: number;
+        email: string;
+        name: string;
+        poolId: number;
+        poolName: string;
+        championshipName: string;
+        recipientPosition: number;
+        recipientPoints: number;
+        standings: Array<{
+            position: number;
+            name: string;
+            points: number;
+            isRecipient: boolean;
+        }>;
+    }): Promise<boolean>;
     createRawToken(): string;
     hashToken(token: string): string;
     todayKeyAmericaSaoPaulo(date?: Date): string;

@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 
+import { RankingUpdateNotificationService } from '../../../betting/application/services/ranking-update-notification.service.js';
 import { ScoringService } from '../../../betting/application/services/scoring.service.js';
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 import { FootballDataClient } from '../../infrastructure/integrations/football-data.client.js';
@@ -13,6 +14,7 @@ export class SyncFixturesService {
     private readonly prisma: PrismaService,
     private readonly footballDataClient: FootballDataClient,
     private readonly scoringService: ScoringService,
+    private readonly rankingUpdateNotificationService: RankingUpdateNotificationService,
   ) {}
 
   async syncChampionship(championshipId: number): Promise<number> {
@@ -44,6 +46,16 @@ export class SyncFixturesService {
     }
 
     await this.scoringService.syncScoresForChampionship(championshipId);
+
+    try {
+      await this.rankingUpdateNotificationService.notifyForChampionship(
+        championshipId,
+      );
+    } catch (error) {
+      this.logger.warn(
+        `Falha ao enviar e-mails de classificação do championship=${championshipId}: ${String(error)}`,
+      );
+    }
 
     return updated;
   }
