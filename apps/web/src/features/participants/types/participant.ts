@@ -8,6 +8,7 @@ export interface PoolParticipant {
   userId: number;
   name: string;
   email: string;
+  avatarDataUrl: string | null;
   isOwner: boolean;
   status: ParticipantStatus;
   joinedAt: string;

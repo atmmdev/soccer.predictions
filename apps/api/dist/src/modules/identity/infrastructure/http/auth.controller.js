@@ -19,20 +19,24 @@ const login_dto_js_1 = require("../../application/dtos/login.dto.js");
 const register_dto_js_1 = require("../../application/dtos/register.dto.js");
 const resend_verification_dto_js_1 = require("../../application/dtos/resend-verification.dto.js");
 const reset_password_dto_js_1 = require("../../application/dtos/reset-password.dto.js");
+const update_profile_dto_js_1 = require("../../application/dtos/update-profile.dto.js");
 const verify_email_dto_js_1 = require("../../application/dtos/verify-email.dto.js");
 const auth_service_js_1 = require("../../application/services/auth.service.js");
 const email_verification_service_js_1 = require("../../application/services/email-verification.service.js");
 const password_reset_service_js_1 = require("../../application/services/password-reset.service.js");
+const user_service_js_1 = require("../../application/services/user.service.js");
 const current_user_decorator_js_1 = require("./current-user.decorator.js");
 const jwt_auth_guard_js_1 = require("./jwt-auth.guard.js");
 let AuthController = class AuthController {
     authService;
     passwordResetService;
     emailVerificationService;
-    constructor(authService, passwordResetService, emailVerificationService) {
+    userService;
+    constructor(authService, passwordResetService, emailVerificationService, userService) {
         this.authService = authService;
         this.passwordResetService = passwordResetService;
         this.emailVerificationService = emailVerificationService;
+        this.userService = userService;
     }
     register(dto) {
         return this.authService.register(dto);
@@ -54,6 +58,9 @@ let AuthController = class AuthController {
     }
     me(user) {
         return { user };
+    }
+    async updateMe(user, dto) {
+        return { user: await this.userService.updateProfile(user.id, dto) };
     }
 };
 exports.AuthController = AuthController;
@@ -107,10 +114,20 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "me", null);
+__decorate([
+    (0, common_1.Patch)('me'),
+    (0, common_1.UseGuards)(jwt_auth_guard_js_1.JwtAuthGuard),
+    __param(0, (0, current_user_decorator_js_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, update_profile_dto_js_1.UpdateProfileDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "updateMe", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_js_1.AuthService,
         password_reset_service_js_1.PasswordResetService,
-        email_verification_service_js_1.EmailVerificationService])
+        email_verification_service_js_1.EmailVerificationService,
+        user_service_js_1.UserService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

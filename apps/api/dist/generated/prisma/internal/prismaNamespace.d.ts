@@ -1079,6 +1079,8 @@ export declare const UserScalarFieldEnum: {
     readonly id: "id";
     readonly email: "email";
     readonly name: "name";
+    readonly phone: "phone";
+    readonly avatarDataUrl: "avatarDataUrl";
     readonly password: "password";
     readonly authProvider: "authProvider";
     readonly providerId: "providerId";
@@ -1239,6 +1241,8 @@ export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder];
 export declare const UserOrderByRelevanceFieldEnum: {
     readonly email: "email";
     readonly name: "name";
+    readonly phone: "phone";
+    readonly avatarDataUrl: "avatarDataUrl";
     readonly password: "password";
     readonly providerId: "providerId";
 };

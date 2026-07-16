@@ -3,4 +3,5 @@ export interface RankingUser {
   name: string;
   points: number;
   email: string;
+  avatarDataUrl: string | null;
 }

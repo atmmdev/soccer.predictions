@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 import type { AuthUser } from '../../../identity/application/types/auth-user.js';
+import { compareRankingStandings } from '../utils/compare-ranking-standings.js';
 import { ScoringService } from './scoring.service.js';
 
 export interface RankingListItem {
@@ -11,6 +12,7 @@ export interface RankingListItem {
   championshipName: string;
   name: string;
   email: string;
+  avatarDataUrl: string | null;
   points: number;
   predictionsCount: number;
   scoringAchievements: {
@@ -59,6 +61,7 @@ export class RankingService {
               id: true,
               name: true,
               email: true,
+              avatarDataUrl: true,
               role: true,
             },
           },
@@ -97,6 +100,7 @@ export class RankingService {
           championshipName: pool.championship.name,
           name: member.user.name,
           email: member.user.email,
+          avatarDataUrl: member.user.avatarDataUrl,
           points: aggregated.points,
           predictionsCount,
           scoringAchievements: aggregated.achievements,
@@ -110,11 +114,18 @@ export class RankingService {
         return left.poolName.localeCompare(right.poolName);
       }
 
-      if (right.points !== left.points) {
-        return right.points - left.points;
-      }
-
-      return left.name.localeCompare(right.name);
+      return compareRankingStandings(
+        {
+          points: left.points,
+          exactScore: left.scoringAchievements.exactScore,
+          name: left.name,
+        },
+        {
+          points: right.points,
+          exactScore: right.scoringAchievements.exactScore,
+          name: right.name,
+        },
+      );
     });
   }
 
@@ -168,17 +179,14 @@ export class RankingService {
             userId: member.userId,
             name: member.user.name,
             points: aggregated.points,
+            exactScore: aggregated.achievements.exactScore,
           };
         }),
       );
 
-      ranked.sort((left, right) => {
-        if (right.points !== left.points) {
-          return right.points - left.points;
-        }
-
-        return left.name.localeCompare(right.name);
-      });
+      ranked.sort((left, right) =>
+        compareRankingStandings(left, right),
+      );
 
       ranked.forEach((entry, index) => {
         positions.set(`${poolId}:${entry.userId}`, index + 1);

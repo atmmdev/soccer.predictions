@@ -13,7 +13,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Soccer Predictions',
-  description: 'Bolões de futebol — crie bolões, palpite e acompanhe rankings',
+  description: 'Bolões de futebol — crie bolões, palpite e acompanhe a classificação',
   applicationName: 'Soccer Predictions',
   appleWebApp: {
     capable: true,

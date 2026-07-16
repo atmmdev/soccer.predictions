@@ -39,11 +39,9 @@ Swagger: `http://localhost:3001/api/docs`
 
 ### Credenciais padrão (seed)
 
-| E-mail                    | Senha         | Papel       |
-| ------------------------- | ------------- | ----------- |
-| `atmmdev@gmail.com`       | `WebAtm1979#` | SUPER_ADMIN |
-| `atmmoreira.rj@gmail.com` | `WebAtm1979#` | ADMIN       |
-| `atmm.rj@gmail.com`       | `WebAtm1979#` | PARTICIPANT |
+| E-mail              | Senha         | Papel       |
+| ------------------- | ------------- | ----------- |
+| `atmmdev@gmail.com` | `WebAtm1979#` | SUPER_ADMIN |
 
 Rodar seed: `cd apps/api && npm run prisma:seed`
 
@@ -57,8 +55,6 @@ Env: `FOOTBALL_DATA_TOKEN`, `FOOTBALL_DATA_BASE_URL`.
 Credenciais de Teste (seed):
 
 - `atmmdev@gmail.com` / `WebAtm1979#` (SUPER_ADMIN)
-- `atmmoreira.rj@gmail.com` / `WebAtm1979#` (ADMIN)
-- `atmm.rj@gmail.com` / `WebAtm1979#` (PARTICIPANT)
 
 Demais usuários: cadastro em `/register` (sempre PARTICIPANT; vira ADMIN ao criar o 1º bolão).
 

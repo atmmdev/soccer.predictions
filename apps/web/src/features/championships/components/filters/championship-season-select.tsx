@@ -19,7 +19,7 @@ export function ChampionshipSeasonSelect({
     <NativeSelect
       value={value}
       onChange={event => onChange(event.target.value)}
-      className={cn(championshipSelectClassName, filterSelectMdClassName)}
+      className={cn(championshipSelectClassName, filterSelectMdClassName) + 'bg'}
     >
       <option value='all'>Todas as temporadas</option>
       {seasons.map(item => (

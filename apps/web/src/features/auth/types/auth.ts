@@ -4,6 +4,8 @@ export interface AuthUser {
   id: number;
   email: string;
   name: string;
+  phone: string | null;
+  avatarDataUrl: string | null;
   role: UserRole;
 }
 

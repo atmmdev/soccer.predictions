@@ -105,7 +105,7 @@ export function LoginForm() {
         <h1 className='text-2xl font-semibold tracking-tight'>
           Bem-vindo de volta
         </h1>
-        <p className='text-muted-foreground text-sm'>
+        <p className='text-muted-foreground text-xs'>
           Entre na sua conta Soccer Predictions
         </p>
       </div>
@@ -117,7 +117,7 @@ export function LoginForm() {
             name='email'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>E-mail</FormLabel>
+                <FormLabel className='text-xs'>E-mail</FormLabel>
                 <FormControl>
                   <Input
                     type='email'
@@ -138,7 +138,7 @@ export function LoginForm() {
             render={({ field }) => (
               <FormItem>
                 <div className='flex items-center justify-between'>
-                  <FormLabel>Senha</FormLabel>
+                  <FormLabel className='text-xs'>Senha</FormLabel>
                   <Link
                     href='/forgot-password'
                     className='text-muted-foreground hover:text-primary text-xs transition-colors'
@@ -182,7 +182,7 @@ export function LoginForm() {
           <Button
             type='submit'
             size='lg'
-            className='h-11 w-full'
+            className='h-11 w-full uppercase tracking-widest'
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Entrando...' : 'Entrar'}

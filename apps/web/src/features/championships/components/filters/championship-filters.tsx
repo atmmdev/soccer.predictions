@@ -51,15 +51,6 @@ export function ChampionshipFilters({
         />
         <CreateChampionshipDialog onCreate={onCreateChampionship} />
       </div>
-
-      <p className='text-muted-foreground px-2 text-xs xl:ml-auto'>
-        <span
-          className={resultCount === 0 ? 'text-red-500' : 'text-primary'}
-        >
-          {resultCount} Campeonato
-          {resultCount !== 1 ? 's' : ''} encontrados
-        </span>
-      </p>
     </>
   );
 }

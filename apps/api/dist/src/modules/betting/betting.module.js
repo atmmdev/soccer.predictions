@@ -13,12 +13,14 @@ const pool_owner_guard_js_1 = require("../../shared/auth/pool-owner.guard.js");
 const roles_guard_js_1 = require("../../shared/auth/roles.guard.js");
 const identity_module_js_1 = require("../identity/identity.module.js");
 const participant_service_js_1 = require("./application/services/participant.service.js");
+const activity_service_js_1 = require("./application/services/activity.service.js");
 const pool_service_js_1 = require("./application/services/pool.service.js");
 const prediction_reminder_service_js_1 = require("./application/services/prediction-reminder.service.js");
 const prediction_service_js_1 = require("./application/services/prediction.service.js");
 const ranking_update_notification_service_js_1 = require("./application/services/ranking-update-notification.service.js");
 const ranking_service_js_1 = require("./application/services/ranking.service.js");
 const scoring_service_js_1 = require("./application/services/scoring.service.js");
+const activity_controller_js_1 = require("./infrastructure/http/activity.controller.js");
 const participants_controller_js_1 = require("./infrastructure/http/participants.controller.js");
 const pools_controller_js_1 = require("./infrastructure/http/pools.controller.js");
 const predictions_controller_js_1 = require("./infrastructure/http/predictions.controller.js");
@@ -30,13 +32,20 @@ exports.BettingModule = BettingModule;
 exports.BettingModule = BettingModule = __decorate([
     (0, common_1.Module)({
         imports: [identity_module_js_1.IdentityModule],
-        controllers: [pools_controller_js_1.PoolsController, predictions_controller_js_1.PredictionsController, rankings_controller_js_1.RankingsController, participants_controller_js_1.ParticipantsController],
+        controllers: [
+            pools_controller_js_1.PoolsController,
+            predictions_controller_js_1.PredictionsController,
+            rankings_controller_js_1.RankingsController,
+            participants_controller_js_1.ParticipantsController,
+            activity_controller_js_1.ActivityController,
+        ],
         providers: [
             pool_service_js_1.PoolService,
             prediction_service_js_1.PredictionService,
             scoring_service_js_1.ScoringService,
             ranking_service_js_1.RankingService,
             participant_service_js_1.ParticipantService,
+            activity_service_js_1.ActivityService,
             prediction_reminder_service_js_1.PredictionReminderService,
             prediction_reminder_scheduler_js_1.PredictionReminderScheduler,
             ranking_update_notification_service_js_1.RankingUpdateNotificationService,
@@ -50,6 +59,7 @@ exports.BettingModule = BettingModule = __decorate([
             scoring_service_js_1.ScoringService,
             ranking_service_js_1.RankingService,
             participant_service_js_1.ParticipantService,
+            activity_service_js_1.ActivityService,
             ranking_update_notification_service_js_1.RankingUpdateNotificationService,
         ],
     })

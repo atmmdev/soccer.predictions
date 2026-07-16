@@ -195,7 +195,11 @@ let PredictionService = class PredictionService {
         return this.toFixtureRow({
             pool,
             fixture,
-            member: { id: user.id, name: user.name },
+            member: {
+                id: user.id,
+                name: user.name,
+                avatarDataUrl: user.avatarDataUrl,
+            },
             userId: user.id,
             prediction,
             poolPosition: positions.get(`${dto.poolId}:${user.id}`) ?? 0,
@@ -214,6 +218,7 @@ let PredictionService = class PredictionService {
                     select: {
                         id: true,
                         name: true,
+                        avatarDataUrl: true,
                         role: true,
                     },
                 },
@@ -233,6 +238,7 @@ let PredictionService = class PredictionService {
             current.push({
                 id: member.user.id,
                 name: member.user.name,
+                avatarDataUrl: member.user.avatarDataUrl,
             });
             membersByPoolId.set(member.poolId, current);
         }
@@ -262,6 +268,8 @@ let PredictionService = class PredictionService {
     }
     toFixtureRow(input) {
         const { pool, fixture, member, userId, prediction, poolPosition, earnedPoints, } = input;
+        const isOwnPrediction = member.id === userId;
+        const canRevealPrediction = isOwnPrediction || (0, prediction_window_js_1.areOthersPredictionsVisible)(fixture);
         return {
             id: fixture.id,
             poolId: pool.id,
@@ -269,7 +277,8 @@ let PredictionService = class PredictionService {
             poolPosition,
             participantId: member.id,
             participantName: member.name,
-            isOwnPrediction: member.id === userId,
+            participantAvatarDataUrl: member.avatarDataUrl,
+            isOwnPrediction,
             championshipName: fixture.championship.name,
             round: fixture.round,
             phase: fixture.phase,
@@ -281,8 +290,10 @@ let PredictionService = class PredictionService {
             matchStatus: this.toMatchStatus(fixture.status),
             officialHomeScore: fixture.homeScore,
             officialAwayScore: fixture.awayScore,
-            earnedPoints: prediction && fixture.status === 'FINISHED' ? earnedPoints : null,
-            prediction: prediction
+            earnedPoints: canRevealPrediction && prediction && fixture.status === 'FINISHED'
+                ? earnedPoints
+                : null,
+            prediction: canRevealPrediction && prediction
                 ? {
                     fixtureId: fixture.id,
                     predictedHomeScore: prediction.predictedHomeScore,

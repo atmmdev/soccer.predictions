@@ -1,13 +1,14 @@
 'use client';
 
 import { Calendar, Target, Trophy, Users } from 'lucide-react';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { TbPercentage } from 'react-icons/tb';
 
 import { usePredictions } from '@/features/predictions/hooks/use-predictions';
 import { usePools } from '@/features/pools/hooks/use-pools';
 import { useRankings } from '@/features/rankings/hooks/use-rankings';
 import type { RankingEntry } from '@/features/rankings/types/ranking-entry';
+import { compareRankingStandings } from '@/features/rankings/utils/compare-ranking-standings';
 import {
   compareFixturesForDashboard,
   isFixtureToday,
@@ -20,9 +21,14 @@ import { mapPredictionToDashboardMatch } from '../utils/map-prediction-to-match'
 import type { Match } from '../matches/types/match';
 import type { RankingUser } from '../rankings/types/ranking';
 
-const TOP_RANKING_LIMIT = 7;
+const TOP_RANKING_LIMIT = 10;
 const ACTIVE_POOLS_LIMIT = 5;
 const MATCHES_LIMIT = 10;
+
+export interface RankingPoolOption {
+  id: number;
+  name: string;
+}
 
 function getPrimaryPoolId(entries: RankingEntry[]): number | null {
   const currentUserPool = entries.find(entry => entry.isCurrentUser);
@@ -34,11 +40,26 @@ function getPrimaryPoolId(entries: RankingEntry[]): number | null {
   return entries[0]?.poolId ?? null;
 }
 
+function toRankingPools(entries: RankingEntry[]): RankingPoolOption[] {
+  const pools = new Map<number, string>();
+
+  for (const entry of entries) {
+    if (!pools.has(entry.poolId)) {
+      pools.set(entry.poolId, entry.poolName);
+    }
+  }
+
+  return [...pools.entries()]
+    .map(([id, name]) => ({ id, name }))
+    .sort((left, right) => left.name.localeCompare(right.name));
+}
+
 function toRankingUsers(entries: RankingEntry[]): RankingUser[] {
   return entries.map(entry => ({
     id: entry.id,
     name: entry.name,
     email: entry.email,
+    avatarDataUrl: entry.avatarDataUrl,
     points: entry.points,
   }));
 }
@@ -47,6 +68,7 @@ export function useDashboardData() {
   const poolsState = usePools();
   const predictionsState = usePredictions();
   const rankingsState = useRankings();
+  const [selectedPoolId, setSelectedPoolId] = useState<number | null>(null);
 
   const isLoading =
     poolsState.isLoading ||
@@ -61,29 +83,43 @@ export function useDashboardData() {
     [predictionsState.fixtures],
   );
 
+  const rankingPools = useMemo(
+    () => toRankingPools(rankingsState.entries),
+    [rankingsState.entries],
+  );
+
   const primaryPoolId = useMemo(
     () => getPrimaryPoolId(rankingsState.entries),
     [rankingsState.entries],
   );
 
+  useEffect(() => {
+    if (rankingPools.length === 0) {
+      setSelectedPoolId(null);
+      return;
+    }
+
+    const selectionStillValid =
+      selectedPoolId !== null &&
+      rankingPools.some(pool => pool.id === selectedPoolId);
+
+    if (!selectionStillValid) {
+      setSelectedPoolId(primaryPoolId ?? rankingPools[0].id);
+    }
+  }, [rankingPools, primaryPoolId, selectedPoolId]);
+
   const topRanking = useMemo(() => {
-    if (primaryPoolId === null) {
+    if (selectedPoolId === null) {
       return [];
     }
 
     return toRankingUsers(
       rankingsState.entries
-        .filter(entry => entry.poolId === primaryPoolId)
-        .sort((left, right) => {
-          if (right.points !== left.points) {
-            return right.points - left.points;
-          }
-
-          return left.name.localeCompare(right.name);
-        })
+        .filter(entry => entry.poolId === selectedPoolId)
+        .sort(compareRankingStandings)
         .slice(0, TOP_RANKING_LIMIT),
     );
-  }, [rankingsState.entries, primaryPoolId]);
+  }, [rankingsState.entries, selectedPoolId]);
 
   const activePools = useMemo(
     () =>
@@ -143,12 +179,23 @@ export function useDashboardData() {
       fixture =>
         fixture.matchStatus === 'FINISHED' && fixture.prediction !== null,
     );
-    const hits = finishedWithPrediction.filter(
-      fixture => (fixture.earnedPoints ?? 0) > 0,
-    ).length;
+    const exactHits = finishedWithPrediction.filter(fixture => {
+      const prediction = fixture.prediction;
+
+      if (!prediction) {
+        return false;
+      }
+
+      return (
+        fixture.officialHomeScore !== null &&
+        fixture.officialAwayScore !== null &&
+        prediction.predictedHomeScore === fixture.officialHomeScore &&
+        prediction.predictedAwayScore === fixture.officialAwayScore
+      );
+    }).length;
     const hitRate =
       finishedWithPrediction.length > 0
-        ? Math.round((hits / finishedWithPrediction.length) * 100)
+        ? Math.round((exactHits / finishedWithPrediction.length) * 100)
         : 0;
 
     return [
@@ -185,7 +232,7 @@ export function useDashboardData() {
       {
         title: 'Palpites Registrados',
         value: registeredPredictions.toLocaleString('pt-BR'),
-        trend: `Aguardando resultados`,
+        trend: `Boa sorte!`,
         trendPositive: registeredPredictions > 0,
         icon: Target,
         iconBackground: 'bg-violet-100',
@@ -196,7 +243,7 @@ export function useDashboardData() {
         value: `${hitRate}%`,
         trend:
           finishedWithPrediction.length > 0
-            ? `${hits} de ${finishedWithPrediction.length} jogos finalizados`
+            ? `${exactHits} de ${finishedWithPrediction.length} placares exatos`
             : 'Sem jogos finalizados ainda',
         trendPositive: hitRate >= 50,
         icon: TbPercentage,
@@ -234,6 +281,9 @@ export function useDashboardData() {
     error,
     stats,
     topRanking,
+    rankingPools,
+    selectedPoolId,
+    setSelectedPoolId,
     activePools,
     matchCounts,
     filterMatches,

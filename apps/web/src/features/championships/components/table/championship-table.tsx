@@ -45,7 +45,7 @@ export function ChampionshipTable({
 
   return (
     <div className='overflow-x-auto'>
-      <Table>
+      <Table className='bg-white'>
         <TableHeader>
           <TableRow className='hover:bg-transparent'>
             <ChampionshipSortableHead
@@ -77,9 +77,6 @@ export function ChampionshipTable({
               onSort={onSort}
             />
             <TableHead className='text-muted-foreground text-center text-xs'>
-              Tabela de Classificação
-            </TableHead>
-            <TableHead className='text-muted-foreground text-right text-xs'>
               Ações
             </TableHead>
           </TableRow>

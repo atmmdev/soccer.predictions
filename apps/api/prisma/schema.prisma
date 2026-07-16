@@ -83,6 +83,8 @@ model User {
   id              Int          @id @default(autoincrement())
   email           String       @unique
   name            String
+  phone           String?      @db.VarChar(20)
+  avatarDataUrl   String?      @db.MediumText
   password        String?
   authProvider    AuthProvider @default(LOCAL)
   providerId      String?
@@ -288,6 +290,6 @@ model PointHistory {
   user    User    @relation(fields: [userId], references: [id])
   fixture Fixture @relation(fields: [fixtureId], references: [id])
 
+  @@unique([poolId, userId, fixtureId])
   @@index([poolId, userId])
-  @@index([poolId, userId, fixtureId])
 }

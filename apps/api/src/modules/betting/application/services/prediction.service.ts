@@ -13,6 +13,7 @@ import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 import type { AuthUser } from '../../../identity/application/types/auth-user.js';
 import type { SubmitPredictionDto } from '../dtos/submit-prediction.dto.js';
 import {
+  areOthersPredictionsVisible,
   canEditPrediction,
   getPredictionLockMessage,
 } from '../utils/prediction-window.js';
@@ -27,6 +28,7 @@ export interface PredictionFixtureResponse {
   poolPosition: number;
   participantId: number;
   participantName: string;
+  participantAvatarDataUrl: string | null;
   isOwnPrediction: boolean;
   championshipName: string;
   round: number | null;
@@ -303,7 +305,11 @@ export class PredictionService {
     return this.toFixtureRow({
       pool,
       fixture,
-      member: { id: user.id, name: user.name },
+      member: {
+        id: user.id,
+        name: user.name,
+        avatarDataUrl: user.avatarDataUrl,
+      },
       userId: user.id,
       prediction,
       poolPosition: positions.get(`${dto.poolId}:${user.id}`) ?? 0,
@@ -324,6 +330,7 @@ export class PredictionService {
           select: {
             id: true,
             name: true,
+            avatarDataUrl: true,
             role: true,
           },
         },
@@ -335,7 +342,10 @@ export class PredictionService {
       },
     });
 
-    const membersByPoolId = new Map<number, Array<{ id: number; name: string }>>();
+    const membersByPoolId = new Map<
+      number,
+      Array<{ id: number; name: string; avatarDataUrl: string | null }>
+    >();
 
     for (const member of members) {
       if (member.user.role === 'SUPER_ADMIN') {
@@ -347,6 +357,7 @@ export class PredictionService {
       current.push({
         id: member.user.id,
         name: member.user.name,
+        avatarDataUrl: member.user.avatarDataUrl,
       });
       membersByPoolId.set(member.poolId, current);
     }
@@ -398,7 +409,7 @@ export class PredictionService {
       awayTeam: { name: string; logo: string; externalId: number };
       championship: { name: string };
     };
-    member: { id: number; name: string };
+    member: { id: number; name: string; avatarDataUrl: string | null };
     userId: number;
     prediction: Prediction | null;
     poolPosition: number;
@@ -414,6 +425,10 @@ export class PredictionService {
       earnedPoints,
     } = input;
 
+    const isOwnPrediction = member.id === userId;
+    const canRevealPrediction =
+      isOwnPrediction || areOthersPredictionsVisible(fixture);
+
     return {
       id: fixture.id,
       poolId: pool.id,
@@ -421,7 +436,8 @@ export class PredictionService {
       poolPosition,
       participantId: member.id,
       participantName: member.name,
-      isOwnPrediction: member.id === userId,
+      participantAvatarDataUrl: member.avatarDataUrl,
+      isOwnPrediction,
       championshipName: fixture.championship.name,
       round: fixture.round,
       phase: fixture.phase,
@@ -434,15 +450,18 @@ export class PredictionService {
       officialHomeScore: fixture.homeScore,
       officialAwayScore: fixture.awayScore,
       earnedPoints:
-        prediction && fixture.status === 'FINISHED' ? earnedPoints : null,
-      prediction: prediction
-        ? {
-            fixtureId: fixture.id,
-            predictedHomeScore: prediction.predictedHomeScore,
-            predictedAwayScore: prediction.predictedAwayScore,
-            selectedPlayerId: prediction.selectedPlayerId,
-          }
-        : null,
+        canRevealPrediction && prediction && fixture.status === 'FINISHED'
+          ? earnedPoints
+          : null,
+      prediction:
+        canRevealPrediction && prediction
+          ? {
+              fixtureId: fixture.id,
+              predictedHomeScore: prediction.predictedHomeScore,
+              predictedAwayScore: prediction.predictedAwayScore,
+              selectedPlayerId: prediction.selectedPlayerId,
+            }
+          : null,
     };
   }
 

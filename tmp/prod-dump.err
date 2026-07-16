@@ -1,0 +1,2 @@
+mysqldump: [Warning] Using a password on the command line interface can be insecure.
+mysqldump: Got error: 1226: User 'u352396458_soccer' has exceeded the 'max_connections_per_hour' resource (current value: 500) when trying to connect

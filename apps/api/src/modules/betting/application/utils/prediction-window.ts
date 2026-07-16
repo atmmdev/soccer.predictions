@@ -16,6 +16,14 @@ export function canEditPrediction(
   return now < getPredictionDeadline(fixture.date);
 }
 
+/** Palpites alheios só após o prazo (cutoff) ou partida já iniciada/encerrada. */
+export function areOthersPredictionsVisible(
+  fixture: { date: Date; status: FixtureStatus },
+  now: Date = new Date(),
+): boolean {
+  return !canEditPrediction(fixture, now);
+}
+
 export function getPredictionLockMessage(
   fixture: { date: Date; status: FixtureStatus },
   now: Date = new Date(),

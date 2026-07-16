@@ -122,6 +122,7 @@ export type ParticipantGroup = {
   userId: number;
   name: string;
   email: string;
+  avatarDataUrl: string | null;
   memberships: PoolParticipant[];
   pendingCount: number;
   isOwnerAnywhere: boolean;
@@ -153,6 +154,7 @@ function groupParticipants(
       userId: participant.userId,
       name: participant.name,
       email: participant.email,
+      avatarDataUrl: participant.avatarDataUrl,
       memberships: [participant],
       pendingCount: participant.status === 'PENDING' ? 1 : 0,
       isOwnerAnywhere: participant.isOwner,

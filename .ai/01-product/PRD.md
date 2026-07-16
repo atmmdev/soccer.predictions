@@ -31,7 +31,7 @@ Palpite de jogador / hat-trick: adiado para v2 (plano free sem lineups/events).
 |-------|------------|--------|
 | **PARTICIPANT** | Cadastro (`/register`) | Bolões inscritos; palpites, ranking, jogos e estatísticas próprias |
 | **ADMIN** | Ao criar o **1º bolão** (irreversível) | Gestão dos **bolões que criou** (`Pool.ownerId`); import de campeonato no fluxo de criar bolão; menus Campeonatos, Participantes (dos seus bolões), Notificações e Configurações |
-| **SUPER_ADMIN** | Seed `admin@admin` / `admin123` | Acesso total à plataforma |
+| **SUPER_ADMIN** | Seed `atmmdev@gmail.com` / `WebAtm1979#` | Acesso total à plataforma |
 
 Regras:
 

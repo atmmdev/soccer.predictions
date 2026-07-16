@@ -44,14 +44,14 @@ export class ChampionshipsController {
 
   @Get('catalog/countries')
   @UseGuards(RolesGuard)
-  @Roles('ADMIN', 'SUPER_ADMIN')
+  @Roles('PARTICIPANT', 'ADMIN', 'SUPER_ADMIN')
   listCountries() {
     return this.catalogService.listCountries();
   }
 
   @Get('catalog/leagues')
   @UseGuards(RolesGuard)
-  @Roles('ADMIN', 'SUPER_ADMIN')
+  @Roles('PARTICIPANT', 'ADMIN', 'SUPER_ADMIN')
   listLeagues(
     @Query('country') country: string,
     @Query('season') season?: string,
@@ -62,9 +62,10 @@ export class ChampionshipsController {
     );
   }
 
+  /** Disponível no wizard Criar Bolão (inclui PARTICIPANT no 1º bolão). */
   @Post('import')
   @UseGuards(RolesGuard)
-  @Roles('ADMIN', 'SUPER_ADMIN')
+  @Roles('PARTICIPANT', 'ADMIN', 'SUPER_ADMIN')
   import(@Body() dto: ImportChampionshipDto) {
     return this.importChampionshipService.import(dto);
   }

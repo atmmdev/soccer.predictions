@@ -84,6 +84,8 @@ exports.UserScalarFieldEnum = {
     id: 'id',
     email: 'email',
     name: 'name',
+    phone: 'phone',
+    avatarDataUrl: 'avatarDataUrl',
     password: 'password',
     authProvider: 'authProvider',
     providerId: 'providerId',
@@ -227,6 +229,8 @@ exports.NullsOrder = {
 exports.UserOrderByRelevanceFieldEnum = {
     email: 'email',
     name: 'name',
+    phone: 'phone',
+    avatarDataUrl: 'avatarDataUrl',
     password: 'password',
     providerId: 'providerId'
 };

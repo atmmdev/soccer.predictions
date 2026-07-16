@@ -127,7 +127,7 @@ export function RegisterForm() {
     <div className='space-y-6'>
       <div className='space-y-1'>
         <h1 className='text-2xl font-semibold tracking-tight'>Criar conta</h1>
-        <p className='text-muted-foreground text-sm'>
+        <p className='text-muted-foreground text-xs'>
           Cadastre-se no Soccer Predictions
         </p>
       </div>
@@ -139,7 +139,7 @@ export function RegisterForm() {
             name='name'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nome e sobrenome</FormLabel>
+                <FormLabel className='text-xs'>Nome e sobrenome</FormLabel>
                 <FormControl>
                   <Input
                     placeholder='Ex.: João Silva'
@@ -158,7 +158,7 @@ export function RegisterForm() {
             name='email'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>E-mail</FormLabel>
+                <FormLabel className='text-xs'>E-mail</FormLabel>
                 <FormControl>
                   <Input
                     type='email'
@@ -178,7 +178,7 @@ export function RegisterForm() {
             name='password'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Senha</FormLabel>
+                <FormLabel className='text-xs'>Senha</FormLabel>
                 <FormControl>
                   <PasswordInput
                     autoComplete='new-password'
@@ -196,7 +196,7 @@ export function RegisterForm() {
             name='confirmPassword'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirmar senha</FormLabel>
+                <FormLabel className='text-xs'>Confirmar senha</FormLabel>
                 <FormControl>
                   <PasswordInput
                     autoComplete='new-password'
@@ -212,7 +212,7 @@ export function RegisterForm() {
           <Button
             type='submit'
             size='lg'
-            className='h-11 w-full'
+            className='h-11 w-full uppercase tracking-widest'
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Criando conta...' : 'Criar conta'}

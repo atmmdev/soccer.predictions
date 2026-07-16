@@ -1,3 +1,5 @@
+import { cn } from '@/lib/utils';
+
 interface TeamCrestProps {
   name: string;
   logo?: string | null;
@@ -31,7 +33,7 @@ export function TeamCrest({
   const hasEmoji = Boolean(logo && !hasImage);
 
   return (
-    <span className={className ?? 'inline-flex min-w-0 items-center gap-1.5'}>
+    <span className={className ?? 'inline-flex min-w-0 items-center gap-2'}>
       {hasImage ? (
         <img
           src={logo!}
@@ -72,7 +74,7 @@ export function MatchTeamsStack({
   size = 18,
 }: MatchTeamsStackProps) {
   return (
-    <div className={className ?? 'flex flex-col gap-1'}>
+    <div className={cn('flex flex-col gap-2', className)}>
       <TeamCrest name={homeTeam} logo={homeTeamLogo} size={size} />
       <TeamCrest name={awayTeam} logo={awayTeamLogo} size={size} />
     </div>
@@ -102,21 +104,19 @@ export function MatchTeamsInline({
 }: MatchTeamsInlineProps) {
   const hasScore = homeScore !== null && awayScore !== null;
   const scoreNode = hasScore ? (
-    <span className='inline-flex items-center gap-1.5 tabular-nums'>
-      <span className='font-semibold text-3xl'>{homeScore}</span>
-      <span className='text-muted-foreground font-normal'>x</span>
-      <span className='font-semibold text-3xl'>{awayScore}</span>
+    <span className='shrink-0 font-bold tabular-nums'>
+      {homeScore} - {awayScore}
     </span>
   ) : (
-    <span className='text-muted-foreground font-normal'>x</span>
+    <span className='text-muted-foreground shrink-0 px-1 font-normal'>x</span>
   );
 
   return (
     <div
-      className={
-        className ??
-        'flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-sm'
-      }
+      className={cn(
+        'flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1.5 text-sm',
+        className,
+      )}
     >
       <TeamCrest name={homeTeam} logo={homeTeamLogo} size={size} />
       {scoreNode}

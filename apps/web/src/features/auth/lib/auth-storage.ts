@@ -7,6 +7,7 @@ import {
 import type { AuthUser, UserRole } from '../types/auth';
 
 const USER_KEY = 'soccer_predictions_user';
+const USER_UPDATED_EVENT = 'soccer-predictions:user-updated';
 
 function readCookie(name: string): string | null {
   if (typeof document === 'undefined') {
@@ -63,6 +64,7 @@ export function saveAuthSession(accessToken: string, user: AuthUser): void {
   setAccessTokenCookie(accessToken);
   setUserRoleCookie(user.role);
   setUserNameCookie(user.name);
+  window.dispatchEvent(new Event(USER_UPDATED_EVENT));
 }
 
 export function updateStoredUser(user: AuthUser): void {
@@ -82,6 +84,7 @@ export function clearAuthSession(): void {
   clearAccessTokenCookie();
   clearUserRoleCookie();
   clearUserNameCookie();
+  window.dispatchEvent(new Event(USER_UPDATED_EVENT));
 }
 
 export function getAccessToken(): string | null {
@@ -122,7 +125,27 @@ export function getStoredUser(): AuthUser | null {
     id: 0,
     email: '',
     name,
+    phone: null,
+    avatarDataUrl: null,
     role,
+  };
+}
+
+export function getStoredUserSnapshot(): string | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  return sessionStorage.getItem(USER_KEY);
+}
+
+export function subscribeToStoredUser(onChange: () => void): () => void {
+  window.addEventListener(USER_UPDATED_EVENT, onChange);
+  window.addEventListener('storage', onChange);
+
+  return () => {
+    window.removeEventListener(USER_UPDATED_EVENT, onChange);
+    window.removeEventListener('storage', onChange);
   };
 }
 

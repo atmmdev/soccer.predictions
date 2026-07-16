@@ -7,6 +7,7 @@ import type {
   RankingEntry,
   RankingScoringRuleFilter,
 } from '../types/ranking-entry';
+import { compareRankingStandings } from '../utils/compare-ranking-standings';
 import { getRankingStatValue } from '../utils/ranking-stats';
 
 export type RankingSortKey = 'name' | 'points' | RankingStatKey;
@@ -22,7 +23,7 @@ function compareEntries(
     case 'name':
       return a.name.localeCompare(b.name, 'pt-BR');
     case 'points':
-      return a.points - b.points;
+      return compareRankingStandings(a, b);
     default:
       return getRankingStatValue(a, sortKey) - getRankingStatValue(b, sortKey);
   }
@@ -50,18 +51,19 @@ export function useRankingTable(
     const safeEntries = Array.isArray(entries) ? entries : [];
 
     return [...safeEntries].sort((a, b) => {
+      if (sortKey === 'points') {
+        // compareRankingStandings: pontos desc → PE → nome.
+        const comparison = compareRankingStandings(a, b);
+        return sortDir === 'desc' ? comparison : -comparison;
+      }
+
       const comparison = compareEntries(a, b, sortKey);
 
       if (comparison !== 0) {
         return sortDir === 'asc' ? comparison : -comparison;
       }
 
-      // Stable tie-breakers when sorting by a scoring rule column.
-      if (b.points !== a.points) {
-        return b.points - a.points;
-      }
-
-      return a.name.localeCompare(b.name, 'pt-BR');
+      return compareRankingStandings(a, b);
     });
   }, [entries, sortDir, sortKey]);
 

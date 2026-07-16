@@ -39,7 +39,7 @@ export function RankingList() {
       />
 
       {isLoading ? (
-        <PageLoading compact label='Carregando ranking...' />
+        <PageLoading compact label='Carregando classificação...' />
       ) : error ? (
         <div className='flex flex-col items-center justify-center gap-3 py-12'>
           <p className='text-destructive text-center text-sm'>{error}</p>

@@ -15,7 +15,6 @@ export function ChampionshipRow({
   onSync,
   onStatusChange,
 }: ChampionshipRowProps) {
-  // TODO: Adicionar link para uma pagina (Tabela de Classificação).
   return (
     <TableRow>
       <TableCell className='font-medium'>
@@ -29,10 +28,7 @@ export function ChampionshipRow({
       <TableCell>
         <ChampionshipStatusBadge status={championship.status} />
       </TableCell>
-      <TableCell className='text-primary text-xs font-medium text-center'>
-        Classificação
-      </TableCell>
-      <TableCell className='text-right'>
+      <TableCell className='text-center'>
         <ChampionshipActions
           championship={championship}
           onSync={onSync}

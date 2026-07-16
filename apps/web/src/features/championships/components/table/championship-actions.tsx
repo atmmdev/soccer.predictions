@@ -1,6 +1,7 @@
 'use client';
 
 import { Ban, CheckCircle2, RefreshCw } from 'lucide-react';
+import { useState } from 'react';
 
 import { IconActionButton } from '@/components/ui/icon-action-button';
 
@@ -17,32 +18,43 @@ export function ChampionshipActions({
   onSync,
   onStatusChange,
 }: ChampionshipActionsProps) {
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  async function handleSync() {
+    setIsSyncing(true);
+    try {
+      await onSync(championship.id);
+    } finally {
+      setIsSyncing(false);
+    }
+  }
+
   return (
-    <div className='flex items-center justify-end gap-0.5'>
+    <div className='flex items-center justify-center gap-0.5'>
       <IconActionButton
-        label='Sincronizar jogos'
+        label='Sincronizar'
+        icon={RefreshCw}
         tone='sync'
-        onClick={() => void onSync(championship.id)}
-      >
-        <RefreshCw className='size-4' />
-      </IconActionButton>
+        loading={isSyncing}
+        onClick={() => void handleSync()}
+      />
 
       {championship.status === 'ACTIVE' ? (
         <IconActionButton
           label='Desativar'
+          icon={Ban}
           tone='mute'
+          disabled={isSyncing}
           onClick={() => void onStatusChange(championship.id, false)}
-        >
-          <Ban className='size-4' />
-        </IconActionButton>
+        />
       ) : (
         <IconActionButton
           label='Ativar'
+          icon={CheckCircle2}
           tone='success'
+          disabled={isSyncing}
           onClick={() => void onStatusChange(championship.id, true)}
-        >
-          <CheckCircle2 className='size-4' />
-        </IconActionButton>
+        />
       )}
     </div>
   );

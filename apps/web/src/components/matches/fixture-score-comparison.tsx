@@ -19,8 +19,8 @@ export function FixtureScoreComparison({
 
   return (
     <div className={className}>
-      <div className='grid grid-cols-2 gap-4 text-center'>
-        <div className='space-y-2'>
+      <div className='grid grid-cols-2 gap-5 text-center'>
+        <div className='space-y-3'>
           <p className='text-muted-foreground text-xs font-medium'>
             Resultado Oficial
           </p>
@@ -30,7 +30,7 @@ export function FixtureScoreComparison({
             highlight={hasOfficial && hasPrediction}
           />
         </div>
-        <div className='space-y-2'>
+        <div className='space-y-3'>
           <p className='text-muted-foreground text-xs font-medium'>
             {predictionLabel}
           </p>

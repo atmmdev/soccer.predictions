@@ -58,12 +58,12 @@ export const mainNav: SidebarItem[] = [
     title: 'Estatísticas',
     url: '/statistics',
     icon: ChartSpline,
+    roles: ['ADMIN', 'PARTICIPANT'],
   },
   {
     title: 'Notificações',
     url: '/notifications',
     icon: Bell,
-    roles: ['ADMIN', 'SUPER_ADMIN'],
   },
   {
     title: 'Perfil',

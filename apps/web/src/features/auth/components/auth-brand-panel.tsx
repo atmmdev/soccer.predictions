@@ -29,17 +29,10 @@ export function AuthBrandPanel() {
               Palpite. Compete. Vença.
             </h2>
             <p className='max-w-sm text-sm leading-relaxed text-white/85'>
-              Crie bolões, acompanhe jogos reais e dispute o ranking com regras
+              Crie bolões, acompanhe jogos reais e dispute a classificação com regras
               de pontuação personalizadas.
             </p>
           </div>
-        </div>
-
-        <div className='text-xs text-white/50'>
-          by{' '}
-          <a href='http://www.atmm.dev' className='underline'>
-            atmm.dev
-          </a>
         </div>
       </div>
     </div>

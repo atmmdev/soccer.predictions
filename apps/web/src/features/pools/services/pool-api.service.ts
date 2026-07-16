@@ -31,6 +31,7 @@ export interface DiscoverablePoolResponse {
   participantsCount: number;
   ownerId: number;
   ownerName: string;
+  ownerAvatarDataUrl: string | null;
   status: 'ACTIVE' | 'INACTIVE' | 'CLOSED';
   membershipStatus: DiscoverMembershipStatus;
 }

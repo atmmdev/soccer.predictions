@@ -14,9 +14,41 @@ import {
 
 @Injectable()
 export class ScoringService {
+  /** Deduplicates concurrent syncs for the same pool in this process. */
+  private readonly syncingPools = new Map<number, Promise<void>>();
+
   constructor(private readonly prisma: PrismaService) {}
 
   async syncPoolScores(poolId: number): Promise<void> {
+    const inFlight = this.syncingPools.get(poolId);
+    if (inFlight) {
+      return inFlight;
+    }
+
+    const syncPromise = this.runPoolScoreSync(poolId).finally(() => {
+      this.syncingPools.delete(poolId);
+    });
+
+    this.syncingPools.set(poolId, syncPromise);
+    return syncPromise;
+  }
+
+  async syncPoolsScores(poolIds: number[]): Promise<void> {
+    for (const poolId of poolIds) {
+      await this.syncPoolScores(poolId);
+    }
+  }
+
+  async syncScoresForChampionship(championshipId: number): Promise<void> {
+    const pools = await this.prisma.pool.findMany({
+      where: { championshipId },
+      select: { id: true },
+    });
+
+    await this.syncPoolsScores(pools.map(pool => pool.id));
+  }
+
+  private async runPoolScoreSync(poolId: number): Promise<void> {
     const pool = await this.prisma.pool.findUnique({
       where: { id: poolId },
       select: {
@@ -59,21 +91,6 @@ export class ScoringService {
     }
   }
 
-  async syncPoolsScores(poolIds: number[]): Promise<void> {
-    for (const poolId of poolIds) {
-      await this.syncPoolScores(poolId);
-    }
-  }
-
-  async syncScoresForChampionship(championshipId: number): Promise<void> {
-    const pools = await this.prisma.pool.findMany({
-      where: { championshipId },
-      select: { id: true },
-    });
-
-    await this.syncPoolsScores(pools.map(pool => pool.id));
-  }
-
   private async scoreFixture(
     poolId: number,
     fixture: {
@@ -92,10 +109,6 @@ export class ScoringService {
     if (predictions.length === 0) {
       return;
     }
-
-    await this.prisma.pointHistory.deleteMany({
-      where: { poolId, fixtureId: fixture.id },
-    });
 
     const rows: Prisma.PointHistoryCreateManyInput[] = [];
 
@@ -127,9 +140,18 @@ export class ScoringService {
       });
     }
 
-    if (rows.length > 0) {
-      await this.prisma.pointHistory.createMany({ data: rows });
-    }
+    await this.prisma.$transaction(async (tx) => {
+      await tx.pointHistory.deleteMany({
+        where: { poolId, fixtureId: fixture.id },
+      });
+
+      if (rows.length > 0) {
+        await tx.pointHistory.createMany({
+          data: rows,
+          skipDuplicates: true,
+        });
+      }
+    });
   }
 
   private resolvePrimaryAchievement(

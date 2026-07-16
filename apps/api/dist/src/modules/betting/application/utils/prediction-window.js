@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.canEditPrediction = canEditPrediction;
+exports.areOthersPredictionsVisible = areOthersPredictionsVisible;
 exports.getPredictionLockMessage = getPredictionLockMessage;
 const prediction_cutoff_js_1 = require("../constants/prediction-cutoff.js");
 function getPredictionDeadline(kickoffAt) {
@@ -11,6 +12,9 @@ function canEditPrediction(fixture, now = new Date()) {
         return false;
     }
     return now < getPredictionDeadline(fixture.date);
+}
+function areOthersPredictionsVisible(fixture, now = new Date()) {
+    return !canEditPrediction(fixture, now);
 }
 function getPredictionLockMessage(fixture, now = new Date()) {
     if (fixture.status === 'LIVE') {

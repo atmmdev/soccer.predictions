@@ -58,6 +58,7 @@ let InstagramOAuthService = class InstagramOAuthService {
                 providerId: userId,
                 name: `Instagram ${userId}`,
                 username: userId,
+                avatarUrl: null,
             };
         }
         const profile = (await profileResponse.json());
@@ -65,6 +66,7 @@ let InstagramOAuthService = class InstagramOAuthService {
             providerId: profile.id,
             name: profile.name ?? profile.username,
             username: profile.username,
+            avatarUrl: profile.profile_picture_url ?? null,
         };
     }
 };

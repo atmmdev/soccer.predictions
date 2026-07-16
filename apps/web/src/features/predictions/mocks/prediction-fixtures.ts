@@ -10,7 +10,11 @@ function localKickoffInMinutes(minutesFromNow: number): string {
 function ownParticipant(
   fixture: Omit<
     PredictionFixtureItem,
-    'participantId' | 'participantName' | 'isOwnPrediction' | 'earnedPoints'
+    | 'participantId'
+    | 'participantName'
+    | 'participantAvatarDataUrl'
+    | 'isOwnPrediction'
+    | 'earnedPoints'
   > & { earnedPoints?: number | null },
 ): PredictionFixtureItem {
   return {
@@ -18,6 +22,7 @@ function ownParticipant(
     earnedPoints: fixture.earnedPoints ?? null,
     participantId: 1,
     participantName: 'Você',
+    participantAvatarDataUrl: null,
     isOwnPrediction: true,
   };
 }

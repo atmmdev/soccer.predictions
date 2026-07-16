@@ -120,6 +120,32 @@ export async function fetchMeRequest(accessToken: string): Promise<AuthResponse[
   return body.user;
 }
 
+export async function updateProfileRequest(
+  accessToken: string,
+  payload: {
+    name: string;
+    phone?: string | null;
+    avatarDataUrl?: string | null;
+  },
+): Promise<AuthResponse['user']> {
+  const response = await fetch(`${API_URL}/auth/me`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw await parseError(response);
+  }
+
+  const body = (await response.json()) as { user: AuthResponse['user'] };
+
+  return body.user;
+}
+
 export async function forgotPasswordRequest(email: string): Promise<{ message: string }> {
   const response = await fetch(`${API_URL}/auth/forgot-password`, {
     method: 'POST',

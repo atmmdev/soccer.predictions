@@ -26,6 +26,7 @@ export interface RankingEntry {
   championshipName: string;
   name: string;
   email: string;
+  avatarDataUrl: string | null;
   points: number;
   predictionsCount: number;
   scoringAchievements: RankingScoringAchievements;

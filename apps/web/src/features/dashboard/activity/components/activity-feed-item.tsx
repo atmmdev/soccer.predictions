@@ -1,6 +1,12 @@
 import { Award, FileText, Trophy, UserPlus, type LucideIcon } from 'lucide-react';
 
-import { ActivityItem, ActivityType } from '../types/activity';
+import { Badge } from '@/components/ui/badge';
+import { UserAvatar } from '@/components/ui/user-avatar';
+import { cn } from '@/lib/utils';
+
+import type { ActivityFeedItemData } from '../hooks/use-activity';
+import type { ActivityType } from '../types/activity';
+import { formatActivityRelativeTime } from '../utils/format-activity-time';
 
 const iconMap: Record<ActivityType, LucideIcon> = {
   participant: UserPlus,
@@ -17,27 +23,52 @@ const colorMap: Record<ActivityType, string> = {
 };
 
 interface ActivityFeedItemProps {
-  item: ActivityItem;
+  item: ActivityFeedItemData;
 }
 
 export function ActivityFeedItem({ item }: ActivityFeedItemProps) {
   const Icon = iconMap[item.type];
 
   return (
-    <div className='flex items-start gap-3 py-3 border-b border-gray-200'>
-      <div
-        className={`flex size-10 shrink-0 items-center justify-center rounded-lg ${colorMap[item.type]}`}
-      >
-        <Icon className='size-4' />
-      </div>
+    <div
+      className={cn(
+        'flex items-start gap-3 border-b border-gray-200 py-3 last:border-b-0',
+        item.isRead && 'opacity-70',
+      )}
+    >
+      {item.userName ? (
+        <UserAvatar
+          name={item.userName}
+          avatarDataUrl={item.avatarDataUrl}
+          className='size-10'
+        />
+      ) : (
+        <div
+          className={`flex size-10 shrink-0 items-center justify-center rounded-lg ${colorMap[item.type]}`}
+        >
+          <Icon className='size-4' />
+        </div>
+      )}
       <div className='min-w-0 flex-1 space-y-0.5'>
-        <p className='text-sm font-semibold leading-snug'>{item.title}</p>
+        <div className='flex flex-wrap items-center gap-2'>
+          <p className='text-sm leading-snug font-semibold'>{item.title}</p>
+          {item.isRead ? (
+            <Badge
+              variant='secondary'
+              className='h-5 bg-muted text-muted-foreground'
+            >
+              Lida
+            </Badge>
+          ) : (
+            <Badge className='h-5'>Nova</Badge>
+          )}
+        </div>
         <p className='text-muted-foreground text-sm leading-snug'>
           {item.description}
         </p>
       </div>
       <span className='text-muted-foreground shrink-0 pt-0.5 text-xs whitespace-nowrap'>
-        {item.timestamp}
+        {formatActivityRelativeTime(item.occurredAt)}
       </span>
     </div>
   );

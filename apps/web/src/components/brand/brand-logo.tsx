@@ -21,8 +21,7 @@ export function BrandLogo({
         alt={brand.logo.alt}
         width={brand.logo.width}
         height={brand.logo.height}
-        className={cn('h-11 w-auto', imageClassName)}
-        style={{ width: 'auto', height: '2.75rem' }}
+        className={cn('', imageClassName)}
         priority={priority}
       />
     </div>

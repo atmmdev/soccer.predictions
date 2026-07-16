@@ -9,13 +9,14 @@ interface StatsCardProps {
 export function StatsCard({ item }: StatsCardProps) {
   return (
     <Card className='shadow-sm'>
-      <CardContent className='flex flex-col gap-3 pt-4'>
-        <div className='flex items-start justify-between gap-2'>
+      <CardContent className='flex flex-col'>
+        <div className='flex items-start justify-between'>
           <p className='text-muted-foreground text-sm leading-snug'>{item.title}</p>
           <StatsIcon
             icon={item.icon}
             iconBackground={item.iconBackground}
             iconColor={item.iconColor}
+            iconSize={34}
           />
         </div>
         <p className='text-3xl font-bold tracking-tight'>{item.value}</p>

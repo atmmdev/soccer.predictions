@@ -4,6 +4,7 @@ export interface PoolDelegateCandidate {
   id: number;
   name: string;
   email: string;
+  avatarDataUrl: string | null;
   role: 'ADMIN' | 'PARTICIPANT';
 }
 
