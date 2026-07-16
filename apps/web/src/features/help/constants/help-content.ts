@@ -2,6 +2,7 @@ import {
   defaultBaseScoringRules,
   defaultCupPhaseRules,
 } from '@/features/pools/mocks/scoring-templates';
+import { PREDICTION_CUTOFF_MINUTES } from '@/features/predictions/constants/prediction-cutoff';
 
 export const HELP_SECTIONS = [
   { id: 'como-funciona', label: 'Como funciona' },
@@ -16,9 +17,9 @@ export const HELP_SECTIONS = [
 export const HOW_IT_WORKS = {
   title: 'Como funciona o Soccer Predictions',
   paragraphs: [
-    'O Soccer Predictions é uma plataforma de bolões de futebol. Administradores importam campeonatos reais; participantes entram em bolões, registram palpites nos jogos e competem na classificação com base nos pontos acumulados.',
-    'Cada bolão pode ter regras de pontuação personalizadas definidas pelo administrador na criação. Os valores abaixo são os padrões do sistema — o administrador do bolão pode alterá-los.',
-    'A pontuação é calculada automaticamente quando o jogo é finalizado. A classificação é sempre derivada do histórico de pontos — não existe tabela de classificação separada.',
+    'O Soccer Predictions é uma plataforma de bolões de futebol. Campeonatos reais são importados; participantes entram em bolões, registram palpites de placar e competem na classificação.',
+    'Cada bolão tem regras de pontuação próprias, definidas na criação (e editáveis pelo administrador). Os valores desta página são os padrões do sistema.',
+    'Os placares oficiais são atualizados automaticamente. Quando o jogo termina, os pontos são calculados e a classificação é atualizada.',
   ],
 };
 
@@ -27,44 +28,43 @@ export const WORKFLOW_STEPS = [
     step: 1,
     title: 'Crie sua conta',
     description:
-      'Cadastre-se com e-mail e senha ou entre com Google/Instagram. Sua sessão fica salva no navegador.',
+      'Cadastre-se com e-mail e senha e confirme o e-mail pelo link enviado. Depois disso, será direcionado ao dashboard do sistema.',
   },
   {
     step: 2,
-    title: 'Entre em um bolão',
+    title: 'Entre ou crie um bolão',
     description:
-      'Participe de um bolão existente usando o código de convite ou crie o seu (se for administrador), vinculado a um campeonato.',
+      'Entre com o código/link de convite, peça acesso a um bolão aberto ou crie o seu. Na criação, você pode importar o campeonato na hora se ainda não houver nenhum.',
   },
   {
     step: 3,
     title: 'Registre seus palpites',
     description:
-      'Em Meus Palpites ou Jogos, informe o placar previsto de cada partida.',
+      'Em Meus Palpites, escolha o bolão e informe o placar de cada partida. Use os filtros (status, data do jogo, busca) para achar os jogos.',
   },
   {
     step: 4,
     title: 'Acompanhe os resultados',
     description:
-      'Quando o jogo termina, seus pontos são calculados e aparecem em Jogos, Meus Palpites e na Classificação do bolão.',
+      'Quando o jogo termina, seus pontos aparecem em Meus Palpites e na Classificação. No Dashboard, a Atividade Recente destaca novidades ainda não vistas.',
   },
   {
     step: 5,
     title: 'Dispute a classificação',
     description:
-      'Compare seu desempenho com os demais participantes. Quem acumular mais pontos ao longo do campeonato lidera a classificação.',
+      'Quem acumular mais pontos no bolão fica na frente. Em empate de pontos, a ordem é alfabética pelo nome.',
   },
 ];
 
 export const PREDICTION_RULES = [
   {
     title: 'Prazo para palpitar',
-    description:
-      'Você pode enviar ou editar um palpite até 10 minutos antes do horário de início da partida. Após esse prazo, o palpite fica bloqueado.',
+    description: `Você pode enviar ou editar um palpite até ${PREDICTION_CUTOFF_MINUTES} minutos antes do horário de início da partida. Após esse prazo, o palpite fica bloqueado.`,
   },
   {
     title: 'Placar obrigatório',
     description:
-      'Informe quantos gols cada time marcará. O palpite considera mandante × visitante (ex.: 2 × 1).',
+      'Informe quantos gols cada time marcará. O palpite considera mandante × visitante (ex.: 2 × 1). Nesta versão não há palpite de jogador artilheiro.',
   },
   {
     title: 'Sem palpite, sem pontos',
@@ -72,9 +72,8 @@ export const PREDICTION_RULES = [
       'Se você não registrar seu palpite antes do prazo, não pontua naquela partida.',
   },
   {
-    title: 'Palpite de jogador (em breve)',
-    description:
-      'Escolher um jogador para marcar gol e bônus de hat-trick voltam em uma versão futura. Nesta versão o palpite é só de placar.',
+    title: 'Visibilidade dos outros',
+    description: `Os palpites dos demais participantes ficam ocultos enquanto o prazo estiver aberto. Depois que o prazo encerra (${PREDICTION_CUTOFF_MINUTES} min antes do jogo), todos podem ver. O seu palpite você sempre vê.`,
   },
 ];
 
@@ -101,7 +100,7 @@ export const SCORING_RULES = [
   },
   {
     key: 'correctWinner',
-    label: 'Vitória do Time vencedor sem placar exato',
+    label: 'Vitória do time vencedor sem placar exato',
     points: defaultBaseScoringRules.correctWinner,
     description:
       'Acertou quem venceu, mas errou os gols de ambos os lados.',
@@ -200,14 +199,18 @@ export const FAQ_ITEMS = [
   {
     id: 'faq-deadline',
     question: 'Até quando posso alterar meu palpite?',
-    answer:
-      'Até 10 minutos antes do horário oficial de início da partida. Depois disso, o sistema bloqueia criação e edição. Confira o horário em Jogos ou Meus Palpites.',
+    answer: `Até ${PREDICTION_CUTOFF_MINUTES} minutos antes do horário oficial de início da partida. Depois disso, o sistema bloqueia criação e edição. Confira o prazo em Meus Palpites.`,
   },
   {
     id: 'faq-no-prediction',
     question: 'Esqueci de palpitar. Posso pontuar mesmo assim?',
     answer:
       'Não. Sem palpite registrado antes do prazo, você recebe 0 pontos naquela partida, independentemente do resultado real.',
+  },
+  {
+    id: 'faq-others-predictions',
+    question: 'Quando posso ver os palpites dos outros?',
+    answer: `Somente depois que o prazo de palpite encerrar (${PREDICTION_CUTOFF_MINUTES} minutos antes do jogo). Antes disso, os placares alheios ficam ocultos (anti-spoiler). O seu você sempre vê. Use “Ver palpites” em Meus Palpites.`,
   },
   {
     id: 'faq-multiple-pools',
@@ -228,34 +231,58 @@ export const FAQ_ITEMS = [
       'Não. Placar exato é exclusivo — quando você acerta o placar completo, não soma pontos parciais de vencedor, perdedor ou empate.',
   },
   {
-    id: 'faq-player-change',
-    question: 'Posso trocar o jogador escolhido depois de selecionar?',
+    id: 'faq-player-prediction',
+    question: 'Posso escolher um jogador para marcar gol?',
     answer:
-      'Sim, enquanto estiver dentro do prazo. Use Trocar para escolher outro jogador ou Remover para limpar a seleção.',
+      'Ainda não. Nesta versão o palpite é só de placar. Palpite de jogador e bônus de hat-trick ficam para uma atualização futura.',
   },
   {
     id: 'faq-ranking',
     question: 'Como a classificação é calculada?',
     answer:
-      'A classificação soma todos os pontos que você ganhou em cada partida do bolão. Quem tiver mais pontos totais fica na frente. Em empate, a posição pode ser desempatada por critérios do bolão (ex.: mais placares exatos).',
+      'A classificação soma todos os pontos que você ganhou em cada partida do bolão. Quem tiver mais pontos fica na frente. Em empate de pontos, a ordem é alfabética pelo nome do participante.',
+  },
+  {
+    id: 'faq-zero-points',
+    question: 'No início, com todos em 0 pontos, como fica a ordem?',
+    answer:
+      'Todos empatam em pontos, então a lista segue ordem alfabética do nome (A → Z). As posições mudam conforme os jogos forem pontuando.',
   },
   {
     id: 'faq-live',
     question: 'Os pontos aparecem durante o jogo ao vivo?',
     answer:
-      'Não. A pontuação é calculada quando a partida é finalizada (status "Encerrado"). Durante o jogo, você vê seu palpite, mas os pontos só aparecem após o apito final.',
+      'Não. A pontuação é calculada quando a partida é finalizada (status “Encerrado”). Durante o jogo você vê seu palpite, mas os pontos só aparecem após o apito final.',
   },
   {
     id: 'faq-invite',
     question: 'Como entro em um bolão?',
     answer:
-      'Peça o código de convite ao administrador do bolão. Em Bolões, use a opção de entrar com código para participar.',
+      'Peça o código ou o link de convite ao administrador (/join/CODIGO). Em Bolões você também pode pedir acesso a bolões disponíveis ou criar o seu (ao criar o primeiro, você vira administrador).',
+  },
+  {
+    id: 'faq-create-pool-import',
+    question: 'Não tem campeonato na lista ao criar bolão. O que faço?',
+    answer:
+      'No dialog Criar Bolão, use “Importar campeonato”: escolha país, liga e temporada. O campeonato é importado e já fica selecionado para o bolão.',
   },
   {
     id: 'faq-admin-scoring',
     question: 'Sou administrador. Posso mudar as regras depois de criar o bolão?',
     answer:
-      'No MVP atual, as regras são definidas na criação do bolão. Alterações posteriores estão previstas para versões futuras. Comunique os participantes se houver mudanças manuais.',
+      'Sim. Em Bolões, edite o bolão para alterar nome e regras de pontuação, desde que ele não esteja encerrado. Avise os participantes se mudar as regras no meio da disputa.',
+  },
+  {
+    id: 'faq-filters',
+    question: 'Como filtro meus jogos em Meus Palpites?',
+    answer:
+      'Selecione o bolão e use busca por time/campeonato, status do jogo, status do palpite (com ou sem palpite) e data do jogo. “Limpar filtros” zera tudo.',
+  },
+  {
+    id: 'faq-activity',
+    question: 'O que é a Atividade Recente no Dashboard?',
+    answer:
+      'É um resumo de novidades dos seus bolões (entradas, palpites, resultados etc.). Itens novos aparecem com badge “Nova”. Depois de vistos, passam a “Lida” e saem do card na próxima visita — a lista completa fica em Notificações (Ver todas).',
   },
   {
     id: 'faq-league-vs-cup',
@@ -267,6 +294,6 @@ export const FAQ_ITEMS = [
     id: 'faq-support',
     question: 'Encontrei um erro ou tenho outra dúvida. O que faço?',
     answer:
-      'Entre em contato com o administrador do seu bolão ou com o suporte da plataforma pelo e-mail de contato informado no rodapé da aplicação.',
+      'Entre em contato com o administrador do seu bolão ou com o suporte da plataforma (www.atmm.dev, link no rodapé).',
   },
 ];

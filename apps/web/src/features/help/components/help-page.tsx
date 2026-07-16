@@ -32,15 +32,15 @@ import { HelpSectionNav } from './help-section-nav';
 const OVERVIEW_ITEMS = [
   {
     title: 'Campeonatos',
-    text: 'Jogos reais importados de campeonatos de liga ou copa.',
+    text: 'Jogos reais importados (liga ou copa), também no fluxo de criar bolão.',
   },
   {
     title: 'Bolões',
-    text: 'Grupos privados com regras e classificação próprios.',
+    text: 'Grupos privados com convite, regras e classificação próprios.',
   },
   {
     title: 'Palpites',
-    text: 'Placar + jogador artilheiro opcional por partida.',
+    text: 'Só placar, até 10 min antes do jogo. Os outros ficam ocultos até o prazo.',
   },
   {
     title: 'Pontuação',
@@ -48,11 +48,11 @@ const OVERVIEW_ITEMS = [
   },
   {
     title: 'Classificação',
-    text: 'Ordenação por total de pontos no bolão.',
+    text: 'Mais pontos na frente; empate desempatado por ordem alfabética.',
   },
   {
     title: 'Personalização',
-    text: 'Admin define valores de pontuação ao criar o bolão.',
+    text: 'Admin define e pode editar as regras de pontuação do bolão.',
   },
 ] as const;
 
