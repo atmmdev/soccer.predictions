@@ -57,10 +57,10 @@ export function ForgotPasswordForm() {
           <h1 className='text-2xl font-semibold tracking-tight'>
             Verifique seu e-mail
           </h1>
-          <p className='text-muted-foreground text-sm leading-relaxed'>
+          <p className='text-muted-foreground text-xs leading-relaxed'>
             {successMessage}
           </p>
-          <p className='text-muted-foreground text-xs leading-relaxed'>
+          <p className='text-red-500 text-xs leading-relaxed text-center'>
             Se o e-mail não chegar em alguns minutos, confira a pasta de spam.
             Em desenvolvimento (e-mail desativado), o link também aparece no
             terminal da API.

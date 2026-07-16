@@ -77,7 +77,7 @@ function ResetPasswordFormContent({ token }: { token: string }) {
     <div className='space-y-6'>
       <div className='space-y-1'>
         <h1 className='text-2xl font-semibold tracking-tight'>Nova senha</h1>
-        <p className='text-muted-foreground text-sm'>
+        <p className='text-muted-foreground text-xs'>
           Escolha uma nova senha para sua conta
         </p>
       </div>
@@ -89,7 +89,7 @@ function ResetPasswordFormContent({ token }: { token: string }) {
             name='password'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nova senha</FormLabel>
+                <FormLabel className='text-xs'>Nova senha</FormLabel>
                 <FormControl>
                   <PasswordInput
                     autoComplete='new-password'
@@ -107,7 +107,7 @@ function ResetPasswordFormContent({ token }: { token: string }) {
             name='confirmPassword'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirmar nova senha</FormLabel>
+                <FormLabel className='text-xs'>Confirmar nova senha</FormLabel>
                 <FormControl>
                   <PasswordInput
                     autoComplete='new-password'
@@ -123,7 +123,7 @@ function ResetPasswordFormContent({ token }: { token: string }) {
           <Button
             type='submit'
             size='lg'
-            className='h-11 w-full'
+            className='h-11 w-full tracking-widest uppercase'
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Salvando...' : 'Redefinir senha'}
