@@ -26,7 +26,10 @@ export function ActivityFeed({
   showViewAll = true,
   viewAllHref = '/notifications',
 }: ActivityFeedProps) {
-  const { items, isLoading, error, reloadActivity } = useActivity(fetchLimit);
+  const { items, isLoading, error, reloadActivity } = useActivity(fetchLimit, {
+    hideRead: true,
+    markVisibleAsRead: true,
+  });
   const pagination = useClientPagination(items, { pageSize });
 
   return (
@@ -59,7 +62,7 @@ export function ActivityFeed({
             </div>
           ) : items.length === 0 ? (
             <p className='text-muted-foreground py-8 text-center text-sm'>
-              Nenhuma atividade recente nos seus bolões.
+              Nenhuma atividade nova. As já lidas ficam em Ver todas.
             </p>
           ) : (
             <>

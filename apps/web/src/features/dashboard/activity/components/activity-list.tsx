@@ -17,7 +17,10 @@ export function ActivityList({
   fetchLimit = 100,
   pageSize = DEFAULT_PAGE_SIZE,
 }: ActivityListProps) {
-  const { items, isLoading, error, reloadActivity } = useActivity(fetchLimit);
+  const { items, isLoading, error, reloadActivity } = useActivity(fetchLimit, {
+    hideRead: false,
+    markVisibleAsRead: true,
+  });
   const pagination = useClientPagination(items, { pageSize });
 
   if (isLoading) {

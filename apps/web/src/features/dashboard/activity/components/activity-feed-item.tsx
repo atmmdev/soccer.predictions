@@ -1,8 +1,11 @@
 import { Award, FileText, Trophy, UserPlus, type LucideIcon } from 'lucide-react';
 
+import { Badge } from '@/components/ui/badge';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { cn } from '@/lib/utils';
 
-import type { ActivityItem, ActivityType } from '../types/activity';
+import type { ActivityFeedItemData } from '../hooks/use-activity';
+import type { ActivityType } from '../types/activity';
 import { formatActivityRelativeTime } from '../utils/format-activity-time';
 
 const iconMap: Record<ActivityType, LucideIcon> = {
@@ -20,14 +23,19 @@ const colorMap: Record<ActivityType, string> = {
 };
 
 interface ActivityFeedItemProps {
-  item: ActivityItem;
+  item: ActivityFeedItemData;
 }
 
 export function ActivityFeedItem({ item }: ActivityFeedItemProps) {
   const Icon = iconMap[item.type];
 
   return (
-    <div className='flex items-start gap-3 border-b border-gray-200 py-3 last:border-b-0'>
+    <div
+      className={cn(
+        'flex items-start gap-3 border-b border-gray-200 py-3 last:border-b-0',
+        item.isRead && 'opacity-70',
+      )}
+    >
       {item.userName ? (
         <UserAvatar
           name={item.userName}
@@ -42,7 +50,19 @@ export function ActivityFeedItem({ item }: ActivityFeedItemProps) {
         </div>
       )}
       <div className='min-w-0 flex-1 space-y-0.5'>
-        <p className='text-sm leading-snug font-semibold'>{item.title}</p>
+        <div className='flex flex-wrap items-center gap-2'>
+          <p className='text-sm leading-snug font-semibold'>{item.title}</p>
+          {item.isRead ? (
+            <Badge
+              variant='secondary'
+              className='h-5 bg-muted text-muted-foreground'
+            >
+              Lida
+            </Badge>
+          ) : (
+            <Badge className='h-5'>Nova</Badge>
+          )}
+        </div>
         <p className='text-muted-foreground text-sm leading-snug'>
           {item.description}
         </p>
