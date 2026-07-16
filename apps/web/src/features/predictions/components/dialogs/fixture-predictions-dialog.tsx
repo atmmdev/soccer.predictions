@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   MatchTeamsInline,
   ScoreStack,
@@ -31,8 +32,10 @@ import { PageLoading } from '@/components/ui/page-loading';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { formatFixtureRoundLabel } from '@/lib/format-fixture-round-label';
 
+import { PREDICTION_CUTOFF_MINUTES } from '../../constants/prediction-cutoff';
 import { fetchPredictionsByFixtureRequest } from '../../services/prediction-api.service';
 import type { PredictionFixtureItem } from '../../types/prediction-fixture';
+import { areOthersPredictionsVisible } from '../../utils/prediction-window';
 
 interface FixturePredictionsDialogProps {
   fixture: PredictionFixtureItem | null;
@@ -48,6 +51,10 @@ export function FixturePredictionsDialog({
   const [rows, setRows] = useState<PredictionFixtureItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const othersVisible = fixture
+    ? areOthersPredictionsVisible(fixture)
+    : false;
 
   useEffect(() => {
     if (!open || !fixture) {
@@ -128,6 +135,16 @@ export function FixturePredictionsDialog({
           </DialogTitle>
         </DialogHeader>
 
+        {!othersVisible ? (
+          <Alert>
+            <AlertDescription>
+              Os palpites dos demais participantes ficam ocultos até o prazo
+              encerrar ({PREDICTION_CUTOFF_MINUTES} minutos antes do jogo). Você
+              continua vendo o seu.
+            </AlertDescription>
+          </Alert>
+        ) : null}
+
         {isLoading ? (
           <PageLoading compact label='Carregando palpites...' />
         ) : error ? (
@@ -163,6 +180,10 @@ export function FixturePredictionsDialog({
                   const hasPrediction =
                     predictionScores !== null &&
                     hasCompleteScore(predictionScores);
+                  const isHidden =
+                    !othersVisible &&
+                    !row.isOwnPrediction &&
+                    row.prediction === null;
 
                   return (
                     <TableRow key={row.participantId}>
@@ -191,21 +212,27 @@ export function FixturePredictionsDialog({
                       </TableCell>
                       <TableCell className='text-center'>
                         <div className='flex justify-center'>
-                          <ScoreStack
-                            scores={
-                              predictionScores ?? { home: null, away: null }
-                            }
-                            compareWith={
-                              hasOfficial && hasPrediction
-                                ? officialScores
-                                : undefined
-                            }
-                            highlight={hasOfficial && hasPrediction}
-                            homeTeam={fixture?.homeTeam}
-                            awayTeam={fixture?.awayTeam}
-                            homeTeamLogo={fixture?.homeTeamLogo}
-                            awayTeamLogo={fixture?.awayTeamLogo}
-                          />
+                          {isHidden ? (
+                            <span className='text-muted-foreground text-xs'>
+                              Oculto
+                            </span>
+                          ) : (
+                            <ScoreStack
+                              scores={
+                                predictionScores ?? { home: null, away: null }
+                              }
+                              compareWith={
+                                hasOfficial && hasPrediction
+                                  ? officialScores
+                                  : undefined
+                              }
+                              highlight={hasOfficial && hasPrediction}
+                              homeTeam={fixture?.homeTeam}
+                              awayTeam={fixture?.awayTeam}
+                              homeTeamLogo={fixture?.homeTeamLogo}
+                              awayTeamLogo={fixture?.awayTeamLogo}
+                            />
+                          )}
                         </div>
                       </TableCell>
                       <TableCell className='text-center'>

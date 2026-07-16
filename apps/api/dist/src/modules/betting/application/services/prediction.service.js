@@ -268,6 +268,8 @@ let PredictionService = class PredictionService {
     }
     toFixtureRow(input) {
         const { pool, fixture, member, userId, prediction, poolPosition, earnedPoints, } = input;
+        const isOwnPrediction = member.id === userId;
+        const canRevealPrediction = isOwnPrediction || (0, prediction_window_js_1.areOthersPredictionsVisible)(fixture);
         return {
             id: fixture.id,
             poolId: pool.id,
@@ -276,7 +278,7 @@ let PredictionService = class PredictionService {
             participantId: member.id,
             participantName: member.name,
             participantAvatarDataUrl: member.avatarDataUrl,
-            isOwnPrediction: member.id === userId,
+            isOwnPrediction,
             championshipName: fixture.championship.name,
             round: fixture.round,
             phase: fixture.phase,
@@ -288,8 +290,10 @@ let PredictionService = class PredictionService {
             matchStatus: this.toMatchStatus(fixture.status),
             officialHomeScore: fixture.homeScore,
             officialAwayScore: fixture.awayScore,
-            earnedPoints: prediction && fixture.status === 'FINISHED' ? earnedPoints : null,
-            prediction: prediction
+            earnedPoints: canRevealPrediction && prediction && fixture.status === 'FINISHED'
+                ? earnedPoints
+                : null,
+            prediction: canRevealPrediction && prediction
                 ? {
                     fixtureId: fixture.id,
                     predictedHomeScore: prediction.predictedHomeScore,

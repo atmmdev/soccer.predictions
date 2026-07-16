@@ -36,6 +36,14 @@ export function canEditPrediction(
   return getPredictionWindowState(fixture, now) === 'OPEN';
 }
 
+/** Palpites alheios só após o prazo (cutoff) ou partida já iniciada/encerrada. */
+export function areOthersPredictionsVisible(
+  fixture: PredictionFixtureItem,
+  now: Date = new Date(),
+): boolean {
+  return getPredictionWindowState(fixture, now) !== 'OPEN';
+}
+
 export function getPredictionLockMessage(
   fixture: PredictionFixtureItem,
   now: Date = new Date(),

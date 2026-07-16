@@ -23,18 +23,21 @@ export function usePoolScoringTemplate(
       ? championships.find(item => item.id === championshipId)
       : undefined;
 
-  function applyTemplateForChampionship(nextChampionshipId: number) {
+  function applyTemplateForChampionship(
+    nextChampionshipId: number,
+    championshipTypeOverride?: Championship['type'],
+  ) {
     const selectedChampionship = championships.find(
       item => item.id === nextChampionshipId,
     );
+    const type =
+      championshipTypeOverride ?? selectedChampionship?.type;
 
-    if (!selectedChampionship) {
+    if (!type) {
       return;
     }
 
-    const template = getScoringTemplateByChampionshipType(
-      selectedChampionship.type,
-    );
+    const template = getScoringTemplateByChampionshipType(type);
 
     form.setValue('baseScoring', { ...template.base });
     form.setValue(

@@ -13,6 +13,7 @@ import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 import type { AuthUser } from '../../../identity/application/types/auth-user.js';
 import type { SubmitPredictionDto } from '../dtos/submit-prediction.dto.js';
 import {
+  areOthersPredictionsVisible,
   canEditPrediction,
   getPredictionLockMessage,
 } from '../utils/prediction-window.js';
@@ -424,6 +425,10 @@ export class PredictionService {
       earnedPoints,
     } = input;
 
+    const isOwnPrediction = member.id === userId;
+    const canRevealPrediction =
+      isOwnPrediction || areOthersPredictionsVisible(fixture);
+
     return {
       id: fixture.id,
       poolId: pool.id,
@@ -432,7 +437,7 @@ export class PredictionService {
       participantId: member.id,
       participantName: member.name,
       participantAvatarDataUrl: member.avatarDataUrl,
-      isOwnPrediction: member.id === userId,
+      isOwnPrediction,
       championshipName: fixture.championship.name,
       round: fixture.round,
       phase: fixture.phase,
@@ -445,15 +450,18 @@ export class PredictionService {
       officialHomeScore: fixture.homeScore,
       officialAwayScore: fixture.awayScore,
       earnedPoints:
-        prediction && fixture.status === 'FINISHED' ? earnedPoints : null,
-      prediction: prediction
-        ? {
-            fixtureId: fixture.id,
-            predictedHomeScore: prediction.predictedHomeScore,
-            predictedAwayScore: prediction.predictedAwayScore,
-            selectedPlayerId: prediction.selectedPlayerId,
-          }
-        : null,
+        canRevealPrediction && prediction && fixture.status === 'FINISHED'
+          ? earnedPoints
+          : null,
+      prediction:
+        canRevealPrediction && prediction
+          ? {
+              fixtureId: fixture.id,
+              predictedHomeScore: prediction.predictedHomeScore,
+              predictedAwayScore: prediction.predictedAwayScore,
+              selectedPlayerId: prediction.selectedPlayerId,
+            }
+          : null,
     };
   }
 
