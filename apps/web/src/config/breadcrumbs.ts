@@ -5,7 +5,7 @@ export const breadcrumbsTitles: Record<string, string> = {
   '/participants': 'Participantes',
   '/matches': 'Jogos',
   '/predictions': 'Meus Palpites',
-  '/rankings': 'Ranking',
+  '/rankings': 'Classificação',
   '/statistics': 'Estatísticas',
   '/notifications': 'Notificações',
   '/profile': 'Perfil',

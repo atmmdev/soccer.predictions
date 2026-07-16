@@ -91,7 +91,7 @@ export function PoolTable({
                 sortDir={sortDir}
                 onSort={onSort}
               />
-              <TableHead className='text-muted-foreground text-right text-xs'>
+              <TableHead className='text-muted-foreground text-center text-xs'>
                 Ações
               </TableHead>
             </TableRow>

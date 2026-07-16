@@ -6,7 +6,6 @@ import {
   Clock3,
   Copy,
   Link2,
-  Loader2Icon,
   Search,
   Users,
   X,
@@ -360,7 +359,7 @@ export function ParticipantList() {
                             <TableHead className='text-[11px] tracking-wide uppercase'>
                               Entrada
                             </TableHead>
-                            <TableHead className='text-right text-[11px] tracking-wide uppercase'>
+                            <TableHead className='text-center text-[11px] tracking-wide uppercase'>
                               Ações
                             </TableHead>
                           </TableRow>
@@ -410,13 +409,15 @@ export function ParticipantList() {
                                     value={participant.joinedAt}
                                   />
                                 </TableCell>
-                                <TableCell className='text-right'>
-                                  <div className='flex items-center justify-end gap-1'>
+                                <TableCell className='text-center'>
+                                  <div className='flex items-center justify-center gap-0.5'>
                                     {canModerate ? (
                                       <>
                                         <IconActionButton
                                           label='Aprovar'
+                                          icon={Check}
                                           tone='success'
+                                          loading={isActing}
                                           disabled={
                                             isActing || actingKey !== null
                                           }
@@ -426,21 +427,10 @@ export function ParticipantList() {
                                               participant.userId,
                                             )
                                           }
-                                        >
-                                          {isActing ? (
-                                            <Loader2Icon
-                                              className='size-4 animate-spin'
-                                              aria-hidden
-                                            />
-                                          ) : (
-                                            <Check
-                                              className='size-4'
-                                              aria-hidden
-                                            />
-                                          )}
-                                        </IconActionButton>
+                                        />
                                         <IconActionButton
                                           label='Recusar'
+                                          icon={X}
                                           tone='danger'
                                           disabled={
                                             isActing || actingKey !== null
@@ -451,34 +441,30 @@ export function ParticipantList() {
                                               participant.userId,
                                             )
                                           }
-                                        >
-                                          <X className='size-4' aria-hidden />
-                                        </IconActionButton>
+                                        />
                                       </>
                                     ) : (
                                       <>
                                         <IconActionButton
                                           label='Copiar link'
+                                          icon={Link2}
                                           tone='link'
                                           onClick={() =>
                                             void copyInviteLink(
                                               participant.inviteCode,
                                             )
                                           }
-                                        >
-                                          <Link2 className='size-4' />
-                                        </IconActionButton>
+                                        />
                                         <IconActionButton
-                                          label='Copiar código'
+                                          label='Código'
+                                          icon={Copy}
                                           tone='copy'
                                           onClick={() =>
                                             void copyInviteCode(
                                               participant.inviteCode,
                                             )
                                           }
-                                        >
-                                          <Copy className='size-4' />
-                                        </IconActionButton>
+                                        />
                                       </>
                                     )}
                                   </div>

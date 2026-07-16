@@ -21,7 +21,7 @@ export function PoolRow({ pool, onEdit, onStatusChange }: PoolRowProps) {
       <TableCell>
         <PoolStatusBadge status={pool.status} />
       </TableCell>
-      <TableCell className='text-right'>
+      <TableCell className='text-center'>
         <PoolActions
           pool={pool}
           onEdit={onEdit}

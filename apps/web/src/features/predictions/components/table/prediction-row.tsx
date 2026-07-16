@@ -47,8 +47,7 @@ export function PredictionRow({
 }: PredictionRowProps) {
   const hasPrediction = fixture.prediction !== null;
   const uiState = getPredictionUiState(fixture, now);
-  const canEdit =
-    fixture.isOwnPrediction && canEditPrediction(fixture, now);
+  const canEdit = fixture.isOwnPrediction && canEditPrediction(fixture, now);
   const statusTone = predictionStatusTone[uiState];
   const actionLabel = fixture.isOwnPrediction
     ? getPredictionActionLabel(uiState, hasPrediction)
@@ -91,9 +90,7 @@ export function PredictionRow({
       >
         {formatFixtureRoundLabel(fixture)}
       </TableCell>
-      <TableCell
-        className={`text-center ${predictionTableColumns.result}`}
-      >
+      <TableCell className={`text-center ${predictionTableColumns.result}`}>
         <ScoreStack
           scores={officialScores}
           compareWith={hasPredictionScores ? predictionScores : undefined}
@@ -127,18 +124,26 @@ export function PredictionRow({
       <TableCell className={`text-center ${predictionTableColumns.deadline}`}>
         <PredictionCountdown fixture={fixture} now={now} />
       </TableCell>
-      <TableCell className='text-right'>
-        <div className='flex items-center justify-end gap-0.5'>
+      <TableCell className='text-center'>
+        <div className='flex items-center justify-center gap-0.5'>
           <IconActionButton
             label='Ver palpites'
+            icon={Eye}
             tone='link'
             onClick={() => onViewAllPredictions(fixture)}
-          >
-            <Eye className='size-4' />
-          </IconActionButton>
+          />
           {fixture.isOwnPrediction ? (
             <IconActionButton
               label={actionLabel}
+              icon={
+                canEdit && hasPrediction
+                  ? Pencil
+                  : canEdit
+                    ? Target
+                    : uiState === 'FINISHED'
+                      ? Lock
+                      : Ban
+              }
               tone={
                 canEdit
                   ? hasPrediction
@@ -150,17 +155,7 @@ export function PredictionRow({
               }
               disabled={!canEdit}
               onClick={() => onPredict(fixture)}
-            >
-              {canEdit && hasPrediction ? (
-                <Pencil className='size-4' />
-              ) : canEdit ? (
-                <Target className='size-4' />
-              ) : uiState === 'FINISHED' ? (
-                <Lock className='size-4' />
-              ) : (
-                <Ban className='size-4' />
-              )}
-            </IconActionButton>
+            />
           ) : null}
         </div>
       </TableCell>

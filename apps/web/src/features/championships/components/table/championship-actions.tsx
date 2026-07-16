@@ -18,31 +18,28 @@ export function ChampionshipActions({
   onStatusChange,
 }: ChampionshipActionsProps) {
   return (
-    <div className='flex items-center justify-end gap-0.5'>
+    <div className='flex items-center justify-center gap-0.5'>
       <IconActionButton
-        label='Sincronizar jogos'
+        label='Sincronizar'
+        icon={RefreshCw}
         tone='sync'
         onClick={() => void onSync(championship.id)}
-      >
-        <RefreshCw className='size-4' />
-      </IconActionButton>
+      />
 
       {championship.status === 'ACTIVE' ? (
         <IconActionButton
           label='Desativar'
+          icon={Ban}
           tone='mute'
           onClick={() => void onStatusChange(championship.id, false)}
-        >
-          <Ban className='size-4' />
-        </IconActionButton>
+        />
       ) : (
         <IconActionButton
           label='Ativar'
+          icon={CheckCircle2}
           tone='success'
           onClick={() => void onStatusChange(championship.id, true)}
-        >
-          <CheckCircle2 className='size-4' />
-        </IconActionButton>
+        />
       )}
     </div>
   );
