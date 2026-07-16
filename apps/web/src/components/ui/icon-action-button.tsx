@@ -1,7 +1,6 @@
 'use client';
 
 import type { LucideIcon } from 'lucide-react';
-import { Loader2 } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -69,13 +68,14 @@ export function IconActionButton({
   loading = false,
   className,
   children,
+  disabled,
   ...props
 }: IconActionButtonProps) {
   const content =
     children ??
     (icon ? (
       <IconActionButtonContent
-        icon={loading ? Loader2 : icon}
+        icon={icon}
         label={label}
         iconClassName={loading ? 'animate-spin' : undefined}
       />
@@ -87,6 +87,7 @@ export function IconActionButton({
       size={stacked ? 'sm' : 'icon-sm'}
       variant='ghost'
       aria-label={label}
+      disabled={loading || disabled}
       className={cn(
         toneClassName[tone],
         stacked &&
