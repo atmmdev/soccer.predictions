@@ -104,7 +104,7 @@ export function PredictionTable({
               Prazo
             </TableHead>
             <TableHead
-              className={predictionTableHeadClass('w-[8.5rem] text-right')}
+              className={predictionTableHeadClass('text-center')}
             >
               Ações
             </TableHead>

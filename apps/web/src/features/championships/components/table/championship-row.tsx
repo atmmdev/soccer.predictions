@@ -32,7 +32,7 @@ export function ChampionshipRow({
       <TableCell className='text-primary text-xs font-medium text-center'>
         Classificação
       </TableCell>
-      <TableCell className='text-right'>
+      <TableCell className='text-center'>
         <ChampionshipActions
           championship={championship}
           onSync={onSync}

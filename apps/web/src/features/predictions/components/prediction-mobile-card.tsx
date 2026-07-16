@@ -109,17 +109,25 @@ export function PredictionMobileCard({
         </div>
       </dl>
 
-      <div className='flex items-center justify-end gap-0.5'>
+      <div className='flex items-center justify-center gap-0.5'>
         <IconActionButton
           label='Ver palpites'
+          icon={Eye}
           tone='link'
           onClick={() => onViewAllPredictions(fixture)}
-        >
-          <Eye className='size-4' />
-        </IconActionButton>
+        />
         {fixture.isOwnPrediction ? (
           <IconActionButton
             label={actionLabel}
+            icon={
+              canEdit && hasPrediction
+                ? Pencil
+                : canEdit
+                  ? Target
+                  : uiState === 'FINISHED'
+                    ? Lock
+                    : Ban
+            }
             tone={
               canEdit
                 ? hasPrediction
@@ -131,17 +139,7 @@ export function PredictionMobileCard({
             }
             disabled={!canEdit}
             onClick={() => onPredict(fixture)}
-          >
-            {canEdit && hasPrediction ? (
-              <Pencil className='size-4' />
-            ) : canEdit ? (
-              <Target className='size-4' />
-            ) : uiState === 'FINISHED' ? (
-              <Lock className='size-4' />
-            ) : (
-              <Ban className='size-4' />
-            )}
-          </IconActionButton>
+          />
         ) : null}
       </div>
     </article>

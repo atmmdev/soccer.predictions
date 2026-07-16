@@ -1,13 +1,10 @@
 'use client';
 
+import type { LucideIcon } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 
 import { Button } from '@/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 export type IconActionTone =
@@ -31,35 +28,74 @@ const toneClassName: Record<IconActionTone, string> = {
   neutral: 'text-muted-foreground hover:bg-muted hover:text-foreground',
 };
 
+interface IconActionButtonContentProps {
+  icon: LucideIcon;
+  label: string;
+  iconClassName?: string;
+}
+
+export function IconActionButtonContent({
+  icon: Icon,
+  label,
+  iconClassName,
+}: IconActionButtonContentProps) {
+  return (
+    <div className='flex w-full flex-col items-center justify-center gap-1'>
+      <span className='flex w-full justify-center'>
+        <Icon className={cn('size-4 shrink-0', iconClassName)} />
+      </span>
+      <span className='w-full text-center text-[7px] leading-none font-medium tracking-widest uppercase'>
+        {label}
+      </span>
+    </div>
+  );
+}
+
 interface IconActionButtonProps
   extends Omit<ComponentProps<typeof Button>, 'children' | 'size' | 'variant'> {
   label: string;
+  icon?: LucideIcon;
   tone?: IconActionTone;
-  children: ReactNode;
+  stacked?: boolean;
+  loading?: boolean;
+  children?: ReactNode;
 }
 
 export function IconActionButton({
   label,
+  icon,
   tone = 'neutral',
+  stacked = true,
+  loading = false,
   className,
   children,
   ...props
 }: IconActionButtonProps) {
+  const content =
+    children ??
+    (icon ? (
+      <IconActionButtonContent
+        icon={loading ? Loader2 : icon}
+        label={label}
+        iconClassName={loading ? 'animate-spin' : undefined}
+      />
+    ) : null);
+
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          type='button'
-          size='icon-sm'
-          variant='ghost'
-          aria-label={label}
-          className={cn(toneClassName[tone], className)}
-          {...props}
-        >
-          {children}
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent side='top'>{label}</TooltipContent>
-    </Tooltip>
+    <Button
+      type='button'
+      size={stacked ? 'sm' : 'icon-sm'}
+      variant='ghost'
+      aria-label={label}
+      className={cn(
+        toneClassName[tone],
+        stacked &&
+          'flex h-auto w-auto min-w-9 flex-col items-center justify-center gap-0 px-1.5 py-1',
+        className,
+      )}
+      {...props}
+    >
+      {content}
+    </Button>
   );
 }

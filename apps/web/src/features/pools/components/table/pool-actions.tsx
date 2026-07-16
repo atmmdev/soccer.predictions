@@ -62,58 +62,53 @@ export function PoolActions({
   }
 
   return (
-    <div className='flex items-center justify-end gap-0.5'>
+    <div className='flex items-center justify-center gap-0.5'>
       <IconActionButton
-        label='Copiar link de convite'
+        label='Copiar link'
+        icon={Link2}
         tone='link'
         onClick={() => void handleCopyInviteLink()}
-      >
-        <Link2 className='size-4' />
-      </IconActionButton>
+      />
 
       <IconActionButton
-        label={`Copiar código ${pool.inviteCode}`}
+        label='Código'
+        icon={Copy}
         tone='copy'
+        aria-label={`Copiar código ${pool.inviteCode}`}
         onClick={() => void handleCopyInviteCode()}
-      >
-        <Copy className='size-4' />
-      </IconActionButton>
+      />
 
       {canManage && pool.status !== 'CLOSED' ? (
         <>
           <IconActionButton
-            label='Editar bolão'
+            label='Editar'
+            icon={Pencil}
             tone='edit'
             onClick={() => onEdit(pool)}
-          >
-            <Pencil className='size-4' />
-          </IconActionButton>
+          />
 
           {pool.status === 'ACTIVE' ? (
             <IconActionButton
               label='Desativar'
+              icon={Ban}
               tone='mute'
               onClick={() => void handleStatusChange('INACTIVE')}
-            >
-              <Ban className='size-4' />
-            </IconActionButton>
+            />
           ) : (
             <IconActionButton
               label='Ativar'
+              icon={CheckCircle2}
               tone='success'
               onClick={() => void handleStatusChange('ACTIVE')}
-            >
-              <CheckCircle2 className='size-4' />
-            </IconActionButton>
+            />
           )}
 
           <IconActionButton
-            label='Encerrar bolão'
+            label='Encerrar'
+            icon={OctagonX}
             tone='danger'
             onClick={() => void handleStatusChange('CLOSED')}
-          >
-            <OctagonX className='size-4' />
-          </IconActionButton>
+          />
         </>
       ) : null}
     </div>
