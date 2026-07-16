@@ -5,7 +5,7 @@ import { createPrismaAdapter } from '../src/shared/prisma/create-prisma-adapter.
 
 const PASSWORD_SALT_ROUNDS = 10;
 const SEED_PASSWORD = 'WebAtm1979#';
-
+// Super Administrador
 const SEED_SUPER_ADMIN = {
   email: 'atmmdev@gmail.com',
   name: 'Super Admin',
