@@ -77,9 +77,6 @@ export function ChampionshipTable({
               onSort={onSort}
             />
             <TableHead className='text-muted-foreground text-center text-xs'>
-              Tabela de Classificação
-            </TableHead>
-            <TableHead className='text-muted-foreground text-center text-xs'>
               Ações
             </TableHead>
           </TableRow>
