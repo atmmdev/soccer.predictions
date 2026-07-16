@@ -34,13 +34,6 @@ export function AuthBrandPanel() {
             </p>
           </div>
         </div>
-
-        <div className='text-xs text-white/50'>
-          by{' '}
-          <a href='http://www.atmm.dev' className='underline'>
-            atmm.dev
-          </a>
-        </div>
       </div>
     </div>
   );
