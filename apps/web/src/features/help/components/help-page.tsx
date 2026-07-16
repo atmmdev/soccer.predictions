@@ -36,7 +36,7 @@ const OVERVIEW_ITEMS = [
   },
   {
     title: 'Bolões',
-    text: 'Grupos privados com regras e ranking próprios.',
+    text: 'Grupos privados com regras e classificação próprios.',
   },
   {
     title: 'Palpites',
@@ -47,8 +47,8 @@ const OVERVIEW_ITEMS = [
     text: 'Calculada automaticamente ao final de cada jogo.',
   },
   {
-    title: 'Ranking',
-    text: 'Classificação por total de pontos no bolão.',
+    title: 'Classificação',
+    text: 'Ordenação por total de pontos no bolão.',
   },
   {
     title: 'Personalização',
@@ -100,7 +100,7 @@ export function HelpPage() {
       <HelpSection
         id='passo-a-passo'
         title='Passo a passo'
-        description='Do cadastro à disputa pelo topo do ranking.'
+        description='Do cadastro à disputa pelo topo da classificação.'
       >
         <ol className='grid gap-3 sm:grid-cols-2 lg:grid-cols-3'>
           {WORKFLOW_STEPS.map(step => (

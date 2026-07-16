@@ -29,7 +29,7 @@ export function AuthBrandPanel() {
               Palpite. Compete. Vença.
             </h2>
             <p className='max-w-sm text-sm leading-relaxed text-white/85'>
-              Crie bolões, acompanhe jogos reais e dispute o ranking com regras
+              Crie bolões, acompanhe jogos reais e dispute a classificação com regras
               de pontuação personalizadas.
             </p>
           </div>

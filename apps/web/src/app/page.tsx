@@ -14,7 +14,7 @@ export default function Home() {
             Soccer Predictions
           </h1>
           <p className='text-muted-foreground text-xs'>
-            Bolões de futebol — palpite e dispute o ranking
+            Bolões de futebol — palpite e dispute a classificação
           </p>
         </div>
 

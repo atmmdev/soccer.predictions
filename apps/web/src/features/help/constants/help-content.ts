@@ -16,9 +16,9 @@ export const HELP_SECTIONS = [
 export const HOW_IT_WORKS = {
   title: 'Como funciona o Soccer Predictions',
   paragraphs: [
-    'O Soccer Predictions é uma plataforma de bolões de futebol. Administradores importam campeonatos reais; participantes entram em bolões, registram palpites nos jogos e competem no ranking com base nos pontos acumulados.',
+    'O Soccer Predictions é uma plataforma de bolões de futebol. Administradores importam campeonatos reais; participantes entram em bolões, registram palpites nos jogos e competem na classificação com base nos pontos acumulados.',
     'Cada bolão pode ter regras de pontuação personalizadas definidas pelo administrador na criação. Os valores abaixo são os padrões do sistema — o administrador do bolão pode alterá-los.',
-    'A pontuação é calculada automaticamente quando o jogo é finalizado. O ranking é sempre derivado do histórico de pontos — não existe tabela de ranking separada.',
+    'A pontuação é calculada automaticamente quando o jogo é finalizado. A classificação é sempre derivada do histórico de pontos — não existe tabela de classificação separada.',
   ],
 };
 
@@ -45,11 +45,11 @@ export const WORKFLOW_STEPS = [
     step: 4,
     title: 'Acompanhe os resultados',
     description:
-      'Quando o jogo termina, seus pontos são calculados e aparecem em Jogos, Meus Palpites e no Ranking do bolão.',
+      'Quando o jogo termina, seus pontos são calculados e aparecem em Jogos, Meus Palpites e na Classificação do bolão.',
   },
   {
     step: 5,
-    title: 'Dispute o ranking',
+    title: 'Dispute a classificação',
     description:
       'Compare seu desempenho com os demais participantes. Quem acumular mais pontos ao longo do campeonato lidera a classificação.',
   },
@@ -213,7 +213,7 @@ export const FAQ_ITEMS = [
     id: 'faq-multiple-pools',
     question: 'Posso participar de mais de um bolão?',
     answer:
-      'Sim. Cada bolão tem ranking e regras independentes. Você palpita separadamente em cada um, mesmo quando os jogos são os mesmos.',
+      'Sim. Cada bolão tem classificação e regras independentes. Você palpita separadamente em cada um, mesmo quando os jogos são os mesmos.',
   },
   {
     id: 'faq-scoring-diff',
@@ -235,9 +235,9 @@ export const FAQ_ITEMS = [
   },
   {
     id: 'faq-ranking',
-    question: 'Como o ranking é calculado?',
+    question: 'Como a classificação é calculada?',
     answer:
-      'O ranking soma todos os pontos que você ganhou em cada partida do bolão. Quem tiver mais pontos totais fica na frente. Em empate, a posição pode ser desempatada por critérios do bolão (ex.: mais placares exatos).',
+      'A classificação soma todos os pontos que você ganhou em cada partida do bolão. Quem tiver mais pontos totais fica na frente. Em empate, a posição pode ser desempatada por critérios do bolão (ex.: mais placares exatos).',
   },
   {
     id: 'faq-live',

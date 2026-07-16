@@ -1,7 +1,7 @@
 'use client';
 
 import { Calendar, Target, Trophy, Users } from 'lucide-react';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { TbPercentage } from 'react-icons/tb';
 
 import { usePredictions } from '@/features/predictions/hooks/use-predictions';
@@ -20,9 +20,14 @@ import { mapPredictionToDashboardMatch } from '../utils/map-prediction-to-match'
 import type { Match } from '../matches/types/match';
 import type { RankingUser } from '../rankings/types/ranking';
 
-const TOP_RANKING_LIMIT = 7;
+const TOP_RANKING_LIMIT = 10;
 const ACTIVE_POOLS_LIMIT = 5;
 const MATCHES_LIMIT = 10;
+
+export interface RankingPoolOption {
+  id: number;
+  name: string;
+}
 
 function getPrimaryPoolId(entries: RankingEntry[]): number | null {
   const currentUserPool = entries.find(entry => entry.isCurrentUser);
@@ -32,6 +37,20 @@ function getPrimaryPoolId(entries: RankingEntry[]): number | null {
   }
 
   return entries[0]?.poolId ?? null;
+}
+
+function toRankingPools(entries: RankingEntry[]): RankingPoolOption[] {
+  const pools = new Map<number, string>();
+
+  for (const entry of entries) {
+    if (!pools.has(entry.poolId)) {
+      pools.set(entry.poolId, entry.poolName);
+    }
+  }
+
+  return [...pools.entries()]
+    .map(([id, name]) => ({ id, name }))
+    .sort((left, right) => left.name.localeCompare(right.name));
 }
 
 function toRankingUsers(entries: RankingEntry[]): RankingUser[] {
@@ -47,6 +66,7 @@ export function useDashboardData() {
   const poolsState = usePools();
   const predictionsState = usePredictions();
   const rankingsState = useRankings();
+  const [selectedPoolId, setSelectedPoolId] = useState<number | null>(null);
 
   const isLoading =
     poolsState.isLoading ||
@@ -61,19 +81,39 @@ export function useDashboardData() {
     [predictionsState.fixtures],
   );
 
+  const rankingPools = useMemo(
+    () => toRankingPools(rankingsState.entries),
+    [rankingsState.entries],
+  );
+
   const primaryPoolId = useMemo(
     () => getPrimaryPoolId(rankingsState.entries),
     [rankingsState.entries],
   );
 
+  useEffect(() => {
+    if (rankingPools.length === 0) {
+      setSelectedPoolId(null);
+      return;
+    }
+
+    const selectionStillValid =
+      selectedPoolId !== null &&
+      rankingPools.some(pool => pool.id === selectedPoolId);
+
+    if (!selectionStillValid) {
+      setSelectedPoolId(primaryPoolId ?? rankingPools[0].id);
+    }
+  }, [rankingPools, primaryPoolId, selectedPoolId]);
+
   const topRanking = useMemo(() => {
-    if (primaryPoolId === null) {
+    if (selectedPoolId === null) {
       return [];
     }
 
     return toRankingUsers(
       rankingsState.entries
-        .filter(entry => entry.poolId === primaryPoolId)
+        .filter(entry => entry.poolId === selectedPoolId)
         .sort((left, right) => {
           if (right.points !== left.points) {
             return right.points - left.points;
@@ -83,7 +123,7 @@ export function useDashboardData() {
         })
         .slice(0, TOP_RANKING_LIMIT),
     );
-  }, [rankingsState.entries, primaryPoolId]);
+  }, [rankingsState.entries, selectedPoolId]);
 
   const activePools = useMemo(
     () =>
@@ -234,6 +274,9 @@ export function useDashboardData() {
     error,
     stats,
     topRanking,
+    rankingPools,
+    selectedPoolId,
+    setSelectedPoolId,
     activePools,
     matchCounts,
     filterMatches,

@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'Soccer Predictions',
     short_name: 'Soccer',
     description:
-      'Bolões de futebol — crie bolões, palpite e acompanhe rankings',
+      'Bolões de futebol — crie bolões, palpite e acompanhe a classificação',
     start_url: '/dashboard',
     scope: '/',
     display: 'standalone',

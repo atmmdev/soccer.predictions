@@ -23,7 +23,7 @@ export function useRankings() {
       setError(
         getFetchErrorMessage(
           loadError,
-          'Não foi possível carregar o ranking.',
+          'Não foi possível carregar a classificação.',
         ),
       );
       setEntries([]);

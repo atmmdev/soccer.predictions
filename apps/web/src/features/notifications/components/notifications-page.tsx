@@ -44,7 +44,7 @@ export function NotificationsPage() {
         </CardHeader>
         <CardContent>
           <p className='text-muted-foreground text-sm leading-relaxed'>
-            Por enquanto, acompanhe jogos, palpites e ranking diretamente no
+            Por enquanto, acompanhe jogos, palpites e classificação diretamente no
             dashboard e nas telas do menu. Nenhuma ação pendente requer sua
             atenção aqui.
           </p>
