@@ -34,13 +34,17 @@ export const pageMeta: Record<string, PageMeta> = {
     title: 'Classificação',
     subtitle: 'Classificação dos participantes',
   },
+  '/activity': {
+    title: 'Atividade Recente',
+    subtitle: 'Últimos eventos dos seus bolões',
+  },
   '/statistics': {
     title: 'Estatísticas',
     subtitle: 'Análise de desempenho',
   },
   '/notifications': {
     title: 'Notificações',
-    subtitle: 'Alertas e atualizações',
+    subtitle: 'Atividade recente dos seus bolões',
   },
   '/profile': {
     title: 'Perfil',

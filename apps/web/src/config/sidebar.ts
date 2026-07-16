@@ -63,7 +63,6 @@ export const mainNav: SidebarItem[] = [
     title: 'Notificações',
     url: '/notifications',
     icon: Bell,
-    roles: ['ADMIN', 'SUPER_ADMIN'],
   },
   {
     title: 'Perfil',

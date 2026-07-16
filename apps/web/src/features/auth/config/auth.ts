@@ -13,6 +13,7 @@ export const PROTECTED_PATH_PREFIXES = [
   '/matches',
   '/predictions',
   '/rankings',
+  '/activity',
   '/statistics',
   '/notifications',
   '/profile',
@@ -23,7 +24,6 @@ export const PROTECTED_PATH_PREFIXES = [
 export const ADMIN_PATH_PREFIXES = [
   '/championships',
   '/participants',
-  '/notifications',
   '/settings',
 ] as const;
 

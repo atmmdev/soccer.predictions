@@ -1,9 +1,9 @@
 export type ActivityType = 'participant' | 'prediction' | 'pool' | 'result';
 
 export interface ActivityItem {
-  id: number;
+  id: string;
   type: ActivityType;
   title: string;
   description: string;
-  timestamp: string;
+  occurredAt: string;
 }

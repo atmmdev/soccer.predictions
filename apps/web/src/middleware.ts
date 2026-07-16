@@ -45,6 +45,7 @@ export const config = {
     '/matches/:path*',
     '/predictions/:path*',
     '/rankings/:path*',
+    '/activity/:path*',
     '/statistics/:path*',
     '/notifications/:path*',
     '/profile/:path*',

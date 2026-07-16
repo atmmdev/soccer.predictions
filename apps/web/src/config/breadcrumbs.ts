@@ -6,6 +6,7 @@ export const breadcrumbsTitles: Record<string, string> = {
   '/matches': 'Jogos',
   '/predictions': 'Meus Palpites',
   '/rankings': 'Classificação',
+  '/activity': 'Atividade Recente',
   '/statistics': 'Estatísticas',
   '/notifications': 'Notificações',
   '/profile': 'Perfil',
