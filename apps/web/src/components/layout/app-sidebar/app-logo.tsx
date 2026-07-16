@@ -1,14 +1,24 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { PiSoccerBallDuotone } from 'react-icons/pi';
 
+import { useSidebar } from '@/components/ui/sidebar';
 import { brand } from '@/config/brand';
 
 export function AppLogo() {
+  const { isMobile, setOpenMobile } = useSidebar();
+
   return (
     <Link
       href='/dashboard'
       className='flex w-full items-center justify-center px-2 py-1 group-data-[collapsible=icon]:px-0'
+      onClick={() => {
+        if (isMobile) {
+          setOpenMobile(false);
+        }
+      }}
     >
       <Image
         src={brand.logo.src}

@@ -10,6 +10,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { SidebarItem } from '@/types/sidebar';
 
@@ -23,7 +24,14 @@ interface NavMenuProps {
 
 function NavMenu({ items, userRole }: NavMenuProps) {
   const pathname = usePathname();
+  const { isMobile, setOpenMobile } = useSidebar();
   const visibleItems = filterSidebarItems(items, userRole);
+
+  function handleNavigate() {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  }
 
   return (
     <SidebarMenu className='group-data-[collapsible=icon]:items-center'>
@@ -45,7 +53,7 @@ function NavMenu({ items, userRole }: NavMenuProps) {
               tooltip={label}
               className={collapsedButtonClass}
             >
-              <Link href={item.url}>
+              <Link href={item.url} onClick={handleNavigate}>
                 <Icon className='size-5 shrink-0' />
                 <span>{label}</span>
               </Link>
