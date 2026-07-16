@@ -10,6 +10,7 @@ import type {
   RankingScoringAchievements,
   ScoringAchievementKey,
 } from '@/features/rankings/types/ranking-entry';
+import { compareRankingStandings } from '@/features/rankings/utils/compare-ranking-standings';
 
 export interface PoolStandingRow {
   poolId: number;
@@ -108,13 +109,7 @@ function getPositionInPool(
 ): number | null {
   const poolEntries = entries
     .filter(entry => entry.poolId === poolId)
-    .sort((left, right) => {
-      if (right.points !== left.points) {
-        return right.points - left.points;
-      }
-
-      return left.name.localeCompare(right.name);
-    });
+    .sort(compareRankingStandings);
 
   const index = poolEntries.findIndex(entry => entry.id === userId);
 

@@ -52,7 +52,7 @@ export const WORKFLOW_STEPS = [
     step: 5,
     title: 'Dispute a classificação',
     description:
-      'Quem acumular mais pontos no bolão fica na frente. Em empate de pontos, a ordem é alfabética pelo nome.',
+      'Quem acumular mais pontos no bolão fica na frente. Em empate de pontos, vence quem tiver mais placares exatos; se ainda empatar, ordem alfabética pelo nome.',
   },
 ];
 
@@ -240,13 +240,13 @@ export const FAQ_ITEMS = [
     id: 'faq-ranking',
     question: 'Como a classificação é calculada?',
     answer:
-      'A classificação soma todos os pontos que você ganhou em cada partida do bolão. Quem tiver mais pontos fica na frente. Em empate de pontos, a ordem é alfabética pelo nome do participante.',
+      'A classificação soma todos os pontos que você ganhou em cada partida do bolão. Quem tiver mais pontos fica na frente. Em empate de pontos, quem tiver mais placares exatos fica à frente. Se ainda empatar, a ordem é alfabética pelo nome.',
   },
   {
     id: 'faq-zero-points',
     question: 'No início, com todos em 0 pontos, como fica a ordem?',
     answer:
-      'Todos empatam em pontos, então a lista segue ordem alfabética do nome (A → Z). As posições mudam conforme os jogos forem pontuando.',
+      'Com todos em 0 pontos (e sem placares exatos), a lista segue ordem alfabética do nome (A → Z). As posições mudam conforme os jogos forem pontuando.',
   },
   {
     id: 'faq-live',

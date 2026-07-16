@@ -8,6 +8,7 @@ import { usePredictions } from '@/features/predictions/hooks/use-predictions';
 import { usePools } from '@/features/pools/hooks/use-pools';
 import { useRankings } from '@/features/rankings/hooks/use-rankings';
 import type { RankingEntry } from '@/features/rankings/types/ranking-entry';
+import { compareRankingStandings } from '@/features/rankings/utils/compare-ranking-standings';
 import {
   compareFixturesForDashboard,
   isFixtureToday,
@@ -115,13 +116,7 @@ export function useDashboardData() {
     return toRankingUsers(
       rankingsState.entries
         .filter(entry => entry.poolId === selectedPoolId)
-        .sort((left, right) => {
-          if (right.points !== left.points) {
-            return right.points - left.points;
-          }
-
-          return left.name.localeCompare(right.name);
-        })
+        .sort(compareRankingStandings)
         .slice(0, TOP_RANKING_LIMIT),
     );
   }, [rankingsState.entries, selectedPoolId]);

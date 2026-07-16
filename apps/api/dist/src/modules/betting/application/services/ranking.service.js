@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RankingService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
+const compare_ranking_standings_js_1 = require("../utils/compare-ranking-standings.js");
 const scoring_service_js_1 = require("./scoring.service.js");
 let RankingService = class RankingService {
     prisma;
@@ -88,10 +89,15 @@ let RankingService = class RankingService {
             if (left.poolName !== right.poolName) {
                 return left.poolName.localeCompare(right.poolName);
             }
-            if (right.points !== left.points) {
-                return right.points - left.points;
-            }
-            return left.name.localeCompare(right.name);
+            return (0, compare_ranking_standings_js_1.compareRankingStandings)({
+                points: left.points,
+                exactScore: left.scoringAchievements.exactScore,
+                name: left.name,
+            }, {
+                points: right.points,
+                exactScore: right.scoringAchievements.exactScore,
+                name: right.name,
+            });
         });
     }
     async getPoolMemberPositions(poolIds, options) {
@@ -134,14 +140,10 @@ let RankingService = class RankingService {
                     userId: member.userId,
                     name: member.user.name,
                     points: aggregated.points,
+                    exactScore: aggregated.achievements.exactScore,
                 };
             }));
-            ranked.sort((left, right) => {
-                if (right.points !== left.points) {
-                    return right.points - left.points;
-                }
-                return left.name.localeCompare(right.name);
-            });
+            ranked.sort((left, right) => (0, compare_ranking_standings_js_1.compareRankingStandings)(left, right));
             ranked.forEach((entry, index) => {
                 positions.set(`${poolId}:${entry.userId}`, index + 1);
             });

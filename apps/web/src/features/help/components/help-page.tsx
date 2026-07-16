@@ -48,7 +48,7 @@ const OVERVIEW_ITEMS = [
   },
   {
     title: 'Classificação',
-    text: 'Mais pontos na frente; empate desempatado por ordem alfabética.',
+    text: 'Mais pontos na frente; empate por placares exatos e, por último, nome.',
   },
   {
     title: 'Personalização',

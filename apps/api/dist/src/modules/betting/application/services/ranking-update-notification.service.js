@@ -14,6 +14,7 @@ exports.RankingUpdateNotificationService = void 0;
 const common_1 = require("@nestjs/common");
 const auth_mail_service_js_1 = require("../../../identity/application/services/auth-mail.service.js");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
+const compare_ranking_standings_js_1 = require("../utils/compare-ranking-standings.js");
 const scoring_service_js_1 = require("./scoring.service.js");
 const TOP_STANDINGS_LIMIT = 10;
 let RankingUpdateNotificationService = RankingUpdateNotificationService_1 = class RankingUpdateNotificationService {
@@ -90,15 +91,11 @@ let RankingUpdateNotificationService = RankingUpdateNotificationService_1 = clas
                 email: member.user.email,
                 name: member.user.name,
                 points: aggregated.points,
+                exactScore: aggregated.achievements.exactScore,
                 position: 0,
             });
         }
-        ranked.sort((left, right) => {
-            if (right.points !== left.points) {
-                return right.points - left.points;
-            }
-            return left.name.localeCompare(right.name);
-        });
+        ranked.sort((left, right) => (0, compare_ranking_standings_js_1.compareRankingStandings)(left, right));
         ranked.forEach((entry, index) => {
             entry.position = index + 1;
         });

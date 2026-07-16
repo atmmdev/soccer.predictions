@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 
 import { AuthMailService } from '../../../identity/application/services/auth-mail.service.js';
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
+import { compareRankingStandings } from '../utils/compare-ranking-standings.js';
 import { ScoringService } from './scoring.service.js';
 
 const TOP_STANDINGS_LIMIT = 10;
@@ -11,6 +12,7 @@ type StandingEntry = {
   email: string;
   name: string;
   points: number;
+  exactScore: number;
   position: number;
 };
 
@@ -101,17 +103,12 @@ export class RankingUpdateNotificationService {
         email: member.user.email,
         name: member.user.name,
         points: aggregated.points,
+        exactScore: aggregated.achievements.exactScore,
         position: 0,
       });
     }
 
-    ranked.sort((left, right) => {
-      if (right.points !== left.points) {
-        return right.points - left.points;
-      }
-
-      return left.name.localeCompare(right.name);
-    });
+    ranked.sort((left, right) => compareRankingStandings(left, right));
 
     ranked.forEach((entry, index) => {
       entry.position = index + 1;
