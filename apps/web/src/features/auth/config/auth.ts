@@ -27,12 +27,20 @@ export const ADMIN_PATH_PREFIXES = [
   '/settings',
 ] as const;
 
+/** Rotas de desempenho pessoal — SUPER_ADMIN não palpita. */
+export const PREDICTOR_ONLY_PATH_PREFIXES = ['/statistics'] as const;
+
 export const AUTH_PATHS = ['/login', '/register'] as const;
 
 const PRIVILEGED_ROLES: UserRole[] = ['ADMIN', 'SUPER_ADMIN'];
+const PREDICTOR_ROLES: UserRole[] = ['ADMIN', 'PARTICIPANT'];
 
 export function isPrivilegedRole(role: UserRole | undefined): boolean {
   return role !== undefined && PRIVILEGED_ROLES.includes(role);
+}
+
+export function isPredictorRole(role: UserRole | undefined): boolean {
+  return role !== undefined && PREDICTOR_ROLES.includes(role);
 }
 
 export function isProtectedPath(pathname: string): boolean {
@@ -47,11 +55,21 @@ export function isAdminOnlyPath(pathname: string): boolean {
   );
 }
 
+export function isPredictorOnlyPath(pathname: string): boolean {
+  return PREDICTOR_ONLY_PATH_PREFIXES.some(
+    prefix => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
 export function isAuthPath(pathname: string): boolean {
   return (AUTH_PATHS as readonly string[]).includes(pathname);
 }
 
 export function canAccessPath(pathname: string, role: UserRole | undefined): boolean {
+  if (isPredictorOnlyPath(pathname)) {
+    return isPredictorRole(role);
+  }
+
   if (!isAdminOnlyPath(pathname)) {
     return true;
   }

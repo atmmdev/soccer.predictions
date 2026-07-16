@@ -183,12 +183,23 @@ export function useDashboardData() {
       fixture =>
         fixture.matchStatus === 'FINISHED' && fixture.prediction !== null,
     );
-    const hits = finishedWithPrediction.filter(
-      fixture => (fixture.earnedPoints ?? 0) > 0,
-    ).length;
+    const exactHits = finishedWithPrediction.filter(fixture => {
+      const prediction = fixture.prediction;
+
+      if (!prediction) {
+        return false;
+      }
+
+      return (
+        fixture.officialHomeScore !== null &&
+        fixture.officialAwayScore !== null &&
+        prediction.predictedHomeScore === fixture.officialHomeScore &&
+        prediction.predictedAwayScore === fixture.officialAwayScore
+      );
+    }).length;
     const hitRate =
       finishedWithPrediction.length > 0
-        ? Math.round((hits / finishedWithPrediction.length) * 100)
+        ? Math.round((exactHits / finishedWithPrediction.length) * 100)
         : 0;
 
     return [
@@ -225,7 +236,7 @@ export function useDashboardData() {
       {
         title: 'Palpites Registrados',
         value: registeredPredictions.toLocaleString('pt-BR'),
-        trend: `Aguardando resultados`,
+        trend: `Boa sorte!`,
         trendPositive: registeredPredictions > 0,
         icon: Target,
         iconBackground: 'bg-violet-100',
@@ -236,7 +247,7 @@ export function useDashboardData() {
         value: `${hitRate}%`,
         trend:
           finishedWithPrediction.length > 0
-            ? `${hits} de ${finishedWithPrediction.length} jogos finalizados`
+            ? `${exactHits} de ${finishedWithPrediction.length} placares exatos`
             : 'Sem jogos finalizados ainda',
         trendPositive: hitRate >= 50,
         icon: TbPercentage,

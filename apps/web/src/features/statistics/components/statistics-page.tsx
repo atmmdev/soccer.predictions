@@ -1,123 +1,27 @@
 'use client';
 
-import type { ComponentType } from 'react';
-import { useMemo } from 'react';
-import {
-  ChartSpline,
-  Target,
-  Trophy,
-  TrendingUp,
-  Users,
-} from 'lucide-react';
+import { Crosshair, Medal, Target, TrendingUp, Trophy } from 'lucide-react';
 import { TbPercentage } from 'react-icons/tb';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PageLoading } from '@/components/ui/page-loading';
-import { usePredictions } from '@/features/predictions/hooks/use-predictions';
-import { usePools } from '@/features/pools/hooks/use-pools';
-import { useRankings } from '@/features/rankings/hooks/use-rankings';
+import { StatsCard } from '@/features/dashboard/stats/components/stats-card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
-interface StatCardProps {
-  title: string;
-  value: string;
-  hint: string;
-  icon: ComponentType<{ className?: string }>;
-  iconBackground: string;
-  iconColor: string;
-}
-
-function StatCard({
-  title,
-  value,
-  hint,
-  icon: Icon,
-  iconBackground,
-  iconColor,
-}: StatCardProps) {
-  return (
-    <Card>
-      <CardContent className='flex items-start gap-4 pt-6'>
-        <div
-          className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${iconBackground}`}
-        >
-          <Icon className={`size-5 ${iconColor}`} />
-        </div>
-        <div className='space-y-1'>
-          <p className='text-muted-foreground text-sm'>{title}</p>
-          <p className='text-2xl font-semibold tracking-tight'>{value}</p>
-          <p className='text-muted-foreground text-xs'>{hint}</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+import { AchievementChart } from './charts/achievement-chart';
+import { PointsEvolutionChart } from './charts/points-evolution-chart';
+import { PoolPerformanceChart } from './charts/pool-performance-chart';
+import { useStatistics } from '../hooks/use-statistics';
 
 export function StatisticsPage() {
-  const poolsState = usePools();
-  const predictionsState = usePredictions();
-  const rankingsState = useRankings();
-
-  const isLoading =
-    poolsState.isLoading ||
-    predictionsState.isLoading ||
-    rankingsState.isLoading;
-
-  const error =
-    poolsState.error ?? predictionsState.error ?? rankingsState.error;
-
-  const stats = useMemo(() => {
-    const ownFixtures = predictionsState.fixtures.filter(
-      fixture => fixture.isOwnPrediction,
-    );
-    const registered = ownFixtures.filter(
-      fixture => fixture.prediction !== null,
-    );
-    const finished = registered.filter(
-      fixture => fixture.matchStatus === 'FINISHED',
-    );
-    const hits = finished.filter(fixture => (fixture.earnedPoints ?? 0) > 0);
-    const hitRate =
-      finished.length > 0
-        ? Math.round((hits.length / finished.length) * 100)
-        : 0;
-    const totalPoints = rankingsState.entries
-      .filter(entry => entry.isCurrentUser)
-      .reduce((sum, entry) => sum + entry.points, 0);
-    const userEntries = rankingsState.entries.filter(entry => entry.isCurrentUser);
-    let bestPosition: number | null = null;
-
-    for (const entry of userEntries) {
-      const poolEntries = rankingsState.entries
-        .filter(item => item.poolId === entry.poolId)
-        .sort((left, right) => {
-          if (right.points !== left.points) {
-            return right.points - left.points;
-          }
-
-          return left.name.localeCompare(right.name);
-        });
-      const position = poolEntries.findIndex(item => item.id === entry.id) + 1;
-
-      if (position > 0 && (bestPosition === null || position < bestPosition)) {
-        bestPosition = position;
-      }
-    }
-    const participantsTotal = new Set(
-      rankingsState.entries.map(entry => entry.id),
-    ).size;
-
-    return {
-      poolsCount: poolsState.pools.length,
-      participantsTotal,
-      registeredPredictions: registered.length,
-      hitRate,
-      totalPoints,
-      bestPosition,
-      exactScores: rankingsState.entries
-        .filter(entry => entry.isCurrentUser)
-        .reduce((sum, entry) => sum + entry.scoringAchievements.exactScore, 0),
-    };
-  }, [predictionsState.fixtures, poolsState.pools, rankingsState.entries]);
+  const { isLoading, error, data, reload } = useStatistics();
 
   if (isLoading) {
     return <PageLoading label='Carregando estatísticas...' />;
@@ -126,77 +30,131 @@ export function StatisticsPage() {
   if (error) {
     return (
       <Card>
-        <CardContent className='py-12 text-center'>
+        <CardContent className='flex flex-col items-center gap-2 py-12 text-center'>
           <p className='text-destructive text-sm'>{error}</p>
+          <button
+            type='button'
+            className='text-primary text-sm underline'
+            onClick={() => void reload()}
+          >
+            Tentar novamente
+          </button>
         </CardContent>
       </Card>
     );
   }
 
+  if (data.evaluatedGames === 0) {
+    return (
+      <Card>
+        <CardContent className='py-12 text-center'>
+          <p className='text-muted-foreground text-sm'>
+            Ainda não há jogos finalizados com os seus palpites para gerar
+            estatísticas.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const averagePointsLabel = data.averagePoints.toLocaleString('pt-BR', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+
   return (
-    <div className='space-y-4'>
-      <div className='grid gap-4 sm:grid-cols-2 xl:grid-cols-3'>
-        <StatCard
-          title='Bolões'
-          value={stats.poolsCount.toLocaleString('pt-BR')}
-          hint='Bolões em que você participa'
-          icon={Trophy}
-          iconBackground='bg-sky-100'
-          iconColor='text-sky-600'
+    <div className='space-y-6'>
+      <div className='grid gap-4 sm:grid-cols-2 xl:grid-cols-4'>
+        <StatsCard
+          item={{
+            title: 'Jogos avaliados',
+            value: data.evaluatedGames.toLocaleString('pt-BR'),
+            trend: 'Finalizados com o seu palpite',
+            icon: Target,
+            iconBackground: 'bg-violet-100',
+            iconColor: 'text-violet-600',
+          }}
         />
-        <StatCard
-          title='Participantes'
-          value={stats.participantsTotal.toLocaleString('pt-BR')}
-          hint='Total nos seus bolões'
-          icon={Users}
-          iconBackground='bg-emerald-100'
-          iconColor='text-emerald-600'
+        <StatsCard
+          item={{
+            title: 'Pontos totais',
+            value: data.totalPoints.toLocaleString('pt-BR'),
+            trend: 'Soma nos jogos avaliados',
+            icon: TrendingUp,
+            iconBackground: 'bg-amber-100',
+            iconColor: 'text-amber-600',
+          }}
         />
-        <StatCard
-          title='Palpites registrados'
-          value={stats.registeredPredictions.toLocaleString('pt-BR')}
-          hint='Jogos com palpite seu'
-          icon={Target}
-          iconBackground='bg-violet-100'
-          iconColor='text-violet-600'
+        <StatsCard
+          item={{
+            title: 'Média de pontos / jogo',
+            value: averagePointsLabel,
+            trend: 'Pontos ÷ jogos avaliados',
+            icon: Trophy,
+            iconBackground: 'bg-sky-100',
+            iconColor: 'text-sky-600',
+          }}
         />
-        <StatCard
-          title='Taxa de acerto'
-          value={`${stats.hitRate}%`}
-          hint='Jogos finalizados com pontos'
-          icon={TbPercentage}
-          iconBackground='bg-rose-100'
-          iconColor='text-rose-600'
-        />
-        <StatCard
-          title='Pontos totais'
-          value={stats.totalPoints.toLocaleString('pt-BR')}
-          hint='Soma nos bolões atuais'
-          icon={TrendingUp}
-          iconBackground='bg-amber-100'
-          iconColor='text-amber-600'
-        />
-        <StatCard
-          title='Placares exatos'
-          value={stats.exactScores.toLocaleString('pt-BR')}
-          hint='Conquistas de placar exato'
-          icon={ChartSpline}
-          iconBackground='bg-cyan-100'
-          iconColor='text-cyan-600'
+        <StatsCard
+          item={{
+            title: 'Taxa de placar exato',
+            value: `${data.exactScoreRate}%`,
+            trend: `${data.achievements.exactScore} placares exatos`,
+            trendPositive: data.exactScoreRate > 0,
+            icon: TbPercentage,
+            iconBackground: 'bg-rose-100',
+            iconColor: 'text-rose-600',
+          }}
         />
       </div>
 
+      <div className='grid gap-6 xl:grid-cols-3'>
+        <PointsEvolutionChart data={data.pointsEvolution} />{' '}
+        <AchievementChart data={data.achievementChart} />
+        <PoolPerformanceChart data={data.poolPerformance} />
+      </div>
+
       <Card>
-        <CardHeader>
-          <CardTitle className='text-base'>Melhor colocação</CardTitle>
+        <CardHeader className='flex flex-row flex-wrap items-center justify-between gap-3'>
+          <CardTitle className='text-base'>Classificação</CardTitle>
+          <div className='flex items-center gap-2 text-sm'>
+            <Medal className='text-muted-foreground size-4' />
+            <span className='text-muted-foreground'>Melhor posição:</span>
+            <span className='font-semibold'>
+              {data.bestPosition ? `${data.bestPosition}º lugar` : '—'}
+            </span>
+          </div>
         </CardHeader>
-        <CardContent>
-          <p className='text-2xl font-semibold'>
-            {stats.bestPosition ? `${stats.bestPosition}º lugar` : '—'}
-          </p>
-          <p className='text-muted-foreground mt-1 text-sm'>
-            Sua melhor posição atual entre os bolões em que participa.
-          </p>
+        <CardContent className='overflow-x-auto'>
+          <Table>
+            <TableHeader>
+              <TableRow className='text-xs'>
+                <TableHead>Bolão</TableHead>
+                <TableHead>Campeonato</TableHead>
+                <TableHead className='text-center'>Posição</TableHead>
+                <TableHead className='text-right'>Pontos</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.poolStandings.map(row => (
+                <TableRow key={row.poolId}>
+                  <TableCell className='font-medium'>{row.poolName}</TableCell>
+                  <TableCell className='text-muted-foreground'>
+                    {row.championshipName}
+                  </TableCell>
+                  <TableCell className='text-center'>
+                    <span className='inline-flex items-center gap-1.5 font-semibold'>
+                      <Crosshair className='text-muted-foreground size-3.5' />
+                      {row.position}º
+                    </span>
+                  </TableCell>
+                  <TableCell className='text-right font-bold tabular-nums'>
+                    {row.points.toLocaleString('pt-BR')}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>
