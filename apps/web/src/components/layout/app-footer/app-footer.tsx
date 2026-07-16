@@ -1,9 +1,7 @@
-import { Lightbulb } from 'lucide-react';
-
 export function AppFooter() {
   return (
     <footer>
-      <small className='text-xs italic text-muted-foreground'>
+      <small className='text-muted-foreground block text-xs italic'>
         <a
           href='https://www.atmm.dev'
           target='_blank'

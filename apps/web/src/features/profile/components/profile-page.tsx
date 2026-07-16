@@ -234,7 +234,7 @@ export function ProfilePage() {
     <div className='grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]'>
       <Card>
         <CardHeader>
-          <div className='flex flex-col gap-4 sm:flex-row sm:items-center'>
+          <div className='flex flex-col items-center gap-4 text-center sm:flex-row sm:items-center sm:text-left'>
             <div className='relative w-fit'>
               <Avatar className='size-[100px]'>
                 {avatarDataUrl ? (
@@ -269,7 +269,7 @@ export function ProfilePage() {
               <CardDescription className='break-all'>
                 {user.email}
               </CardDescription>
-              <div className='mt-2 flex flex-wrap gap-2'>
+              <div className='mt-2 flex flex-wrap justify-center gap-2 sm:justify-start'>
                 <Button
                   type='button'
                   variant='outline'
