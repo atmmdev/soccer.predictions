@@ -24,7 +24,7 @@ export function usePredictionList() {
   }, []);
 
   const searchFilters = usePredictionSearchFilters(fixtures, {
-    enableDateFilter: isSuperAdmin,
+    enableDateFilter: true,
     enableParticipantFilter: isSuperAdmin,
   });
 
