@@ -15,10 +15,34 @@ const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js
 const scoring_calculator_js_1 = require("../utils/scoring-calculator.js");
 let ScoringService = class ScoringService {
     prisma;
+    syncingPools = new Map();
     constructor(prisma) {
         this.prisma = prisma;
     }
     async syncPoolScores(poolId) {
+        const inFlight = this.syncingPools.get(poolId);
+        if (inFlight) {
+            return inFlight;
+        }
+        const syncPromise = this.runPoolScoreSync(poolId).finally(() => {
+            this.syncingPools.delete(poolId);
+        });
+        this.syncingPools.set(poolId, syncPromise);
+        return syncPromise;
+    }
+    async syncPoolsScores(poolIds) {
+        for (const poolId of poolIds) {
+            await this.syncPoolScores(poolId);
+        }
+    }
+    async syncScoresForChampionship(championshipId) {
+        const pools = await this.prisma.pool.findMany({
+            where: { championshipId },
+            select: { id: true },
+        });
+        await this.syncPoolsScores(pools.map(pool => pool.id));
+    }
+    async runPoolScoreSync(poolId) {
         const pool = await this.prisma.pool.findUnique({
             where: { id: poolId },
             select: {
@@ -51,18 +75,6 @@ let ScoringService = class ScoringService {
             await this.scoreFixture(poolId, fixture, pool.championship.type, scoring);
         }
     }
-    async syncPoolsScores(poolIds) {
-        for (const poolId of poolIds) {
-            await this.syncPoolScores(poolId);
-        }
-    }
-    async syncScoresForChampionship(championshipId) {
-        const pools = await this.prisma.pool.findMany({
-            where: { championshipId },
-            select: { id: true },
-        });
-        await this.syncPoolsScores(pools.map(pool => pool.id));
-    }
     async scoreFixture(poolId, fixture, championshipType, scoring) {
         const predictions = await this.prisma.prediction.findMany({
             where: { poolId, fixtureId: fixture.id },
@@ -70,9 +82,6 @@ let ScoringService = class ScoringService {
         if (predictions.length === 0) {
             return;
         }
-        await this.prisma.pointHistory.deleteMany({
-            where: { poolId, fixtureId: fixture.id },
-        });
         const rows = [];
         for (const prediction of predictions) {
             const result = (0, scoring_calculator_js_1.calculatePredictionScore)({
@@ -98,9 +107,17 @@ let ScoringService = class ScoringService {
                 breakdown: result.achievements,
             });
         }
-        if (rows.length > 0) {
-            await this.prisma.pointHistory.createMany({ data: rows });
-        }
+        await this.prisma.$transaction(async (tx) => {
+            await tx.pointHistory.deleteMany({
+                where: { poolId, fixtureId: fixture.id },
+            });
+            if (rows.length > 0) {
+                await tx.pointHistory.createMany({
+                    data: rows,
+                    skipDuplicates: true,
+                });
+            }
+        });
     }
     resolvePrimaryAchievement(achievements) {
         if (achievements.exactScore > 0) {

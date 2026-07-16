@@ -288,6 +288,6 @@ model PointHistory {
   user    User    @relation(fields: [userId], references: [id])
   fixture Fixture @relation(fields: [fixtureId], references: [id])
 
+  @@unique([poolId, userId, fixtureId])
   @@index([poolId, userId])
-  @@index([poolId, userId, fixtureId])
 }

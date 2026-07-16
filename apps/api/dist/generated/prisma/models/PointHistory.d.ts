@@ -172,6 +172,7 @@ export type PointHistoryOrderByWithRelationInput = {
 };
 export type PointHistoryWhereUniqueInput = Prisma.AtLeast<{
     id?: number;
+    poolId_userId_fixtureId?: Prisma.PointHistoryPoolIdUserIdFixtureIdCompoundUniqueInput;
     AND?: Prisma.PointHistoryWhereInput | Prisma.PointHistoryWhereInput[];
     OR?: Prisma.PointHistoryWhereInput[];
     NOT?: Prisma.PointHistoryWhereInput | Prisma.PointHistoryWhereInput[];
@@ -185,7 +186,7 @@ export type PointHistoryWhereUniqueInput = Prisma.AtLeast<{
     pool?: Prisma.XOR<Prisma.PoolScalarRelationFilter, Prisma.PoolWhereInput>;
     user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>;
     fixture?: Prisma.XOR<Prisma.FixtureScalarRelationFilter, Prisma.FixtureWhereInput>;
-}, "id">;
+}, "id" | "poolId_userId_fixtureId">;
 export type PointHistoryOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
     poolId?: Prisma.SortOrder;
@@ -285,6 +286,11 @@ export type PointHistoryListRelationFilter = {
 };
 export type PointHistoryOrderByRelationAggregateInput = {
     _count?: Prisma.SortOrder;
+};
+export type PointHistoryPoolIdUserIdFixtureIdCompoundUniqueInput = {
+    poolId: number;
+    userId: number;
+    fixtureId: number;
 };
 export type PointHistoryCountOrderByAggregateInput = {
     id?: Prisma.SortOrder;
