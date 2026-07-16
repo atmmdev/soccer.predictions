@@ -35,6 +35,7 @@ let GoogleStrategy = class GoogleStrategy extends (0, passport_1.PassportStrateg
                 name: profile.displayName ??
                     profile.name?.givenName ??
                     'Usuário Google',
+                avatarUrl: profile.photos?.[0]?.value ?? null,
             });
             done(null, user);
         }

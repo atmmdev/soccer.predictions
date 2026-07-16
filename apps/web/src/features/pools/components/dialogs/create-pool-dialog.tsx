@@ -24,6 +24,14 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { getStoredUser } from '@/features/auth/lib/auth-storage';
 import { useActiveChampionships } from '@/features/championships/hooks/use-active-championships';
 import { usePoolDelegates } from '@/features/users/hooks/use-pool-delegates';
@@ -156,25 +164,46 @@ export function CreatePoolDialog({ onCreate }: CreatePoolDialogProps) {
                     </FormLabel>
                     {hasDelegateCandidates ? (
                       <FormControl>
-                        <NativeSelect
+                        <Select
                           value={field.value ? field.value.toString() : ''}
-                          onChange={event => {
-                            const nextId = Number(event.target.value);
+                          onValueChange={value => {
+                            const nextId = Number(value);
                             field.onChange(nextId > 0 ? nextId : undefined);
                           }}
                           disabled={isLoadingDelegates}
                         >
-                          <option value='' disabled>
-                            {isLoadingDelegates
-                              ? 'Carregando participantes...'
-                              : 'Selecione o responsável'}
-                          </option>
-                          {delegates.map(delegate => (
-                            <option key={delegate.id} value={delegate.id}>
-                              {delegate.name} ({delegate.email})
-                            </option>
-                          ))}
-                        </NativeSelect>
+                          <SelectTrigger size='lg' className='w-full'>
+                            <SelectValue
+                              placeholder={
+                                isLoadingDelegates
+                                  ? 'Carregando participantes...'
+                                  : 'Selecione o responsável'
+                              }
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {delegates.map(delegate => (
+                              <SelectItem
+                                key={delegate.id}
+                                value={delegate.id.toString()}
+                              >
+                                <UserAvatar
+                                  name={delegate.name}
+                                  avatarDataUrl={delegate.avatarDataUrl}
+                                  className='size-7'
+                                />
+                                <span className='flex min-w-0 flex-col'>
+                                  <span className='truncate font-medium'>
+                                    {delegate.name}
+                                  </span>
+                                  <span className='text-muted-foreground truncate text-xs'>
+                                    {delegate.email}
+                                  </span>
+                                </span>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                     ) : (
                       <p className='text-muted-foreground rounded-md border border-dashed px-3 py-2 text-sm'>

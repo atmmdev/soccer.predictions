@@ -5,5 +5,7 @@ export interface ActivityItem {
   type: ActivityType;
   title: string;
   description: string;
+  userName: string | null;
+  avatarDataUrl: string | null;
   occurredAt: string;
 }

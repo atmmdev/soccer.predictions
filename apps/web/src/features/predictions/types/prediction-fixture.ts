@@ -17,6 +17,7 @@ export interface PredictionFixtureItem {
   poolPosition: number;
   participantId: number;
   participantName: string;
+  participantAvatarDataUrl: string | null;
   isOwnPrediction: boolean;
   championshipName: string;
   round: number | null;

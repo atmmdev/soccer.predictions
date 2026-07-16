@@ -28,6 +28,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { PageLoading } from '@/components/ui/page-loading';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { formatFixtureRoundLabel } from '@/lib/format-fixture-round-label';
 
 import { fetchPredictionsByFixtureRequest } from '../../services/prediction-api.service';
@@ -165,16 +166,23 @@ export function FixturePredictionsDialog({
 
                   return (
                     <TableRow key={row.participantId}>
-                      <TableCell className='max-w-[14rem] truncate text-xs font-medium'>
-                        <span title={row.participantName}>
-                          {row.participantName}
-                        </span>
-                        {row.isOwnPrediction ? (
-                          <span className='text-muted-foreground font-normal'>
-                            {' '}
-                            (você)
+                      <TableCell className='max-w-[14rem] text-xs font-medium'>
+                        <div className='flex items-center gap-2'>
+                          <UserAvatar
+                            name={row.participantName}
+                            avatarDataUrl={row.participantAvatarDataUrl}
+                            className='size-7'
+                          />
+                          <span className='truncate' title={row.participantName}>
+                            {row.participantName}
+                            {row.isOwnPrediction ? (
+                              <span className='text-muted-foreground font-normal'>
+                                {' '}
+                                (você)
+                              </span>
+                            ) : null}
                           </span>
-                        ) : null}
+                        </div>
                       </TableCell>
                       <TableCell className='text-center'>
                         <div className='flex justify-center'>

@@ -83,6 +83,8 @@ model User {
   id              Int          @id @default(autoincrement())
   email           String       @unique
   name            String
+  phone           String?      @db.VarChar(20)
+  avatarDataUrl   String?      @db.MediumText
   password        String?
   authProvider    AuthProvider @default(LOCAL)
   providerId      String?

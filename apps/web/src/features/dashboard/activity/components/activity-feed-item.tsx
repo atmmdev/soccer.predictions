@@ -1,5 +1,7 @@
 import { Award, FileText, Trophy, UserPlus, type LucideIcon } from 'lucide-react';
 
+import { UserAvatar } from '@/components/ui/user-avatar';
+
 import type { ActivityItem, ActivityType } from '../types/activity';
 import { formatActivityRelativeTime } from '../utils/format-activity-time';
 
@@ -26,11 +28,19 @@ export function ActivityFeedItem({ item }: ActivityFeedItemProps) {
 
   return (
     <div className='flex items-start gap-3 border-b border-gray-200 py-3 last:border-b-0'>
-      <div
-        className={`flex size-10 shrink-0 items-center justify-center rounded-lg ${colorMap[item.type]}`}
-      >
-        <Icon className='size-4' />
-      </div>
+      {item.userName ? (
+        <UserAvatar
+          name={item.userName}
+          avatarDataUrl={item.avatarDataUrl}
+          className='size-10'
+        />
+      ) : (
+        <div
+          className={`flex size-10 shrink-0 items-center justify-center rounded-lg ${colorMap[item.type]}`}
+        >
+          <Icon className='size-4' />
+        </div>
+      )}
       <div className='min-w-0 flex-1 space-y-0.5'>
         <p className='text-sm leading-snug font-semibold'>{item.title}</p>
         <p className='text-muted-foreground text-sm leading-snug'>

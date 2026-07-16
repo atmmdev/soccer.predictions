@@ -145,6 +145,8 @@ export class EmailVerificationService {
     id: number;
     email: string;
     name: string;
+    phone: string | null;
+    avatarDataUrl: string | null;
     role: AuthUser['role'];
   }): AuthResponse {
     const payload: JwtPayload = {
@@ -159,6 +161,8 @@ export class EmailVerificationService {
         id: user.id,
         email: user.email,
         name: user.name,
+        phone: user.phone,
+        avatarDataUrl: user.avatarDataUrl,
         role: user.role,
       },
     };

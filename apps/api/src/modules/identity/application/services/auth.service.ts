@@ -16,6 +16,7 @@ import type {
   JwtPayload,
 } from '../types/auth-user.js';
 import type { OAuthProfile } from '../types/oauth-profile.js';
+import { fetchOAuthAvatarDataUrl } from '../utils/oauth-avatar.js';
 import { EmailVerificationService } from './email-verification.service.js';
 
 const PASSWORD_SALT_ROUNDS = 10;
@@ -101,6 +102,8 @@ export class AuthService {
   }
 
   async validateOAuthLogin(profile: OAuthProfile): Promise<AuthUser> {
+    const importedAvatar = await fetchOAuthAvatarDataUrl(profile.avatarUrl);
+
     const existingOAuthUser = await this.prisma.user.findFirst({
       where: {
         authProvider: profile.provider,
@@ -109,13 +112,24 @@ export class AuthService {
     });
 
     if (existingOAuthUser) {
-      if (!existingOAuthUser.emailVerifiedAt) {
+      const shouldImportAvatar =
+        Boolean(importedAvatar) && !existingOAuthUser.avatarDataUrl;
+
+      if (!existingOAuthUser.emailVerifiedAt || shouldImportAvatar) {
         const verified = await this.prisma.user.update({
           where: { id: existingOAuthUser.id },
-          data: { emailVerifiedAt: new Date() },
+          data: {
+            ...(!existingOAuthUser.emailVerifiedAt
+              ? { emailVerifiedAt: new Date() }
+              : {}),
+            ...(shouldImportAvatar
+              ? { avatarDataUrl: importedAvatar }
+              : {}),
+          },
         });
         return this.toAuthUser(verified);
       }
+
       return this.toAuthUser(existingOAuthUser);
     }
 
@@ -125,6 +139,9 @@ export class AuthService {
       });
 
       if (existingEmailUser) {
+        const shouldImportAvatar =
+          Boolean(importedAvatar) && !existingEmailUser.avatarDataUrl;
+
         const linkedUser = await this.prisma.user.update({
           where: { id: existingEmailUser.id },
           data: {
@@ -133,6 +150,9 @@ export class AuthService {
             name: existingEmailUser.name || profile.name,
             password: null,
             emailVerifiedAt: existingEmailUser.emailVerifiedAt ?? new Date(),
+            ...(shouldImportAvatar
+              ? { avatarDataUrl: importedAvatar }
+              : {}),
           },
         });
 
@@ -152,6 +172,7 @@ export class AuthService {
         providerId: profile.providerId,
         password: null,
         emailVerifiedAt: new Date(),
+        ...(importedAvatar ? { avatarDataUrl: importedAvatar } : {}),
       },
     });
 
@@ -178,6 +199,8 @@ export class AuthService {
     id: number;
     email: string;
     name: string;
+    phone: string | null;
+    avatarDataUrl: string | null;
     role: AuthUser['role'];
   }): AuthResponse {
     const payload: JwtPayload = {
@@ -196,12 +219,16 @@ export class AuthService {
     id: number;
     email: string;
     name: string;
+    phone: string | null;
+    avatarDataUrl: string | null;
     role: AuthUser['role'];
   }): AuthUser {
     return {
       id: user.id,
       email: user.email,
       name: user.name,
+      phone: user.phone,
+      avatarDataUrl: user.avatarDataUrl,
       role: user.role,
     };
   }

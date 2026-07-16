@@ -17,6 +17,27 @@ let UserService = class UserService {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    async updateProfile(userId, dto) {
+        const user = await this.prisma.user.update({
+            where: { id: userId },
+            data: {
+                name: dto.name,
+                ...(dto.phone !== undefined ? { phone: dto.phone } : {}),
+                ...(dto.avatarDataUrl !== undefined
+                    ? { avatarDataUrl: dto.avatarDataUrl }
+                    : {}),
+            },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                phone: true,
+                avatarDataUrl: true,
+                role: true,
+            },
+        });
+        return user;
+    }
     async listPoolDelegateCandidates() {
         const users = await this.prisma.user.findMany({
             where: {
@@ -26,6 +47,7 @@ let UserService = class UserService {
                 id: true,
                 name: true,
                 email: true,
+                avatarDataUrl: true,
                 role: true,
             },
             orderBy: { name: 'asc' },

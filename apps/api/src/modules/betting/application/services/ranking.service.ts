@@ -11,6 +11,7 @@ export interface RankingListItem {
   championshipName: string;
   name: string;
   email: string;
+  avatarDataUrl: string | null;
   points: number;
   predictionsCount: number;
   scoringAchievements: {
@@ -59,6 +60,7 @@ export class RankingService {
               id: true,
               name: true,
               email: true,
+              avatarDataUrl: true,
               role: true,
             },
           },
@@ -97,6 +99,7 @@ export class RankingService {
           championshipName: pool.championship.name,
           name: member.user.name,
           email: member.user.email,
+          avatarDataUrl: member.user.avatarDataUrl,
           points: aggregated.points,
           predictionsCount,
           scoringAchievements: aggregated.achievements,

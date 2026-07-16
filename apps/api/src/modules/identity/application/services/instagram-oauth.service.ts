@@ -10,6 +10,7 @@ interface InstagramProfileResponse {
   id: string;
   username: string;
   name?: string;
+  profile_picture_url?: string;
 }
 
 @Injectable()
@@ -37,6 +38,7 @@ export class InstagramOAuthService {
     providerId: string;
     name: string;
     username: string;
+    avatarUrl: string | null;
   }> {
     const clientId = this.configService.getOrThrow<string>(
       'INSTAGRAM_CLIENT_ID',
@@ -87,6 +89,7 @@ export class InstagramOAuthService {
         providerId: userId,
         name: `Instagram ${userId}`,
         username: userId,
+        avatarUrl: null,
       };
     }
 
@@ -97,6 +100,7 @@ export class InstagramOAuthService {
       providerId: profile.id,
       name: profile.name ?? profile.username,
       username: profile.username,
+      avatarUrl: profile.profile_picture_url ?? null,
     };
   }
 }

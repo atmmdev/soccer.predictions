@@ -24,6 +24,7 @@ function mapDiscoverablePool(
     participantsCount: pool.participantsCount,
     ownerId: pool.ownerId,
     ownerName: pool.ownerName,
+    ownerAvatarDataUrl: pool.ownerAvatarDataUrl,
     status: pool.status,
     membershipStatus: pool.membershipStatus,
   };

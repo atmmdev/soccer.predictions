@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ListPagination } from '@/components/ui/list-pagination';
 import { PageLoading } from '@/components/ui/page-loading';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import {
   Table,
   TableBody,
@@ -131,7 +132,16 @@ export function DiscoverablePoolsTable({
                 <TableCell>{pool.championshipName}</TableCell>
                 <TableCell>{pool.season}</TableCell>
                 <TableCell>{pool.participantsCount}</TableCell>
-                <TableCell>{pool.ownerName}</TableCell>
+                <TableCell>
+                  <div className='flex items-center gap-2'>
+                    <UserAvatar
+                      name={pool.ownerName}
+                      avatarDataUrl={pool.ownerAvatarDataUrl}
+                      className='size-7'
+                    />
+                    <span>{pool.ownerName}</span>
+                  </div>
+                </TableCell>
                 <TableCell className='text-right'>
                   <MembershipAction
                     pool={pool}

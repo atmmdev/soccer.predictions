@@ -10,6 +10,8 @@ export interface ActivityItem {
   type: ActivityType;
   title: string;
   description: string;
+  userName: string | null;
+  avatarDataUrl: string | null;
   occurredAt: string;
 }
 
@@ -47,7 +49,9 @@ export class ActivityService {
           orderBy: { joinedAt: 'desc' },
           take: PER_SOURCE_LIMIT,
           include: {
-            user: { select: { id: true, name: true } },
+            user: {
+              select: { id: true, name: true, avatarDataUrl: true },
+            },
             pool: { select: { id: true, name: true } },
           },
         }),
@@ -56,7 +60,9 @@ export class ActivityService {
           orderBy: { createdAt: 'desc' },
           take: PER_SOURCE_LIMIT,
           include: {
-            user: { select: { id: true, name: true } },
+            user: {
+              select: { id: true, name: true, avatarDataUrl: true },
+            },
             fixture: {
               include: {
                 homeTeam: { select: { name: true } },
@@ -70,7 +76,9 @@ export class ActivityService {
           orderBy: { createdAt: 'desc' },
           take: PER_SOURCE_LIMIT,
           include: {
-            owner: { select: { id: true, name: true } },
+            owner: {
+              select: { id: true, name: true, avatarDataUrl: true },
+            },
           },
         }),
         this.prisma.fixture.findMany({
@@ -94,6 +102,8 @@ export class ActivityService {
         type: 'participant' as const,
         title: 'Novo participante cadastrado',
         description: `${row.user.name} entrou no bolão ${row.pool.name}`,
+        userName: row.user.name,
+        avatarDataUrl: row.user.avatarDataUrl,
         occurredAt: row.joinedAt.toISOString(),
       })),
       ...predictions.map(row => ({
@@ -101,6 +111,8 @@ export class ActivityService {
         type: 'prediction' as const,
         title: 'Novo palpite registrado',
         description: `${row.user.name} registrou palpite no jogo ${row.fixture.homeTeam.name} x ${row.fixture.awayTeam.name}`,
+        userName: row.user.name,
+        avatarDataUrl: row.user.avatarDataUrl,
         occurredAt: row.createdAt.toISOString(),
       })),
       ...createdPools.map(row => ({
@@ -108,6 +120,8 @@ export class ActivityService {
         type: 'pool' as const,
         title: 'Bolão criado',
         description: `${row.name} foi criado por ${row.owner.name}`,
+        userName: row.owner.name,
+        avatarDataUrl: row.owner.avatarDataUrl,
         occurredAt: row.createdAt.toISOString(),
       })),
       ...finishedFixtures.map(row => {
@@ -119,6 +133,8 @@ export class ActivityService {
           type: 'result' as const,
           title: 'Resultado finalizado',
           description: `${row.homeTeam.name} ${homeScore} x ${awayScore} ${row.awayTeam.name} - ${row.championship.name}`,
+          userName: null,
+          avatarDataUrl: null,
           occurredAt: row.updatedAt.toISOString(),
         };
       }),

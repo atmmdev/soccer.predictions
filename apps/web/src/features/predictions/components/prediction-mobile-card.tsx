@@ -4,6 +4,7 @@ import { Ban, Eye, Lock, Pencil, Target } from 'lucide-react';
 
 import { StatusBadge } from '@/components/ui/status-badge';
 import { IconActionButton } from '@/components/ui/icon-action-button';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import {
   FixtureScoreComparison,
   MatchTeamsStack,
@@ -89,7 +90,14 @@ export function PredictionMobileCard({
         {showParticipant ? (
           <div className='col-span-2'>
             <dt className='text-muted-foreground'>Participante</dt>
-            <dd className='font-medium'>{fixture.participantName}</dd>
+            <dd className='mt-1 flex items-center gap-2 font-medium'>
+              <UserAvatar
+                name={fixture.participantName}
+                avatarDataUrl={fixture.participantAvatarDataUrl}
+                className='size-7'
+              />
+              {fixture.participantName}
+            </dd>
           </div>
         ) : null}
         <div>

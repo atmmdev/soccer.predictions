@@ -30,6 +30,7 @@ export interface DiscoverablePool {
   participantsCount: number;
   ownerId: number;
   ownerName: string;
+  ownerAvatarDataUrl: string | null;
   status: PoolStatus;
   membershipStatus: DiscoverMembershipStatus;
 }

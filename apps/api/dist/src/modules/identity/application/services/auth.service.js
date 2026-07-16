@@ -14,6 +14,7 @@ const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const bcryptjs_1 = require("bcryptjs");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
+const oauth_avatar_js_1 = require("../utils/oauth-avatar.js");
 const email_verification_service_js_1 = require("./email-verification.service.js");
 const PASSWORD_SALT_ROUNDS = 10;
 let AuthService = class AuthService {
@@ -73,6 +74,7 @@ let AuthService = class AuthService {
         return this.buildAuthResponse(user);
     }
     async validateOAuthLogin(profile) {
+        const importedAvatar = await (0, oauth_avatar_js_1.fetchOAuthAvatarDataUrl)(profile.avatarUrl);
         const existingOAuthUser = await this.prisma.user.findFirst({
             where: {
                 authProvider: profile.provider,
@@ -80,10 +82,18 @@ let AuthService = class AuthService {
             },
         });
         if (existingOAuthUser) {
-            if (!existingOAuthUser.emailVerifiedAt) {
+            const shouldImportAvatar = Boolean(importedAvatar) && !existingOAuthUser.avatarDataUrl;
+            if (!existingOAuthUser.emailVerifiedAt || shouldImportAvatar) {
                 const verified = await this.prisma.user.update({
                     where: { id: existingOAuthUser.id },
-                    data: { emailVerifiedAt: new Date() },
+                    data: {
+                        ...(!existingOAuthUser.emailVerifiedAt
+                            ? { emailVerifiedAt: new Date() }
+                            : {}),
+                        ...(shouldImportAvatar
+                            ? { avatarDataUrl: importedAvatar }
+                            : {}),
+                    },
                 });
                 return this.toAuthUser(verified);
             }
@@ -94,6 +104,7 @@ let AuthService = class AuthService {
                 where: { email: profile.email },
             });
             if (existingEmailUser) {
+                const shouldImportAvatar = Boolean(importedAvatar) && !existingEmailUser.avatarDataUrl;
                 const linkedUser = await this.prisma.user.update({
                     where: { id: existingEmailUser.id },
                     data: {
@@ -102,6 +113,9 @@ let AuthService = class AuthService {
                         name: existingEmailUser.name || profile.name,
                         password: null,
                         emailVerifiedAt: existingEmailUser.emailVerifiedAt ?? new Date(),
+                        ...(shouldImportAvatar
+                            ? { avatarDataUrl: importedAvatar }
+                            : {}),
                     },
                 });
                 return this.toAuthUser(linkedUser);
@@ -117,6 +131,7 @@ let AuthService = class AuthService {
                 providerId: profile.providerId,
                 password: null,
                 emailVerifiedAt: new Date(),
+                ...(importedAvatar ? { avatarDataUrl: importedAvatar } : {}),
             },
         });
         return this.toAuthUser(user);
@@ -149,6 +164,8 @@ let AuthService = class AuthService {
             id: user.id,
             email: user.email,
             name: user.name,
+            phone: user.phone,
+            avatarDataUrl: user.avatarDataUrl,
             role: user.role,
         };
     }

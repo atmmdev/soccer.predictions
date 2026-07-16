@@ -11,6 +11,7 @@ export interface PoolParticipantItem {
   userId: number;
   name: string;
   email: string;
+  avatarDataUrl: string | null;
   isOwner: boolean;
   status: PoolUserStatus;
   joinedAt: string;
@@ -50,6 +51,7 @@ export class ParticipantService {
             id: true,
             name: true,
             email: true,
+            avatarDataUrl: true,
           },
         },
       },
@@ -78,6 +80,7 @@ export class ParticipantService {
       userId: member.user.id,
       name: member.user.name,
       email: member.user.email,
+      avatarDataUrl: member.user.avatarDataUrl,
       isOwner: member.pool.ownerId === member.user.id,
       status: member.status,
       joinedAt: member.joinedAt.toISOString(),

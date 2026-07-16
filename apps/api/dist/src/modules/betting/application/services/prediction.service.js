@@ -195,7 +195,11 @@ let PredictionService = class PredictionService {
         return this.toFixtureRow({
             pool,
             fixture,
-            member: { id: user.id, name: user.name },
+            member: {
+                id: user.id,
+                name: user.name,
+                avatarDataUrl: user.avatarDataUrl,
+            },
             userId: user.id,
             prediction,
             poolPosition: positions.get(`${dto.poolId}:${user.id}`) ?? 0,
@@ -214,6 +218,7 @@ let PredictionService = class PredictionService {
                     select: {
                         id: true,
                         name: true,
+                        avatarDataUrl: true,
                         role: true,
                     },
                 },
@@ -233,6 +238,7 @@ let PredictionService = class PredictionService {
             current.push({
                 id: member.user.id,
                 name: member.user.name,
+                avatarDataUrl: member.user.avatarDataUrl,
             });
             membersByPoolId.set(member.poolId, current);
         }
@@ -269,6 +275,7 @@ let PredictionService = class PredictionService {
             poolPosition,
             participantId: member.id,
             participantName: member.name,
+            participantAvatarDataUrl: member.avatarDataUrl,
             isOwnPrediction: member.id === userId,
             championshipName: fixture.championship.name,
             round: fixture.round,

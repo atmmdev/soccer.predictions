@@ -17,6 +17,7 @@ import {
   dateTimeTableCellClassName,
 } from '@/components/ui/datetime-display';
 import { TableCell, TableRow } from '@/components/ui/table';
+import { UserAvatar } from '@/components/ui/user-avatar';
 
 import { PredictionCountdown } from '../prediction-countdown';
 import type { PredictionFixtureItem } from '../../types/prediction-fixture';
@@ -79,10 +80,17 @@ export function PredictionRow({
       </TableCell>
       {showParticipantColumn ? (
         <TableCell
-          className={`max-w-[7rem] truncate text-center text-xs font-medium ${predictionTableColumns.participant}`}
+          className={`max-w-[9rem] text-xs font-medium ${predictionTableColumns.participant}`}
           title={fixture.participantName}
         >
-          {fixture.participantName}
+          <div className='flex items-center justify-center gap-2'>
+            <UserAvatar
+              name={fixture.participantName}
+              avatarDataUrl={fixture.participantAvatarDataUrl}
+              className='size-7'
+            />
+            <span className='truncate'>{fixture.participantName}</span>
+          </div>
         </TableCell>
       ) : null}
       <TableCell

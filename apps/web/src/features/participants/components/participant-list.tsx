@@ -18,7 +18,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -41,6 +40,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { useClientPagination } from '@/hooks/use-client-pagination';
 import {
   lineTabTriggerClassName,
@@ -80,17 +80,6 @@ function ParticipantStatusBadge({
   }
 
   return <StatusBadge tone='neutral'>Inativo</StatusBadge>;
-}
-
-function initialsFromName(name: string) {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) {
-    return '?';
-  }
-  if (parts.length === 1) {
-    return parts[0]!.slice(0, 1).toUpperCase();
-  }
-  return `${parts[0]!.slice(0, 1)}${parts[parts.length - 1]!.slice(0, 1)}`.toUpperCase();
 }
 
 async function copyInviteLink(inviteCode: string) {
@@ -312,11 +301,11 @@ export function ParticipantList() {
                 >
                   <AccordionTrigger className='items-center gap-2 py-3.5 hover:no-underline'>
                     <div className='flex min-w-0 flex-1 items-center gap-3 pr-2'>
-                      <Avatar size='default' className='bg-primary/10'>
-                        <AvatarFallback className='bg-primary/10 text-xs font-semibold text-primary'>
-                          {initialsFromName(group.name)}
-                        </AvatarFallback>
-                      </Avatar>
+                      <UserAvatar
+                        name={group.name}
+                        avatarDataUrl={group.avatarDataUrl}
+                        fallbackClassName='bg-primary/10 font-semibold text-primary'
+                      />
 
                       <div className='min-w-0 flex-1 text-left'>
                         <div className='flex flex-wrap items-center gap-2'>

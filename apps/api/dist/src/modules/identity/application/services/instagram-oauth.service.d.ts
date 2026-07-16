@@ -7,5 +7,6 @@ export declare class InstagramOAuthService {
         providerId: string;
         name: string;
         username: string;
+        avatarUrl: string | null;
     }>;
 }

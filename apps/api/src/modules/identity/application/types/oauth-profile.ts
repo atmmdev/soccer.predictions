@@ -7,4 +7,6 @@ export interface OAuthProfile {
   providerId: string;
   email?: string | null;
   name: string;
+  /** URL pública da foto no provedor (Google/Instagram). */
+  avatarUrl?: string | null;
 }

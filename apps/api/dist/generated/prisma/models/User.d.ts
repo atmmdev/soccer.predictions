@@ -19,6 +19,8 @@ export type UserMinAggregateOutputType = {
     id: number | null;
     email: string | null;
     name: string | null;
+    phone: string | null;
+    avatarDataUrl: string | null;
     password: string | null;
     authProvider: $Enums.AuthProvider | null;
     providerId: string | null;
@@ -31,6 +33,8 @@ export type UserMaxAggregateOutputType = {
     id: number | null;
     email: string | null;
     name: string | null;
+    phone: string | null;
+    avatarDataUrl: string | null;
     password: string | null;
     authProvider: $Enums.AuthProvider | null;
     providerId: string | null;
@@ -43,6 +47,8 @@ export type UserCountAggregateOutputType = {
     id: number;
     email: number;
     name: number;
+    phone: number;
+    avatarDataUrl: number;
     password: number;
     authProvider: number;
     providerId: number;
@@ -62,6 +68,8 @@ export type UserMinAggregateInputType = {
     id?: true;
     email?: true;
     name?: true;
+    phone?: true;
+    avatarDataUrl?: true;
     password?: true;
     authProvider?: true;
     providerId?: true;
@@ -74,6 +82,8 @@ export type UserMaxAggregateInputType = {
     id?: true;
     email?: true;
     name?: true;
+    phone?: true;
+    avatarDataUrl?: true;
     password?: true;
     authProvider?: true;
     providerId?: true;
@@ -86,6 +96,8 @@ export type UserCountAggregateInputType = {
     id?: true;
     email?: true;
     name?: true;
+    phone?: true;
+    avatarDataUrl?: true;
     password?: true;
     authProvider?: true;
     providerId?: true;
@@ -127,6 +139,8 @@ export type UserGroupByOutputType = {
     id: number;
     email: string;
     name: string;
+    phone: string | null;
+    avatarDataUrl: string | null;
     password: string | null;
     authProvider: $Enums.AuthProvider;
     providerId: string | null;
@@ -150,6 +164,8 @@ export type UserWhereInput = {
     id?: Prisma.IntFilter<"User"> | number;
     email?: Prisma.StringFilter<"User"> | string;
     name?: Prisma.StringFilter<"User"> | string;
+    phone?: Prisma.StringNullableFilter<"User"> | string | null;
+    avatarDataUrl?: Prisma.StringNullableFilter<"User"> | string | null;
     password?: Prisma.StringNullableFilter<"User"> | string | null;
     authProvider?: Prisma.EnumAuthProviderFilter<"User"> | $Enums.AuthProvider;
     providerId?: Prisma.StringNullableFilter<"User"> | string | null;
@@ -169,6 +185,8 @@ export type UserOrderByWithRelationInput = {
     id?: Prisma.SortOrder;
     email?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
+    phone?: Prisma.SortOrderInput | Prisma.SortOrder;
+    avatarDataUrl?: Prisma.SortOrderInput | Prisma.SortOrder;
     password?: Prisma.SortOrderInput | Prisma.SortOrder;
     authProvider?: Prisma.SortOrder;
     providerId?: Prisma.SortOrderInput | Prisma.SortOrder;
@@ -193,6 +211,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
     OR?: Prisma.UserWhereInput[];
     NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[];
     name?: Prisma.StringFilter<"User"> | string;
+    phone?: Prisma.StringNullableFilter<"User"> | string | null;
+    avatarDataUrl?: Prisma.StringNullableFilter<"User"> | string | null;
     password?: Prisma.StringNullableFilter<"User"> | string | null;
     authProvider?: Prisma.EnumAuthProviderFilter<"User"> | $Enums.AuthProvider;
     providerId?: Prisma.StringNullableFilter<"User"> | string | null;
@@ -212,6 +232,8 @@ export type UserOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
     email?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
+    phone?: Prisma.SortOrderInput | Prisma.SortOrder;
+    avatarDataUrl?: Prisma.SortOrderInput | Prisma.SortOrder;
     password?: Prisma.SortOrderInput | Prisma.SortOrder;
     authProvider?: Prisma.SortOrder;
     providerId?: Prisma.SortOrderInput | Prisma.SortOrder;
@@ -232,6 +254,8 @@ export type UserScalarWhereWithAggregatesInput = {
     id?: Prisma.IntWithAggregatesFilter<"User"> | number;
     email?: Prisma.StringWithAggregatesFilter<"User"> | string;
     name?: Prisma.StringWithAggregatesFilter<"User"> | string;
+    phone?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null;
+    avatarDataUrl?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null;
     password?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null;
     authProvider?: Prisma.EnumAuthProviderWithAggregatesFilter<"User"> | $Enums.AuthProvider;
     providerId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null;
@@ -243,6 +267,8 @@ export type UserScalarWhereWithAggregatesInput = {
 export type UserCreateInput = {
     email: string;
     name: string;
+    phone?: string | null;
+    avatarDataUrl?: string | null;
     password?: string | null;
     authProvider?: $Enums.AuthProvider;
     providerId?: string | null;
@@ -262,6 +288,8 @@ export type UserUncheckedCreateInput = {
     id?: number;
     email: string;
     name: string;
+    phone?: string | null;
+    avatarDataUrl?: string | null;
     password?: string | null;
     authProvider?: $Enums.AuthProvider;
     providerId?: string | null;
@@ -280,6 +308,8 @@ export type UserUncheckedCreateInput = {
 export type UserUpdateInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    avatarDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
     providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -299,6 +329,8 @@ export type UserUncheckedUpdateInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    avatarDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
     providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -318,6 +350,8 @@ export type UserCreateManyInput = {
     id?: number;
     email: string;
     name: string;
+    phone?: string | null;
+    avatarDataUrl?: string | null;
     password?: string | null;
     authProvider?: $Enums.AuthProvider;
     providerId?: string | null;
@@ -329,6 +363,8 @@ export type UserCreateManyInput = {
 export type UserUpdateManyMutationInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    avatarDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
     providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -341,6 +377,8 @@ export type UserUncheckedUpdateManyInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    avatarDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
     providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -362,6 +400,8 @@ export type UserCountOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     email?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
+    phone?: Prisma.SortOrder;
+    avatarDataUrl?: Prisma.SortOrder;
     password?: Prisma.SortOrder;
     authProvider?: Prisma.SortOrder;
     providerId?: Prisma.SortOrder;
@@ -377,6 +417,8 @@ export type UserMaxOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     email?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
+    phone?: Prisma.SortOrder;
+    avatarDataUrl?: Prisma.SortOrder;
     password?: Prisma.SortOrder;
     authProvider?: Prisma.SortOrder;
     providerId?: Prisma.SortOrder;
@@ -389,6 +431,8 @@ export type UserMinOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     email?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
+    phone?: Prisma.SortOrder;
+    avatarDataUrl?: Prisma.SortOrder;
     password?: Prisma.SortOrder;
     authProvider?: Prisma.SortOrder;
     providerId?: Prisma.SortOrder;
@@ -516,6 +560,8 @@ export type UserUpdateOneRequiredWithoutPointHistoryNestedInput = {
 export type UserCreateWithoutPasswordResetTokensInput = {
     email: string;
     name: string;
+    phone?: string | null;
+    avatarDataUrl?: string | null;
     password?: string | null;
     authProvider?: $Enums.AuthProvider;
     providerId?: string | null;
@@ -534,6 +580,8 @@ export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
     id?: number;
     email: string;
     name: string;
+    phone?: string | null;
+    avatarDataUrl?: string | null;
     password?: string | null;
     authProvider?: $Enums.AuthProvider;
     providerId?: string | null;
@@ -564,6 +612,8 @@ export type UserUpdateToOneWithWhereWithoutPasswordResetTokensInput = {
 export type UserUpdateWithoutPasswordResetTokensInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    avatarDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
     providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -582,6 +632,8 @@ export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    avatarDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
     providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -599,6 +651,8 @@ export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
 export type UserCreateWithoutEmailVerificationTokensInput = {
     email: string;
     name: string;
+    phone?: string | null;
+    avatarDataUrl?: string | null;
     password?: string | null;
     authProvider?: $Enums.AuthProvider;
     providerId?: string | null;
@@ -617,6 +671,8 @@ export type UserUncheckedCreateWithoutEmailVerificationTokensInput = {
     id?: number;
     email: string;
     name: string;
+    phone?: string | null;
+    avatarDataUrl?: string | null;
     password?: string | null;
     authProvider?: $Enums.AuthProvider;
     providerId?: string | null;
@@ -647,6 +703,8 @@ export type UserUpdateToOneWithWhereWithoutEmailVerificationTokensInput = {
 export type UserUpdateWithoutEmailVerificationTokensInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    avatarDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
     providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -665,6 +723,8 @@ export type UserUncheckedUpdateWithoutEmailVerificationTokensInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    avatarDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
     providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -682,6 +742,8 @@ export type UserUncheckedUpdateWithoutEmailVerificationTokensInput = {
 export type UserCreateWithoutEmailDispatchLogsInput = {
     email: string;
     name: string;
+    phone?: string | null;
+    avatarDataUrl?: string | null;
     password?: string | null;
     authProvider?: $Enums.AuthProvider;
     providerId?: string | null;
@@ -700,6 +762,8 @@ export type UserUncheckedCreateWithoutEmailDispatchLogsInput = {
     id?: number;
     email: string;
     name: string;
+    phone?: string | null;
+    avatarDataUrl?: string | null;
     password?: string | null;
     authProvider?: $Enums.AuthProvider;
     providerId?: string | null;
@@ -730,6 +794,8 @@ export type UserUpdateToOneWithWhereWithoutEmailDispatchLogsInput = {
 export type UserUpdateWithoutEmailDispatchLogsInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    avatarDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
     providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -748,6 +814,8 @@ export type UserUncheckedUpdateWithoutEmailDispatchLogsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    avatarDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
     providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -765,6 +833,8 @@ export type UserUncheckedUpdateWithoutEmailDispatchLogsInput = {
 export type UserCreateWithoutOwnedPoolsInput = {
     email: string;
     name: string;
+    phone?: string | null;
+    avatarDataUrl?: string | null;
     password?: string | null;
     authProvider?: $Enums.AuthProvider;
     providerId?: string | null;
@@ -783,6 +853,8 @@ export type UserUncheckedCreateWithoutOwnedPoolsInput = {
     id?: number;
     email: string;
     name: string;
+    phone?: string | null;
+    avatarDataUrl?: string | null;
     password?: string | null;
     authProvider?: $Enums.AuthProvider;
     providerId?: string | null;
@@ -813,6 +885,8 @@ export type UserUpdateToOneWithWhereWithoutOwnedPoolsInput = {
 export type UserUpdateWithoutOwnedPoolsInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    avatarDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
     providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -831,6 +905,8 @@ export type UserUncheckedUpdateWithoutOwnedPoolsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    avatarDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
     providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -848,6 +924,8 @@ export type UserUncheckedUpdateWithoutOwnedPoolsInput = {
 export type UserCreateWithoutPoolUsersInput = {
     email: string;
     name: string;
+    phone?: string | null;
+    avatarDataUrl?: string | null;
     password?: string | null;
     authProvider?: $Enums.AuthProvider;
     providerId?: string | null;
@@ -866,6 +944,8 @@ export type UserUncheckedCreateWithoutPoolUsersInput = {
     id?: number;
     email: string;
     name: string;
+    phone?: string | null;
+    avatarDataUrl?: string | null;
     password?: string | null;
     authProvider?: $Enums.AuthProvider;
     providerId?: string | null;
@@ -896,6 +976,8 @@ export type UserUpdateToOneWithWhereWithoutPoolUsersInput = {
 export type UserUpdateWithoutPoolUsersInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    avatarDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
     providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -914,6 +996,8 @@ export type UserUncheckedUpdateWithoutPoolUsersInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    avatarDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
     providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -931,6 +1015,8 @@ export type UserUncheckedUpdateWithoutPoolUsersInput = {
 export type UserCreateWithoutPredictionsInput = {
     email: string;
     name: string;
+    phone?: string | null;
+    avatarDataUrl?: string | null;
     password?: string | null;
     authProvider?: $Enums.AuthProvider;
     providerId?: string | null;
@@ -949,6 +1035,8 @@ export type UserUncheckedCreateWithoutPredictionsInput = {
     id?: number;
     email: string;
     name: string;
+    phone?: string | null;
+    avatarDataUrl?: string | null;
     password?: string | null;
     authProvider?: $Enums.AuthProvider;
     providerId?: string | null;
@@ -979,6 +1067,8 @@ export type UserUpdateToOneWithWhereWithoutPredictionsInput = {
 export type UserUpdateWithoutPredictionsInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    avatarDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
     providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -997,6 +1087,8 @@ export type UserUncheckedUpdateWithoutPredictionsInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    avatarDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
     providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -1014,6 +1106,8 @@ export type UserUncheckedUpdateWithoutPredictionsInput = {
 export type UserCreateWithoutPointHistoryInput = {
     email: string;
     name: string;
+    phone?: string | null;
+    avatarDataUrl?: string | null;
     password?: string | null;
     authProvider?: $Enums.AuthProvider;
     providerId?: string | null;
@@ -1032,6 +1126,8 @@ export type UserUncheckedCreateWithoutPointHistoryInput = {
     id?: number;
     email: string;
     name: string;
+    phone?: string | null;
+    avatarDataUrl?: string | null;
     password?: string | null;
     authProvider?: $Enums.AuthProvider;
     providerId?: string | null;
@@ -1062,6 +1158,8 @@ export type UserUpdateToOneWithWhereWithoutPointHistoryInput = {
 export type UserUpdateWithoutPointHistoryInput = {
     email?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    avatarDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
     providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -1080,6 +1178,8 @@ export type UserUncheckedUpdateWithoutPointHistoryInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    avatarDataUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
     providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -1140,6 +1240,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
     id?: boolean;
     email?: boolean;
     name?: boolean;
+    phone?: boolean;
+    avatarDataUrl?: boolean;
     password?: boolean;
     authProvider?: boolean;
     providerId?: boolean;
@@ -1160,6 +1262,8 @@ export type UserSelectScalar = {
     id?: boolean;
     email?: boolean;
     name?: boolean;
+    phone?: boolean;
+    avatarDataUrl?: boolean;
     password?: boolean;
     authProvider?: boolean;
     providerId?: boolean;
@@ -1168,7 +1272,7 @@ export type UserSelectScalar = {
     createdAt?: boolean;
     updatedAt?: boolean;
 };
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "password" | "authProvider" | "providerId" | "role" | "emailVerifiedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>;
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "phone" | "avatarDataUrl" | "password" | "authProvider" | "providerId" | "role" | "emailVerifiedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>;
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     poolUsers?: boolean | Prisma.User$poolUsersArgs<ExtArgs>;
     ownedPools?: boolean | Prisma.User$ownedPoolsArgs<ExtArgs>;
@@ -1194,6 +1298,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
         id: number;
         email: string;
         name: string;
+        phone: string | null;
+        avatarDataUrl: string | null;
         password: string | null;
         authProvider: $Enums.AuthProvider;
         providerId: string | null;
@@ -1266,6 +1372,8 @@ export interface UserFieldRefs {
     readonly id: Prisma.FieldRef<"User", 'Int'>;
     readonly email: Prisma.FieldRef<"User", 'String'>;
     readonly name: Prisma.FieldRef<"User", 'String'>;
+    readonly phone: Prisma.FieldRef<"User", 'String'>;
+    readonly avatarDataUrl: Prisma.FieldRef<"User", 'String'>;
     readonly password: Prisma.FieldRef<"User", 'String'>;
     readonly authProvider: Prisma.FieldRef<"User", 'AuthProvider'>;
     readonly providerId: Prisma.FieldRef<"User", 'String'>;

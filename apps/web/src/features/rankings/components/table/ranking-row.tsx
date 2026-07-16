@@ -1,7 +1,7 @@
 'use client';
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { TableCell, TableRow } from '@/components/ui/table';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { PositionBadge } from '@/features/dashboard/rankings/components/position-badge';
 import { cn } from '@/lib/utils';
 
@@ -20,15 +20,6 @@ interface RankingRowProps {
   scoringRule: RankingScoringRuleFilter;
 }
 
-function getInitials(name: string) {
-  return name
-    .split(' ')
-    .slice(0, 2)
-    .map(part => part[0])
-    .join('')
-    .toUpperCase();
-}
-
 export function RankingRow({
   entry,
   position,
@@ -45,11 +36,10 @@ export function RankingRow({
       </TableCell>
       <TableCell className='min-w-[180px] px-3'>
         <div className='flex items-center gap-2.5'>
-          <Avatar className='size-8'>
-            <AvatarFallback className='bg-muted text-xs font-medium'>
-              {getInitials(entry.name)}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar
+            name={entry.name}
+            avatarDataUrl={entry.avatarDataUrl}
+          />
           <div className='min-w-0'>
             <span className='block truncate font-medium'>
               {entry.name} {' '}

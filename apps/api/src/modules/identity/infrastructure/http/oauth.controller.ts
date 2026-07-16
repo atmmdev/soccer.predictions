@@ -61,6 +61,7 @@ export class OAuthController {
         providerId: profile.providerId,
         email: `instagram+${profile.username}@oauth.soccer.local`,
         name: profile.name,
+        avatarUrl: profile.avatarUrl,
       });
 
       return this.redirectWithAuth(response, user);

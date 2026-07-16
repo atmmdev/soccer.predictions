@@ -58,6 +58,7 @@ function toRankingUsers(entries: RankingEntry[]): RankingUser[] {
     id: entry.id,
     name: entry.name,
     email: entry.email,
+    avatarDataUrl: entry.avatarDataUrl,
     points: entry.points,
   }));
 }

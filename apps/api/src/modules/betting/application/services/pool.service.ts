@@ -48,6 +48,7 @@ export interface DiscoverablePoolItem {
   participantsCount: number;
   ownerId: number;
   ownerName: string;
+  ownerAvatarDataUrl: string | null;
   status: Pool['status'];
   membershipStatus: DiscoverMembershipStatus;
 }
@@ -132,7 +133,7 @@ export class PoolService {
       include: {
         championship: true,
         owner: {
-          select: { id: true, name: true },
+          select: { id: true, name: true, avatarDataUrl: true },
         },
         poolUsers: {
           where: { userId: user.id },
@@ -292,6 +293,8 @@ export class PoolService {
           id: updatedUser.id,
           email: updatedUser.email,
           name: updatedUser.name,
+          phone: updatedUser.phone,
+          avatarDataUrl: updatedUser.avatarDataUrl,
           role: updatedUser.role,
         };
       }
@@ -569,7 +572,7 @@ export class PoolService {
       include: {
         championship: true,
         owner: {
-          select: { id: true, name: true },
+          select: { id: true, name: true, avatarDataUrl: true },
         },
         poolUsers: {
           where: { userId },
@@ -600,7 +603,7 @@ export class PoolService {
         type: ChampionshipType;
         season: number;
       };
-      owner: { id: number; name: string };
+      owner: { id: number; name: string; avatarDataUrl: string | null };
       poolUsers: Array<{ status: PoolUserStatus }>;
       _count: { poolUsers: number };
     },
@@ -620,6 +623,7 @@ export class PoolService {
       participantsCount: pool._count.poolUsers,
       ownerId: pool.owner.id,
       ownerName: pool.owner.name,
+      ownerAvatarDataUrl: pool.owner.avatarDataUrl,
       status: pool.status,
       membershipStatus,
     };
