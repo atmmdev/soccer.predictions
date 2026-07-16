@@ -80,7 +80,7 @@ export function ForgotPasswordForm() {
         <h1 className='text-2xl font-semibold tracking-tight'>
           Esqueceu a senha?
         </h1>
-        <p className='text-muted-foreground text-sm'>
+        <p className='text-muted-foreground text-xs'>
           Informe seu e-mail para receber um link de redefinição
         </p>
       </div>
@@ -92,7 +92,7 @@ export function ForgotPasswordForm() {
             name='email'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>E-mail</FormLabel>
+                <FormLabel className='text-xs'>E-mail</FormLabel>
                 <FormControl>
                   <Input
                     type='email'
@@ -110,7 +110,7 @@ export function ForgotPasswordForm() {
           <Button
             type='submit'
             size='lg'
-            className='h-11 w-full'
+            className='h-11 w-full tracking-widest uppercase'
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Enviando...' : 'Enviar link'}
