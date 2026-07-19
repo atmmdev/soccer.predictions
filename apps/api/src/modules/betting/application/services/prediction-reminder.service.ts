@@ -3,12 +3,19 @@ import { Injectable, Logger } from '@nestjs/common';
 import { AuthMailService } from '../../../identity/application/services/auth-mail.service.js';
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 
+/** Mantém o lote abaixo do limite de ~2 req/s do Resend. */
+const SEND_GAP_MS = 600;
+
 type PendingFixture = {
   homeTeam: string;
   awayTeam: string;
   kickoffLabel: string;
   poolName: string;
 };
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 @Injectable()
 export class PredictionReminderService {
@@ -103,7 +110,12 @@ export class PredictionReminderService {
     }
 
     let sent = 0;
-    for (const [userId, payload] of byUser) {
+    let failed = 0;
+    const recipients = [...byUser.entries()];
+
+    for (let index = 0; index < recipients.length; index += 1) {
+      const [userId, payload] = recipients[index]!;
+
       try {
         const ok = await this.authMailService.sendPredictionReminder({
           userId,
@@ -115,14 +127,19 @@ export class PredictionReminderService {
           sent += 1;
         }
       } catch (error) {
+        failed += 1;
         this.logger.warn(
-          `Falha ao enviar lembrete para user=${userId}: ${String(error)}`,
+          `Falha ao enviar lembrete para ${payload.email} (user=${userId}): ${String(error)}`,
         );
+      }
+
+      if (index < recipients.length - 1) {
+        await sleep(SEND_GAP_MS);
       }
     }
 
     this.logger.log(
-      `Lembretes de palpite: ${sent} enviados de ${byUser.size} candidatos`,
+      `Lembretes de palpite: ${sent} enviados de ${byUser.size} candidatos (falhas: ${failed})`,
     );
   }
 

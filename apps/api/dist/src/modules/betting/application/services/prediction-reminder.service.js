@@ -14,6 +14,10 @@ exports.PredictionReminderService = void 0;
 const common_1 = require("@nestjs/common");
 const auth_mail_service_js_1 = require("../../../identity/application/services/auth-mail.service.js");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
+const SEND_GAP_MS = 600;
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 let PredictionReminderService = PredictionReminderService_1 = class PredictionReminderService {
     prisma;
     authMailService;
@@ -95,7 +99,10 @@ let PredictionReminderService = PredictionReminderService_1 = class PredictionRe
             byUser.set(membership.userId, current);
         }
         let sent = 0;
-        for (const [userId, payload] of byUser) {
+        let failed = 0;
+        const recipients = [...byUser.entries()];
+        for (let index = 0; index < recipients.length; index += 1) {
+            const [userId, payload] = recipients[index];
             try {
                 const ok = await this.authMailService.sendPredictionReminder({
                     userId,
@@ -108,10 +115,14 @@ let PredictionReminderService = PredictionReminderService_1 = class PredictionRe
                 }
             }
             catch (error) {
-                this.logger.warn(`Falha ao enviar lembrete para user=${userId}: ${String(error)}`);
+                failed += 1;
+                this.logger.warn(`Falha ao enviar lembrete para ${payload.email} (user=${userId}): ${String(error)}`);
+            }
+            if (index < recipients.length - 1) {
+                await sleep(SEND_GAP_MS);
             }
         }
-        this.logger.log(`Lembretes de palpite: ${sent} enviados de ${byUser.size} candidatos`);
+        this.logger.log(`Lembretes de palpite: ${sent} enviados de ${byUser.size} candidatos (falhas: ${failed})`);
     }
     formatKickoff(date) {
         return new Intl.DateTimeFormat('pt-BR', {

@@ -17,6 +17,10 @@ const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js
 const compare_ranking_standings_js_1 = require("../utils/compare-ranking-standings.js");
 const scoring_service_js_1 = require("./scoring.service.js");
 const TOP_STANDINGS_LIMIT = 10;
+const SEND_GAP_MS = 600;
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 let RankingUpdateNotificationService = RankingUpdateNotificationService_1 = class RankingUpdateNotificationService {
     prisma;
     authMailService;
@@ -101,14 +105,16 @@ let RankingUpdateNotificationService = RankingUpdateNotificationService_1 = clas
         });
         const topStandings = ranked.slice(0, TOP_STANDINGS_LIMIT);
         let sent = 0;
-        for (const entry of ranked) {
-            const standingsForRecipient = topStandings.map((row) => ({
+        let failed = 0;
+        for (let index = 0; index < ranked.length; index += 1) {
+            const entry = ranked[index];
+            const standingsForRecipient = topStandings.map(row => ({
                 position: row.position,
                 name: row.name,
                 points: row.points,
                 isRecipient: row.userId === entry.userId,
             }));
-            const recipientInTop = standingsForRecipient.some((row) => row.isRecipient);
+            const recipientInTop = standingsForRecipient.some(row => row.isRecipient);
             if (!recipientInTop) {
                 standingsForRecipient.push({
                     position: entry.position,
@@ -117,22 +123,31 @@ let RankingUpdateNotificationService = RankingUpdateNotificationService_1 = clas
                     isRecipient: true,
                 });
             }
-            const ok = await this.authMailService.sendRankingUpdated({
-                userId: entry.userId,
-                email: entry.email,
-                name: entry.name,
-                poolId: params.poolId,
-                poolName: params.poolName,
-                championshipName: params.championshipName,
-                recipientPosition: entry.position,
-                recipientPoints: entry.points,
-                standings: standingsForRecipient,
-            });
-            if (ok) {
-                sent += 1;
+            try {
+                const ok = await this.authMailService.sendRankingUpdated({
+                    userId: entry.userId,
+                    email: entry.email,
+                    name: entry.name,
+                    poolId: params.poolId,
+                    poolName: params.poolName,
+                    championshipName: params.championshipName,
+                    recipientPosition: entry.position,
+                    recipientPoints: entry.points,
+                    standings: standingsForRecipient,
+                });
+                if (ok) {
+                    sent += 1;
+                }
+            }
+            catch (error) {
+                failed += 1;
+                this.logger.warn(`Falha ao enviar ranking para ${entry.email} (pool=${params.poolId}): ${String(error)}`);
+            }
+            if (index < ranked.length - 1) {
+                await sleep(SEND_GAP_MS);
             }
         }
-        this.logger.log(`Ranking update emails pool=${params.poolId}: ${sent}/${ranked.length}`);
+        this.logger.log(`Ranking update emails pool=${params.poolId}: ${sent}/${ranked.length} (falhas: ${failed})`);
     }
 };
 exports.RankingUpdateNotificationService = RankingUpdateNotificationService;

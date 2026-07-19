@@ -6,6 +6,8 @@ import { compareRankingStandings } from '../utils/compare-ranking-standings.js';
 import { ScoringService } from './scoring.service.js';
 
 const TOP_STANDINGS_LIMIT = 10;
+/** Mantém o lote abaixo do limite de ~2 req/s do Resend. */
+const SEND_GAP_MS = 600;
 
 type StandingEntry = {
   userId: number;
@@ -15,6 +17,10 @@ type StandingEntry = {
   exactScore: number;
   position: number;
 };
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 @Injectable()
 export class RankingUpdateNotificationService {
@@ -116,9 +122,11 @@ export class RankingUpdateNotificationService {
 
     const topStandings = ranked.slice(0, TOP_STANDINGS_LIMIT);
     let sent = 0;
+    let failed = 0;
 
-    for (const entry of ranked) {
-      const standingsForRecipient = topStandings.map((row) => ({
+    for (let index = 0; index < ranked.length; index += 1) {
+      const entry = ranked[index]!;
+      const standingsForRecipient = topStandings.map(row => ({
         position: row.position,
         name: row.name,
         points: row.points,
@@ -126,7 +134,7 @@ export class RankingUpdateNotificationService {
       }));
 
       const recipientInTop = standingsForRecipient.some(
-        (row) => row.isRecipient,
+        row => row.isRecipient,
       );
 
       if (!recipientInTop) {
@@ -138,25 +146,36 @@ export class RankingUpdateNotificationService {
         });
       }
 
-      const ok = await this.authMailService.sendRankingUpdated({
-        userId: entry.userId,
-        email: entry.email,
-        name: entry.name,
-        poolId: params.poolId,
-        poolName: params.poolName,
-        championshipName: params.championshipName,
-        recipientPosition: entry.position,
-        recipientPoints: entry.points,
-        standings: standingsForRecipient,
-      });
+      try {
+        const ok = await this.authMailService.sendRankingUpdated({
+          userId: entry.userId,
+          email: entry.email,
+          name: entry.name,
+          poolId: params.poolId,
+          poolName: params.poolName,
+          championshipName: params.championshipName,
+          recipientPosition: entry.position,
+          recipientPoints: entry.points,
+          standings: standingsForRecipient,
+        });
 
-      if (ok) {
-        sent += 1;
+        if (ok) {
+          sent += 1;
+        }
+      } catch (error) {
+        failed += 1;
+        this.logger.warn(
+          `Falha ao enviar ranking para ${entry.email} (pool=${params.poolId}): ${String(error)}`,
+        );
+      }
+
+      if (index < ranked.length - 1) {
+        await sleep(SEND_GAP_MS);
       }
     }
 
     this.logger.log(
-      `Ranking update emails pool=${params.poolId}: ${sent}/${ranked.length}`,
+      `Ranking update emails pool=${params.poolId}: ${sent}/${ranked.length} (falhas: ${failed})`,
     );
   }
 }
