@@ -12,17 +12,13 @@ const webDir = path.join(rootDir, 'apps/web');
 const apiDir = path.join(rootDir, 'apps/api');
 const apiMain = path.join(apiDir, 'dist', 'src', 'main.js');
 const apiPort = Number(process.env.API_INTERNAL_PORT ?? '3001');
-const instanceLockPort = Number(process.env.INSTANCE_LOCK_PORT ?? '3099');
 const port = Number(process.env.PORT || 3000);
 const hostname = '0.0.0.0';
 const PORT_FREE_ATTEMPTS = 10;
 const API_HEALTH_TIMEOUT_MS = 45_000;
-const INSTANCE_LOCK_WAIT_MS = 20_000;
 
 /** @type {import('node:child_process').ChildProcess | null} */
 let apiProcess = null;
-/** @type {import('node:net').Server | null} */
-let instanceLockServer = null;
 let apiReady = false;
 let shuttingDown = false;
 
@@ -73,38 +69,6 @@ function isPortFree(listenPort) {
 
     probe.listen(listenPort, '127.0.0.1');
   });
-}
-
-function tryAcquireInstanceLock() {
-  return new Promise(resolve => {
-    const lockServer = net.createServer();
-
-    lockServer.once('error', () => resolve(false));
-    lockServer.listen(instanceLockPort, '127.0.0.1', () => {
-      instanceLockServer = lockServer;
-      resolve(true);
-    });
-  });
-}
-
-async function acquireInstanceLock() {
-  const deadline = Date.now() + INSTANCE_LOCK_WAIT_MS;
-
-  while (Date.now() < deadline) {
-    if (await tryAcquireInstanceLock()) {
-      console.log(
-        `[startup] Instance lock acquired on port ${instanceLockPort}`,
-      );
-      return true;
-    }
-
-    await sleep(400);
-  }
-
-  console.error(
-    `[startup] Could not acquire instance lock on port ${instanceLockPort} after ${INSTANCE_LOCK_WAIT_MS}ms`,
-  );
-  return false;
 }
 
 function listPortListenerPids(listenPort) {
@@ -240,12 +204,6 @@ async function startApi() {
     return false;
   }
 
-  if (await probeApiHealth(apiPort)) {
-    console.log(`[api] Reusing existing Nest API on port ${apiPort}`);
-    markApiReady();
-    return true;
-  }
-
   const portReady = await ensureApiPortAvailable(apiPort);
 
   if (!portReady) {
@@ -331,11 +289,6 @@ function shutdown(signal) {
     apiProcess.kill('SIGTERM');
   }
 
-  if (instanceLockServer) {
-    instanceLockServer.close();
-    instanceLockServer = null;
-  }
-
   server.close(() => {
     process.exit(0);
   });
@@ -345,9 +298,6 @@ function shutdown(signal) {
 
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
-
-const require = createRequire(path.join(webDir, 'package.json'));
-const next = require('next');
 
 let ready = false;
 let handleRequest = null;
@@ -381,6 +331,25 @@ const server = createServer(async (req, res) => {
   }
 });
 
+function listenHttp() {
+  return new Promise(resolve => {
+    server.once('error', error => {
+      if (error.code === 'EADDRINUSE') {
+        resolve({ ok: false, reason: 'EADDRINUSE' });
+        return;
+      }
+
+      console.error('[startup] HTTP server error:', error);
+      resolve({ ok: false, reason: error.code ?? 'ERROR' });
+    });
+
+    server.listen(port, hostname, () => {
+      console.log(`[startup] Listening on http://${hostname}:${port}`);
+      resolve({ ok: true });
+    });
+  });
+}
+
 async function bootNext() {
   const nestReady = await startApi();
 
@@ -390,6 +359,8 @@ async function bootNext() {
   }
 
   console.log('[startup] Preparing Next.js...');
+  const require = createRequire(path.join(webDir, 'package.json'));
+  const next = require('next');
   const app = next({ dev: false, dir: webDir });
   handleRequest = app.getRequestHandler();
   await app.prepare();
@@ -398,26 +369,14 @@ async function bootNext() {
 }
 
 async function main() {
-  const locked = await acquireInstanceLock();
+  const listenResult = await listenHttp();
 
-  if (!locked) {
-    if (await probeApiHealth(apiPort)) {
-      console.log(
-        '[startup] Another instance is already running with a healthy API — exiting',
-      );
-      process.exit(0);
-    }
-
-    process.exit(1);
+  if (!listenResult.ok) {
+    console.log(
+      `[startup] Port ${port} already in use (${listenResult.reason}) — primary instance is serving`,
+    );
+    process.exit(0);
   }
-
-  await new Promise((resolve, reject) => {
-    server.once('error', reject);
-    server.listen(port, hostname, () => {
-      console.log(`[startup] Listening on http://${hostname}:${port}`);
-      resolve();
-    });
-  });
 
   await bootNext();
 }
