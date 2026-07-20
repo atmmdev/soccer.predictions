@@ -167,7 +167,6 @@ export declare const ModelName: {
     readonly Fixture: "Fixture";
     readonly Pool: "Pool";
     readonly PoolUser: "PoolUser";
-    readonly Invitation: "Invitation";
     readonly Prediction: "Prediction";
     readonly PointHistory: "PointHistory";
 };
@@ -182,7 +181,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         omit: GlobalOmitOptions;
     };
     meta: {
-        modelProps: "user" | "passwordResetToken" | "emailVerificationToken" | "emailDispatchLog" | "league" | "championship" | "team" | "fixture" | "pool" | "poolUser" | "invitation" | "prediction" | "pointHistory";
+        modelProps: "user" | "passwordResetToken" | "emailVerificationToken" | "emailDispatchLog" | "league" | "championship" | "team" | "fixture" | "pool" | "poolUser" | "prediction" | "pointHistory";
         txIsolationLevel: TransactionIsolationLevel;
     };
     model: {
@@ -846,72 +845,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
                 };
             };
         };
-        Invitation: {
-            payload: Prisma.$InvitationPayload<ExtArgs>;
-            fields: Prisma.InvitationFieldRefs;
-            operations: {
-                findUnique: {
-                    args: Prisma.InvitationFindUniqueArgs<ExtArgs>;
-                    result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload> | null;
-                };
-                findUniqueOrThrow: {
-                    args: Prisma.InvitationFindUniqueOrThrowArgs<ExtArgs>;
-                    result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>;
-                };
-                findFirst: {
-                    args: Prisma.InvitationFindFirstArgs<ExtArgs>;
-                    result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload> | null;
-                };
-                findFirstOrThrow: {
-                    args: Prisma.InvitationFindFirstOrThrowArgs<ExtArgs>;
-                    result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>;
-                };
-                findMany: {
-                    args: Prisma.InvitationFindManyArgs<ExtArgs>;
-                    result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>[];
-                };
-                create: {
-                    args: Prisma.InvitationCreateArgs<ExtArgs>;
-                    result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>;
-                };
-                createMany: {
-                    args: Prisma.InvitationCreateManyArgs<ExtArgs>;
-                    result: BatchPayload;
-                };
-                delete: {
-                    args: Prisma.InvitationDeleteArgs<ExtArgs>;
-                    result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>;
-                };
-                update: {
-                    args: Prisma.InvitationUpdateArgs<ExtArgs>;
-                    result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>;
-                };
-                deleteMany: {
-                    args: Prisma.InvitationDeleteManyArgs<ExtArgs>;
-                    result: BatchPayload;
-                };
-                updateMany: {
-                    args: Prisma.InvitationUpdateManyArgs<ExtArgs>;
-                    result: BatchPayload;
-                };
-                upsert: {
-                    args: Prisma.InvitationUpsertArgs<ExtArgs>;
-                    result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>;
-                };
-                aggregate: {
-                    args: Prisma.InvitationAggregateArgs<ExtArgs>;
-                    result: runtime.Types.Utils.Optional<Prisma.AggregateInvitation>;
-                };
-                groupBy: {
-                    args: Prisma.InvitationGroupByArgs<ExtArgs>;
-                    result: runtime.Types.Utils.Optional<Prisma.InvitationGroupByOutputType>[];
-                };
-                count: {
-                    args: Prisma.InvitationCountArgs<ExtArgs>;
-                    result: runtime.Types.Utils.Optional<Prisma.InvitationCountAggregateOutputType> | number;
-                };
-            };
-        };
         Prediction: {
             payload: Prisma.$PredictionPayload<ExtArgs>;
             fields: Prisma.PredictionFieldRefs;
@@ -1173,7 +1106,6 @@ export declare const PoolScalarFieldEnum: {
     readonly ownerId: "ownerId";
     readonly championshipId: "championshipId";
     readonly name: "name";
-    readonly inviteCode: "inviteCode";
     readonly status: "status";
     readonly scoring: "scoring";
     readonly createdAt: "createdAt";
@@ -1188,14 +1120,6 @@ export declare const PoolUserScalarFieldEnum: {
     readonly joinedAt: "joinedAt";
 };
 export type PoolUserScalarFieldEnum = (typeof PoolUserScalarFieldEnum)[keyof typeof PoolUserScalarFieldEnum];
-export declare const InvitationScalarFieldEnum: {
-    readonly id: "id";
-    readonly poolId: "poolId";
-    readonly code: "code";
-    readonly expiresAt: "expiresAt";
-    readonly createdAt: "createdAt";
-};
-export type InvitationScalarFieldEnum = (typeof InvitationScalarFieldEnum)[keyof typeof InvitationScalarFieldEnum];
 export declare const PredictionScalarFieldEnum: {
     readonly id: "id";
     readonly poolId: "poolId";
@@ -1290,13 +1214,8 @@ export declare const QueryMode: {
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode];
 export declare const PoolOrderByRelevanceFieldEnum: {
     readonly name: "name";
-    readonly inviteCode: "inviteCode";
 };
 export type PoolOrderByRelevanceFieldEnum = (typeof PoolOrderByRelevanceFieldEnum)[keyof typeof PoolOrderByRelevanceFieldEnum];
-export declare const InvitationOrderByRelevanceFieldEnum: {
-    readonly code: "code";
-};
-export type InvitationOrderByRelevanceFieldEnum = (typeof InvitationOrderByRelevanceFieldEnum)[keyof typeof InvitationOrderByRelevanceFieldEnum];
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>;
 export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String'>;
 export type EnumAuthProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuthProvider'>;
@@ -1349,7 +1268,6 @@ export type GlobalOmitConfig = {
     fixture?: Prisma.FixtureOmit;
     pool?: Prisma.PoolOmit;
     poolUser?: Prisma.PoolUserOmit;
-    invitation?: Prisma.InvitationOmit;
     prediction?: Prisma.PredictionOmit;
     pointHistory?: Prisma.PointHistoryOmit;
 };

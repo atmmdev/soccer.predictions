@@ -24,7 +24,6 @@ export type PoolMinAggregateOutputType = {
     ownerId: number | null;
     championshipId: number | null;
     name: string | null;
-    inviteCode: string | null;
     status: $Enums.PoolStatus | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -34,7 +33,6 @@ export type PoolMaxAggregateOutputType = {
     ownerId: number | null;
     championshipId: number | null;
     name: string | null;
-    inviteCode: string | null;
     status: $Enums.PoolStatus | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -44,7 +42,6 @@ export type PoolCountAggregateOutputType = {
     ownerId: number;
     championshipId: number;
     name: number;
-    inviteCode: number;
     status: number;
     scoring: number;
     createdAt: number;
@@ -66,7 +63,6 @@ export type PoolMinAggregateInputType = {
     ownerId?: true;
     championshipId?: true;
     name?: true;
-    inviteCode?: true;
     status?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -76,7 +72,6 @@ export type PoolMaxAggregateInputType = {
     ownerId?: true;
     championshipId?: true;
     name?: true;
-    inviteCode?: true;
     status?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -86,7 +81,6 @@ export type PoolCountAggregateInputType = {
     ownerId?: true;
     championshipId?: true;
     name?: true;
-    inviteCode?: true;
     status?: true;
     scoring?: true;
     createdAt?: true;
@@ -126,7 +120,6 @@ export type PoolGroupByOutputType = {
     ownerId: number;
     championshipId: number;
     name: string;
-    inviteCode: string;
     status: $Enums.PoolStatus;
     scoring: runtime.JsonValue;
     createdAt: Date;
@@ -148,7 +141,6 @@ export type PoolWhereInput = {
     ownerId?: Prisma.IntFilter<"Pool"> | number;
     championshipId?: Prisma.IntFilter<"Pool"> | number;
     name?: Prisma.StringFilter<"Pool"> | string;
-    inviteCode?: Prisma.StringFilter<"Pool"> | string;
     status?: Prisma.EnumPoolStatusFilter<"Pool"> | $Enums.PoolStatus;
     scoring?: Prisma.JsonFilter<"Pool">;
     createdAt?: Prisma.DateTimeFilter<"Pool"> | Date | string;
@@ -156,7 +148,6 @@ export type PoolWhereInput = {
     owner?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>;
     championship?: Prisma.XOR<Prisma.ChampionshipScalarRelationFilter, Prisma.ChampionshipWhereInput>;
     poolUsers?: Prisma.PoolUserListRelationFilter;
-    invitations?: Prisma.InvitationListRelationFilter;
     predictions?: Prisma.PredictionListRelationFilter;
     pointHistory?: Prisma.PointHistoryListRelationFilter;
 };
@@ -165,7 +156,6 @@ export type PoolOrderByWithRelationInput = {
     ownerId?: Prisma.SortOrder;
     championshipId?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
-    inviteCode?: Prisma.SortOrder;
     status?: Prisma.SortOrder;
     scoring?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
@@ -173,14 +163,12 @@ export type PoolOrderByWithRelationInput = {
     owner?: Prisma.UserOrderByWithRelationInput;
     championship?: Prisma.ChampionshipOrderByWithRelationInput;
     poolUsers?: Prisma.PoolUserOrderByRelationAggregateInput;
-    invitations?: Prisma.InvitationOrderByRelationAggregateInput;
     predictions?: Prisma.PredictionOrderByRelationAggregateInput;
     pointHistory?: Prisma.PointHistoryOrderByRelationAggregateInput;
     _relevance?: Prisma.PoolOrderByRelevanceInput;
 };
 export type PoolWhereUniqueInput = Prisma.AtLeast<{
     id?: number;
-    inviteCode?: string;
     AND?: Prisma.PoolWhereInput | Prisma.PoolWhereInput[];
     OR?: Prisma.PoolWhereInput[];
     NOT?: Prisma.PoolWhereInput | Prisma.PoolWhereInput[];
@@ -194,16 +182,14 @@ export type PoolWhereUniqueInput = Prisma.AtLeast<{
     owner?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>;
     championship?: Prisma.XOR<Prisma.ChampionshipScalarRelationFilter, Prisma.ChampionshipWhereInput>;
     poolUsers?: Prisma.PoolUserListRelationFilter;
-    invitations?: Prisma.InvitationListRelationFilter;
     predictions?: Prisma.PredictionListRelationFilter;
     pointHistory?: Prisma.PointHistoryListRelationFilter;
-}, "id" | "inviteCode">;
+}, "id">;
 export type PoolOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
     ownerId?: Prisma.SortOrder;
     championshipId?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
-    inviteCode?: Prisma.SortOrder;
     status?: Prisma.SortOrder;
     scoring?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
@@ -222,7 +208,6 @@ export type PoolScalarWhereWithAggregatesInput = {
     ownerId?: Prisma.IntWithAggregatesFilter<"Pool"> | number;
     championshipId?: Prisma.IntWithAggregatesFilter<"Pool"> | number;
     name?: Prisma.StringWithAggregatesFilter<"Pool"> | string;
-    inviteCode?: Prisma.StringWithAggregatesFilter<"Pool"> | string;
     status?: Prisma.EnumPoolStatusWithAggregatesFilter<"Pool"> | $Enums.PoolStatus;
     scoring?: Prisma.JsonWithAggregatesFilter<"Pool">;
     createdAt?: Prisma.DateTimeWithAggregatesFilter<"Pool"> | Date | string;
@@ -230,7 +215,6 @@ export type PoolScalarWhereWithAggregatesInput = {
 };
 export type PoolCreateInput = {
     name: string;
-    inviteCode: string;
     status?: $Enums.PoolStatus;
     scoring: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
@@ -238,7 +222,6 @@ export type PoolCreateInput = {
     owner: Prisma.UserCreateNestedOneWithoutOwnedPoolsInput;
     championship: Prisma.ChampionshipCreateNestedOneWithoutPoolsInput;
     poolUsers?: Prisma.PoolUserCreateNestedManyWithoutPoolInput;
-    invitations?: Prisma.InvitationCreateNestedManyWithoutPoolInput;
     predictions?: Prisma.PredictionCreateNestedManyWithoutPoolInput;
     pointHistory?: Prisma.PointHistoryCreateNestedManyWithoutPoolInput;
 };
@@ -247,19 +230,16 @@ export type PoolUncheckedCreateInput = {
     ownerId: number;
     championshipId: number;
     name: string;
-    inviteCode: string;
     status?: $Enums.PoolStatus;
     scoring: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     poolUsers?: Prisma.PoolUserUncheckedCreateNestedManyWithoutPoolInput;
-    invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutPoolInput;
     predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutPoolInput;
     pointHistory?: Prisma.PointHistoryUncheckedCreateNestedManyWithoutPoolInput;
 };
 export type PoolUpdateInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
-    inviteCode?: Prisma.StringFieldUpdateOperationsInput | string;
     status?: Prisma.EnumPoolStatusFieldUpdateOperationsInput | $Enums.PoolStatus;
     scoring?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -267,7 +247,6 @@ export type PoolUpdateInput = {
     owner?: Prisma.UserUpdateOneRequiredWithoutOwnedPoolsNestedInput;
     championship?: Prisma.ChampionshipUpdateOneRequiredWithoutPoolsNestedInput;
     poolUsers?: Prisma.PoolUserUpdateManyWithoutPoolNestedInput;
-    invitations?: Prisma.InvitationUpdateManyWithoutPoolNestedInput;
     predictions?: Prisma.PredictionUpdateManyWithoutPoolNestedInput;
     pointHistory?: Prisma.PointHistoryUpdateManyWithoutPoolNestedInput;
 };
@@ -276,13 +255,11 @@ export type PoolUncheckedUpdateInput = {
     ownerId?: Prisma.IntFieldUpdateOperationsInput | number;
     championshipId?: Prisma.IntFieldUpdateOperationsInput | number;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
-    inviteCode?: Prisma.StringFieldUpdateOperationsInput | string;
     status?: Prisma.EnumPoolStatusFieldUpdateOperationsInput | $Enums.PoolStatus;
     scoring?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     poolUsers?: Prisma.PoolUserUncheckedUpdateManyWithoutPoolNestedInput;
-    invitations?: Prisma.InvitationUncheckedUpdateManyWithoutPoolNestedInput;
     predictions?: Prisma.PredictionUncheckedUpdateManyWithoutPoolNestedInput;
     pointHistory?: Prisma.PointHistoryUncheckedUpdateManyWithoutPoolNestedInput;
 };
@@ -291,7 +268,6 @@ export type PoolCreateManyInput = {
     ownerId: number;
     championshipId: number;
     name: string;
-    inviteCode: string;
     status?: $Enums.PoolStatus;
     scoring: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
@@ -299,7 +275,6 @@ export type PoolCreateManyInput = {
 };
 export type PoolUpdateManyMutationInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
-    inviteCode?: Prisma.StringFieldUpdateOperationsInput | string;
     status?: Prisma.EnumPoolStatusFieldUpdateOperationsInput | $Enums.PoolStatus;
     scoring?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -310,7 +285,6 @@ export type PoolUncheckedUpdateManyInput = {
     ownerId?: Prisma.IntFieldUpdateOperationsInput | number;
     championshipId?: Prisma.IntFieldUpdateOperationsInput | number;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
-    inviteCode?: Prisma.StringFieldUpdateOperationsInput | string;
     status?: Prisma.EnumPoolStatusFieldUpdateOperationsInput | $Enums.PoolStatus;
     scoring?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -334,7 +308,6 @@ export type PoolCountOrderByAggregateInput = {
     ownerId?: Prisma.SortOrder;
     championshipId?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
-    inviteCode?: Prisma.SortOrder;
     status?: Prisma.SortOrder;
     scoring?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
@@ -350,7 +323,6 @@ export type PoolMaxOrderByAggregateInput = {
     ownerId?: Prisma.SortOrder;
     championshipId?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
-    inviteCode?: Prisma.SortOrder;
     status?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
@@ -360,7 +332,6 @@ export type PoolMinOrderByAggregateInput = {
     ownerId?: Prisma.SortOrder;
     championshipId?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
-    inviteCode?: Prisma.SortOrder;
     status?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
@@ -465,18 +436,6 @@ export type PoolUpdateOneRequiredWithoutPoolUsersNestedInput = {
     connect?: Prisma.PoolWhereUniqueInput;
     update?: Prisma.XOR<Prisma.XOR<Prisma.PoolUpdateToOneWithWhereWithoutPoolUsersInput, Prisma.PoolUpdateWithoutPoolUsersInput>, Prisma.PoolUncheckedUpdateWithoutPoolUsersInput>;
 };
-export type PoolCreateNestedOneWithoutInvitationsInput = {
-    create?: Prisma.XOR<Prisma.PoolCreateWithoutInvitationsInput, Prisma.PoolUncheckedCreateWithoutInvitationsInput>;
-    connectOrCreate?: Prisma.PoolCreateOrConnectWithoutInvitationsInput;
-    connect?: Prisma.PoolWhereUniqueInput;
-};
-export type PoolUpdateOneRequiredWithoutInvitationsNestedInput = {
-    create?: Prisma.XOR<Prisma.PoolCreateWithoutInvitationsInput, Prisma.PoolUncheckedCreateWithoutInvitationsInput>;
-    connectOrCreate?: Prisma.PoolCreateOrConnectWithoutInvitationsInput;
-    upsert?: Prisma.PoolUpsertWithoutInvitationsInput;
-    connect?: Prisma.PoolWhereUniqueInput;
-    update?: Prisma.XOR<Prisma.XOR<Prisma.PoolUpdateToOneWithWhereWithoutInvitationsInput, Prisma.PoolUpdateWithoutInvitationsInput>, Prisma.PoolUncheckedUpdateWithoutInvitationsInput>;
-};
 export type PoolCreateNestedOneWithoutPredictionsInput = {
     create?: Prisma.XOR<Prisma.PoolCreateWithoutPredictionsInput, Prisma.PoolUncheckedCreateWithoutPredictionsInput>;
     connectOrCreate?: Prisma.PoolCreateOrConnectWithoutPredictionsInput;
@@ -503,14 +462,12 @@ export type PoolUpdateOneRequiredWithoutPointHistoryNestedInput = {
 };
 export type PoolCreateWithoutOwnerInput = {
     name: string;
-    inviteCode: string;
     status?: $Enums.PoolStatus;
     scoring: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     championship: Prisma.ChampionshipCreateNestedOneWithoutPoolsInput;
     poolUsers?: Prisma.PoolUserCreateNestedManyWithoutPoolInput;
-    invitations?: Prisma.InvitationCreateNestedManyWithoutPoolInput;
     predictions?: Prisma.PredictionCreateNestedManyWithoutPoolInput;
     pointHistory?: Prisma.PointHistoryCreateNestedManyWithoutPoolInput;
 };
@@ -518,13 +475,11 @@ export type PoolUncheckedCreateWithoutOwnerInput = {
     id?: number;
     championshipId: number;
     name: string;
-    inviteCode: string;
     status?: $Enums.PoolStatus;
     scoring: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     poolUsers?: Prisma.PoolUserUncheckedCreateNestedManyWithoutPoolInput;
-    invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutPoolInput;
     predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutPoolInput;
     pointHistory?: Prisma.PointHistoryUncheckedCreateNestedManyWithoutPoolInput;
 };
@@ -557,7 +512,6 @@ export type PoolScalarWhereInput = {
     ownerId?: Prisma.IntFilter<"Pool"> | number;
     championshipId?: Prisma.IntFilter<"Pool"> | number;
     name?: Prisma.StringFilter<"Pool"> | string;
-    inviteCode?: Prisma.StringFilter<"Pool"> | string;
     status?: Prisma.EnumPoolStatusFilter<"Pool"> | $Enums.PoolStatus;
     scoring?: Prisma.JsonFilter<"Pool">;
     createdAt?: Prisma.DateTimeFilter<"Pool"> | Date | string;
@@ -565,14 +519,12 @@ export type PoolScalarWhereInput = {
 };
 export type PoolCreateWithoutChampionshipInput = {
     name: string;
-    inviteCode: string;
     status?: $Enums.PoolStatus;
     scoring: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     owner: Prisma.UserCreateNestedOneWithoutOwnedPoolsInput;
     poolUsers?: Prisma.PoolUserCreateNestedManyWithoutPoolInput;
-    invitations?: Prisma.InvitationCreateNestedManyWithoutPoolInput;
     predictions?: Prisma.PredictionCreateNestedManyWithoutPoolInput;
     pointHistory?: Prisma.PointHistoryCreateNestedManyWithoutPoolInput;
 };
@@ -580,13 +532,11 @@ export type PoolUncheckedCreateWithoutChampionshipInput = {
     id?: number;
     ownerId: number;
     name: string;
-    inviteCode: string;
     status?: $Enums.PoolStatus;
     scoring: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     poolUsers?: Prisma.PoolUserUncheckedCreateNestedManyWithoutPoolInput;
-    invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutPoolInput;
     predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutPoolInput;
     pointHistory?: Prisma.PointHistoryUncheckedCreateNestedManyWithoutPoolInput;
 };
@@ -613,14 +563,12 @@ export type PoolUpdateManyWithWhereWithoutChampionshipInput = {
 };
 export type PoolCreateWithoutPoolUsersInput = {
     name: string;
-    inviteCode: string;
     status?: $Enums.PoolStatus;
     scoring: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     owner: Prisma.UserCreateNestedOneWithoutOwnedPoolsInput;
     championship: Prisma.ChampionshipCreateNestedOneWithoutPoolsInput;
-    invitations?: Prisma.InvitationCreateNestedManyWithoutPoolInput;
     predictions?: Prisma.PredictionCreateNestedManyWithoutPoolInput;
     pointHistory?: Prisma.PointHistoryCreateNestedManyWithoutPoolInput;
 };
@@ -629,12 +577,10 @@ export type PoolUncheckedCreateWithoutPoolUsersInput = {
     ownerId: number;
     championshipId: number;
     name: string;
-    inviteCode: string;
     status?: $Enums.PoolStatus;
     scoring: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
-    invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutPoolInput;
     predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutPoolInput;
     pointHistory?: Prisma.PointHistoryUncheckedCreateNestedManyWithoutPoolInput;
 };
@@ -653,14 +599,12 @@ export type PoolUpdateToOneWithWhereWithoutPoolUsersInput = {
 };
 export type PoolUpdateWithoutPoolUsersInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
-    inviteCode?: Prisma.StringFieldUpdateOperationsInput | string;
     status?: Prisma.EnumPoolStatusFieldUpdateOperationsInput | $Enums.PoolStatus;
     scoring?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     owner?: Prisma.UserUpdateOneRequiredWithoutOwnedPoolsNestedInput;
     championship?: Prisma.ChampionshipUpdateOneRequiredWithoutPoolsNestedInput;
-    invitations?: Prisma.InvitationUpdateManyWithoutPoolNestedInput;
     predictions?: Prisma.PredictionUpdateManyWithoutPoolNestedInput;
     pointHistory?: Prisma.PointHistoryUpdateManyWithoutPoolNestedInput;
 };
@@ -669,85 +613,15 @@ export type PoolUncheckedUpdateWithoutPoolUsersInput = {
     ownerId?: Prisma.IntFieldUpdateOperationsInput | number;
     championshipId?: Prisma.IntFieldUpdateOperationsInput | number;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
-    inviteCode?: Prisma.StringFieldUpdateOperationsInput | string;
     status?: Prisma.EnumPoolStatusFieldUpdateOperationsInput | $Enums.PoolStatus;
     scoring?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    invitations?: Prisma.InvitationUncheckedUpdateManyWithoutPoolNestedInput;
-    predictions?: Prisma.PredictionUncheckedUpdateManyWithoutPoolNestedInput;
-    pointHistory?: Prisma.PointHistoryUncheckedUpdateManyWithoutPoolNestedInput;
-};
-export type PoolCreateWithoutInvitationsInput = {
-    name: string;
-    inviteCode: string;
-    status?: $Enums.PoolStatus;
-    scoring: Prisma.JsonNullValueInput | runtime.InputJsonValue;
-    createdAt?: Date | string;
-    updatedAt?: Date | string;
-    owner: Prisma.UserCreateNestedOneWithoutOwnedPoolsInput;
-    championship: Prisma.ChampionshipCreateNestedOneWithoutPoolsInput;
-    poolUsers?: Prisma.PoolUserCreateNestedManyWithoutPoolInput;
-    predictions?: Prisma.PredictionCreateNestedManyWithoutPoolInput;
-    pointHistory?: Prisma.PointHistoryCreateNestedManyWithoutPoolInput;
-};
-export type PoolUncheckedCreateWithoutInvitationsInput = {
-    id?: number;
-    ownerId: number;
-    championshipId: number;
-    name: string;
-    inviteCode: string;
-    status?: $Enums.PoolStatus;
-    scoring: Prisma.JsonNullValueInput | runtime.InputJsonValue;
-    createdAt?: Date | string;
-    updatedAt?: Date | string;
-    poolUsers?: Prisma.PoolUserUncheckedCreateNestedManyWithoutPoolInput;
-    predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutPoolInput;
-    pointHistory?: Prisma.PointHistoryUncheckedCreateNestedManyWithoutPoolInput;
-};
-export type PoolCreateOrConnectWithoutInvitationsInput = {
-    where: Prisma.PoolWhereUniqueInput;
-    create: Prisma.XOR<Prisma.PoolCreateWithoutInvitationsInput, Prisma.PoolUncheckedCreateWithoutInvitationsInput>;
-};
-export type PoolUpsertWithoutInvitationsInput = {
-    update: Prisma.XOR<Prisma.PoolUpdateWithoutInvitationsInput, Prisma.PoolUncheckedUpdateWithoutInvitationsInput>;
-    create: Prisma.XOR<Prisma.PoolCreateWithoutInvitationsInput, Prisma.PoolUncheckedCreateWithoutInvitationsInput>;
-    where?: Prisma.PoolWhereInput;
-};
-export type PoolUpdateToOneWithWhereWithoutInvitationsInput = {
-    where?: Prisma.PoolWhereInput;
-    data: Prisma.XOR<Prisma.PoolUpdateWithoutInvitationsInput, Prisma.PoolUncheckedUpdateWithoutInvitationsInput>;
-};
-export type PoolUpdateWithoutInvitationsInput = {
-    name?: Prisma.StringFieldUpdateOperationsInput | string;
-    inviteCode?: Prisma.StringFieldUpdateOperationsInput | string;
-    status?: Prisma.EnumPoolStatusFieldUpdateOperationsInput | $Enums.PoolStatus;
-    scoring?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
-    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    owner?: Prisma.UserUpdateOneRequiredWithoutOwnedPoolsNestedInput;
-    championship?: Prisma.ChampionshipUpdateOneRequiredWithoutPoolsNestedInput;
-    poolUsers?: Prisma.PoolUserUpdateManyWithoutPoolNestedInput;
-    predictions?: Prisma.PredictionUpdateManyWithoutPoolNestedInput;
-    pointHistory?: Prisma.PointHistoryUpdateManyWithoutPoolNestedInput;
-};
-export type PoolUncheckedUpdateWithoutInvitationsInput = {
-    id?: Prisma.IntFieldUpdateOperationsInput | number;
-    ownerId?: Prisma.IntFieldUpdateOperationsInput | number;
-    championshipId?: Prisma.IntFieldUpdateOperationsInput | number;
-    name?: Prisma.StringFieldUpdateOperationsInput | string;
-    inviteCode?: Prisma.StringFieldUpdateOperationsInput | string;
-    status?: Prisma.EnumPoolStatusFieldUpdateOperationsInput | $Enums.PoolStatus;
-    scoring?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
-    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    poolUsers?: Prisma.PoolUserUncheckedUpdateManyWithoutPoolNestedInput;
     predictions?: Prisma.PredictionUncheckedUpdateManyWithoutPoolNestedInput;
     pointHistory?: Prisma.PointHistoryUncheckedUpdateManyWithoutPoolNestedInput;
 };
 export type PoolCreateWithoutPredictionsInput = {
     name: string;
-    inviteCode: string;
     status?: $Enums.PoolStatus;
     scoring: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
@@ -755,7 +629,6 @@ export type PoolCreateWithoutPredictionsInput = {
     owner: Prisma.UserCreateNestedOneWithoutOwnedPoolsInput;
     championship: Prisma.ChampionshipCreateNestedOneWithoutPoolsInput;
     poolUsers?: Prisma.PoolUserCreateNestedManyWithoutPoolInput;
-    invitations?: Prisma.InvitationCreateNestedManyWithoutPoolInput;
     pointHistory?: Prisma.PointHistoryCreateNestedManyWithoutPoolInput;
 };
 export type PoolUncheckedCreateWithoutPredictionsInput = {
@@ -763,13 +636,11 @@ export type PoolUncheckedCreateWithoutPredictionsInput = {
     ownerId: number;
     championshipId: number;
     name: string;
-    inviteCode: string;
     status?: $Enums.PoolStatus;
     scoring: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     poolUsers?: Prisma.PoolUserUncheckedCreateNestedManyWithoutPoolInput;
-    invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutPoolInput;
     pointHistory?: Prisma.PointHistoryUncheckedCreateNestedManyWithoutPoolInput;
 };
 export type PoolCreateOrConnectWithoutPredictionsInput = {
@@ -787,7 +658,6 @@ export type PoolUpdateToOneWithWhereWithoutPredictionsInput = {
 };
 export type PoolUpdateWithoutPredictionsInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
-    inviteCode?: Prisma.StringFieldUpdateOperationsInput | string;
     status?: Prisma.EnumPoolStatusFieldUpdateOperationsInput | $Enums.PoolStatus;
     scoring?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -795,7 +665,6 @@ export type PoolUpdateWithoutPredictionsInput = {
     owner?: Prisma.UserUpdateOneRequiredWithoutOwnedPoolsNestedInput;
     championship?: Prisma.ChampionshipUpdateOneRequiredWithoutPoolsNestedInput;
     poolUsers?: Prisma.PoolUserUpdateManyWithoutPoolNestedInput;
-    invitations?: Prisma.InvitationUpdateManyWithoutPoolNestedInput;
     pointHistory?: Prisma.PointHistoryUpdateManyWithoutPoolNestedInput;
 };
 export type PoolUncheckedUpdateWithoutPredictionsInput = {
@@ -803,18 +672,15 @@ export type PoolUncheckedUpdateWithoutPredictionsInput = {
     ownerId?: Prisma.IntFieldUpdateOperationsInput | number;
     championshipId?: Prisma.IntFieldUpdateOperationsInput | number;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
-    inviteCode?: Prisma.StringFieldUpdateOperationsInput | string;
     status?: Prisma.EnumPoolStatusFieldUpdateOperationsInput | $Enums.PoolStatus;
     scoring?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     poolUsers?: Prisma.PoolUserUncheckedUpdateManyWithoutPoolNestedInput;
-    invitations?: Prisma.InvitationUncheckedUpdateManyWithoutPoolNestedInput;
     pointHistory?: Prisma.PointHistoryUncheckedUpdateManyWithoutPoolNestedInput;
 };
 export type PoolCreateWithoutPointHistoryInput = {
     name: string;
-    inviteCode: string;
     status?: $Enums.PoolStatus;
     scoring: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
@@ -822,7 +688,6 @@ export type PoolCreateWithoutPointHistoryInput = {
     owner: Prisma.UserCreateNestedOneWithoutOwnedPoolsInput;
     championship: Prisma.ChampionshipCreateNestedOneWithoutPoolsInput;
     poolUsers?: Prisma.PoolUserCreateNestedManyWithoutPoolInput;
-    invitations?: Prisma.InvitationCreateNestedManyWithoutPoolInput;
     predictions?: Prisma.PredictionCreateNestedManyWithoutPoolInput;
 };
 export type PoolUncheckedCreateWithoutPointHistoryInput = {
@@ -830,13 +695,11 @@ export type PoolUncheckedCreateWithoutPointHistoryInput = {
     ownerId: number;
     championshipId: number;
     name: string;
-    inviteCode: string;
     status?: $Enums.PoolStatus;
     scoring: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     poolUsers?: Prisma.PoolUserUncheckedCreateNestedManyWithoutPoolInput;
-    invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutPoolInput;
     predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutPoolInput;
 };
 export type PoolCreateOrConnectWithoutPointHistoryInput = {
@@ -854,7 +717,6 @@ export type PoolUpdateToOneWithWhereWithoutPointHistoryInput = {
 };
 export type PoolUpdateWithoutPointHistoryInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
-    inviteCode?: Prisma.StringFieldUpdateOperationsInput | string;
     status?: Prisma.EnumPoolStatusFieldUpdateOperationsInput | $Enums.PoolStatus;
     scoring?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -862,7 +724,6 @@ export type PoolUpdateWithoutPointHistoryInput = {
     owner?: Prisma.UserUpdateOneRequiredWithoutOwnedPoolsNestedInput;
     championship?: Prisma.ChampionshipUpdateOneRequiredWithoutPoolsNestedInput;
     poolUsers?: Prisma.PoolUserUpdateManyWithoutPoolNestedInput;
-    invitations?: Prisma.InvitationUpdateManyWithoutPoolNestedInput;
     predictions?: Prisma.PredictionUpdateManyWithoutPoolNestedInput;
 };
 export type PoolUncheckedUpdateWithoutPointHistoryInput = {
@@ -870,20 +731,17 @@ export type PoolUncheckedUpdateWithoutPointHistoryInput = {
     ownerId?: Prisma.IntFieldUpdateOperationsInput | number;
     championshipId?: Prisma.IntFieldUpdateOperationsInput | number;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
-    inviteCode?: Prisma.StringFieldUpdateOperationsInput | string;
     status?: Prisma.EnumPoolStatusFieldUpdateOperationsInput | $Enums.PoolStatus;
     scoring?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     poolUsers?: Prisma.PoolUserUncheckedUpdateManyWithoutPoolNestedInput;
-    invitations?: Prisma.InvitationUncheckedUpdateManyWithoutPoolNestedInput;
     predictions?: Prisma.PredictionUncheckedUpdateManyWithoutPoolNestedInput;
 };
 export type PoolCreateManyOwnerInput = {
     id?: number;
     championshipId: number;
     name: string;
-    inviteCode: string;
     status?: $Enums.PoolStatus;
     scoring: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
@@ -891,14 +749,12 @@ export type PoolCreateManyOwnerInput = {
 };
 export type PoolUpdateWithoutOwnerInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
-    inviteCode?: Prisma.StringFieldUpdateOperationsInput | string;
     status?: Prisma.EnumPoolStatusFieldUpdateOperationsInput | $Enums.PoolStatus;
     scoring?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     championship?: Prisma.ChampionshipUpdateOneRequiredWithoutPoolsNestedInput;
     poolUsers?: Prisma.PoolUserUpdateManyWithoutPoolNestedInput;
-    invitations?: Prisma.InvitationUpdateManyWithoutPoolNestedInput;
     predictions?: Prisma.PredictionUpdateManyWithoutPoolNestedInput;
     pointHistory?: Prisma.PointHistoryUpdateManyWithoutPoolNestedInput;
 };
@@ -906,13 +762,11 @@ export type PoolUncheckedUpdateWithoutOwnerInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     championshipId?: Prisma.IntFieldUpdateOperationsInput | number;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
-    inviteCode?: Prisma.StringFieldUpdateOperationsInput | string;
     status?: Prisma.EnumPoolStatusFieldUpdateOperationsInput | $Enums.PoolStatus;
     scoring?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     poolUsers?: Prisma.PoolUserUncheckedUpdateManyWithoutPoolNestedInput;
-    invitations?: Prisma.InvitationUncheckedUpdateManyWithoutPoolNestedInput;
     predictions?: Prisma.PredictionUncheckedUpdateManyWithoutPoolNestedInput;
     pointHistory?: Prisma.PointHistoryUncheckedUpdateManyWithoutPoolNestedInput;
 };
@@ -920,7 +774,6 @@ export type PoolUncheckedUpdateManyWithoutOwnerInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     championshipId?: Prisma.IntFieldUpdateOperationsInput | number;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
-    inviteCode?: Prisma.StringFieldUpdateOperationsInput | string;
     status?: Prisma.EnumPoolStatusFieldUpdateOperationsInput | $Enums.PoolStatus;
     scoring?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -930,7 +783,6 @@ export type PoolCreateManyChampionshipInput = {
     id?: number;
     ownerId: number;
     name: string;
-    inviteCode: string;
     status?: $Enums.PoolStatus;
     scoring: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Date | string;
@@ -938,14 +790,12 @@ export type PoolCreateManyChampionshipInput = {
 };
 export type PoolUpdateWithoutChampionshipInput = {
     name?: Prisma.StringFieldUpdateOperationsInput | string;
-    inviteCode?: Prisma.StringFieldUpdateOperationsInput | string;
     status?: Prisma.EnumPoolStatusFieldUpdateOperationsInput | $Enums.PoolStatus;
     scoring?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     owner?: Prisma.UserUpdateOneRequiredWithoutOwnedPoolsNestedInput;
     poolUsers?: Prisma.PoolUserUpdateManyWithoutPoolNestedInput;
-    invitations?: Prisma.InvitationUpdateManyWithoutPoolNestedInput;
     predictions?: Prisma.PredictionUpdateManyWithoutPoolNestedInput;
     pointHistory?: Prisma.PointHistoryUpdateManyWithoutPoolNestedInput;
 };
@@ -953,13 +803,11 @@ export type PoolUncheckedUpdateWithoutChampionshipInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     ownerId?: Prisma.IntFieldUpdateOperationsInput | number;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
-    inviteCode?: Prisma.StringFieldUpdateOperationsInput | string;
     status?: Prisma.EnumPoolStatusFieldUpdateOperationsInput | $Enums.PoolStatus;
     scoring?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     poolUsers?: Prisma.PoolUserUncheckedUpdateManyWithoutPoolNestedInput;
-    invitations?: Prisma.InvitationUncheckedUpdateManyWithoutPoolNestedInput;
     predictions?: Prisma.PredictionUncheckedUpdateManyWithoutPoolNestedInput;
     pointHistory?: Prisma.PointHistoryUncheckedUpdateManyWithoutPoolNestedInput;
 };
@@ -967,7 +815,6 @@ export type PoolUncheckedUpdateManyWithoutChampionshipInput = {
     id?: Prisma.IntFieldUpdateOperationsInput | number;
     ownerId?: Prisma.IntFieldUpdateOperationsInput | number;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
-    inviteCode?: Prisma.StringFieldUpdateOperationsInput | string;
     status?: Prisma.EnumPoolStatusFieldUpdateOperationsInput | $Enums.PoolStatus;
     scoring?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -975,13 +822,11 @@ export type PoolUncheckedUpdateManyWithoutChampionshipInput = {
 };
 export type PoolCountOutputType = {
     poolUsers: number;
-    invitations: number;
     predictions: number;
     pointHistory: number;
 };
 export type PoolCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     poolUsers?: boolean | PoolCountOutputTypeCountPoolUsersArgs;
-    invitations?: boolean | PoolCountOutputTypeCountInvitationsArgs;
     predictions?: boolean | PoolCountOutputTypeCountPredictionsArgs;
     pointHistory?: boolean | PoolCountOutputTypeCountPointHistoryArgs;
 };
@@ -990,9 +835,6 @@ export type PoolCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
 };
 export type PoolCountOutputTypeCountPoolUsersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: Prisma.PoolUserWhereInput;
-};
-export type PoolCountOutputTypeCountInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-    where?: Prisma.InvitationWhereInput;
 };
 export type PoolCountOutputTypeCountPredictionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: Prisma.PredictionWhereInput;
@@ -1005,7 +847,6 @@ export type PoolSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
     ownerId?: boolean;
     championshipId?: boolean;
     name?: boolean;
-    inviteCode?: boolean;
     status?: boolean;
     scoring?: boolean;
     createdAt?: boolean;
@@ -1013,7 +854,6 @@ export type PoolSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
     owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
     championship?: boolean | Prisma.ChampionshipDefaultArgs<ExtArgs>;
     poolUsers?: boolean | Prisma.Pool$poolUsersArgs<ExtArgs>;
-    invitations?: boolean | Prisma.Pool$invitationsArgs<ExtArgs>;
     predictions?: boolean | Prisma.Pool$predictionsArgs<ExtArgs>;
     pointHistory?: boolean | Prisma.Pool$pointHistoryArgs<ExtArgs>;
     _count?: boolean | Prisma.PoolCountOutputTypeDefaultArgs<ExtArgs>;
@@ -1023,18 +863,16 @@ export type PoolSelectScalar = {
     ownerId?: boolean;
     championshipId?: boolean;
     name?: boolean;
-    inviteCode?: boolean;
     status?: boolean;
     scoring?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
 };
-export type PoolOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ownerId" | "championshipId" | "name" | "inviteCode" | "status" | "scoring" | "createdAt" | "updatedAt", ExtArgs["result"]["pool"]>;
+export type PoolOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ownerId" | "championshipId" | "name" | "status" | "scoring" | "createdAt" | "updatedAt", ExtArgs["result"]["pool"]>;
 export type PoolInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
     championship?: boolean | Prisma.ChampionshipDefaultArgs<ExtArgs>;
     poolUsers?: boolean | Prisma.Pool$poolUsersArgs<ExtArgs>;
-    invitations?: boolean | Prisma.Pool$invitationsArgs<ExtArgs>;
     predictions?: boolean | Prisma.Pool$predictionsArgs<ExtArgs>;
     pointHistory?: boolean | Prisma.Pool$pointHistoryArgs<ExtArgs>;
     _count?: boolean | Prisma.PoolCountOutputTypeDefaultArgs<ExtArgs>;
@@ -1045,7 +883,6 @@ export type $PoolPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
         owner: Prisma.$UserPayload<ExtArgs>;
         championship: Prisma.$ChampionshipPayload<ExtArgs>;
         poolUsers: Prisma.$PoolUserPayload<ExtArgs>[];
-        invitations: Prisma.$InvitationPayload<ExtArgs>[];
         predictions: Prisma.$PredictionPayload<ExtArgs>[];
         pointHistory: Prisma.$PointHistoryPayload<ExtArgs>[];
     };
@@ -1054,7 +891,6 @@ export type $PoolPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
         ownerId: number;
         championshipId: number;
         name: string;
-        inviteCode: string;
         status: $Enums.PoolStatus;
         scoring: runtime.JsonValue;
         createdAt: Date;
@@ -1112,7 +948,6 @@ export interface Prisma__PoolClient<T, Null = never, ExtArgs extends runtime.Typ
     owner<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     championship<T extends Prisma.ChampionshipDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChampionshipDefaultArgs<ExtArgs>>): Prisma.Prisma__ChampionshipClient<runtime.Types.Result.GetResult<Prisma.$ChampionshipPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     poolUsers<T extends Prisma.Pool$poolUsersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Pool$poolUsersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PoolUserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
-    invitations<T extends Prisma.Pool$invitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Pool$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     predictions<T extends Prisma.Pool$predictionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Pool$predictionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PredictionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     pointHistory<T extends Prisma.Pool$pointHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Pool$pointHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PointHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>;
@@ -1124,7 +959,6 @@ export interface PoolFieldRefs {
     readonly ownerId: Prisma.FieldRef<"Pool", 'Int'>;
     readonly championshipId: Prisma.FieldRef<"Pool", 'Int'>;
     readonly name: Prisma.FieldRef<"Pool", 'String'>;
-    readonly inviteCode: Prisma.FieldRef<"Pool", 'String'>;
     readonly status: Prisma.FieldRef<"Pool", 'PoolStatus'>;
     readonly scoring: Prisma.FieldRef<"Pool", 'Json'>;
     readonly createdAt: Prisma.FieldRef<"Pool", 'DateTime'>;
@@ -1225,17 +1059,6 @@ export type Pool$poolUsersArgs<ExtArgs extends runtime.Types.Extensions.Internal
     take?: number;
     skip?: number;
     distinct?: Prisma.PoolUserScalarFieldEnum | Prisma.PoolUserScalarFieldEnum[];
-};
-export type Pool$invitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-    select?: Prisma.InvitationSelect<ExtArgs> | null;
-    omit?: Prisma.InvitationOmit<ExtArgs> | null;
-    include?: Prisma.InvitationInclude<ExtArgs> | null;
-    where?: Prisma.InvitationWhereInput;
-    orderBy?: Prisma.InvitationOrderByWithRelationInput | Prisma.InvitationOrderByWithRelationInput[];
-    cursor?: Prisma.InvitationWhereUniqueInput;
-    take?: number;
-    skip?: number;
-    distinct?: Prisma.InvitationScalarFieldEnum | Prisma.InvitationScalarFieldEnum[];
 };
 export type Pool$predictionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     select?: Prisma.PredictionSelect<ExtArgs> | null;

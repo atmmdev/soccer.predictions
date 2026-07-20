@@ -219,7 +219,6 @@ model Pool {
   ownerId        Int
   championshipId Int
   name           String
-  inviteCode     String     @unique
   status         PoolStatus @default(ACTIVE)
   scoring        Json
   createdAt      DateTime   @default(now())
@@ -228,7 +227,6 @@ model Pool {
   owner        User           @relation("PoolOwner", fields: [ownerId], references: [id])
   championship Championship   @relation(fields: [championshipId], references: [id])
   poolUsers    PoolUser[]
-  invitations  Invitation[]
   predictions  Prediction[]
   pointHistory PointHistory[]
 
@@ -246,16 +244,6 @@ model PoolUser {
   user User @relation(fields: [userId], references: [id])
 
   @@unique([poolId, userId])
-}
-
-model Invitation {
-  id        Int       @id @default(autoincrement())
-  poolId    Int
-  code      String    @unique
-  expiresAt DateTime?
-  createdAt DateTime  @default(now())
-
-  pool Pool @relation(fields: [poolId], references: [id])
 }
 
 model Prediction {

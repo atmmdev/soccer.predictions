@@ -333,12 +333,12 @@ export function CreatePoolDialog({ onCreate }: CreatePoolDialogProps) {
                       <p className='text-muted-foreground rounded-md border border-dashed px-3 py-2 text-sm'>
                         {isLoadingDelegates
                           ? 'Carregando participantes...'
-                          : 'Nenhum participante cadastrado ainda. O bolão será criado sob gestão da plataforma — compartilhe o código de convite e delegue um administrador quando alguém se cadastrar.'}
+                          : 'Nenhum participante cadastrado ainda. O bolão será criado sob gestão da plataforma — delegue um administrador quando alguém se cadastrar e solicitar acesso.'}
                       </p>
                     )}
                     <FormDescription>
                       {hasDelegateCandidates
-                        ? 'Este participante será o dono e administrador do bolão. Depois, outros entram pelo código de convite.'
+                        ? 'Este participante será o dono e administrador do bolão. Depois, outros pedem acesso na aba Disponíveis.'
                         : 'Sem participantes disponíveis, você pode criar o bolão agora e definir o administrador depois.'}
                     </FormDescription>
                     <FormMessage />

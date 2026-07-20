@@ -16,6 +16,5 @@ export type Team = Prisma.TeamModel;
 export type Fixture = Prisma.FixtureModel;
 export type Pool = Prisma.PoolModel;
 export type PoolUser = Prisma.PoolUserModel;
-export type Invitation = Prisma.InvitationModel;
 export type Prediction = Prisma.PredictionModel;
 export type PointHistory = Prisma.PointHistoryModel;

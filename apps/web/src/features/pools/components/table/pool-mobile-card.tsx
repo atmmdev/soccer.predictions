@@ -25,8 +25,7 @@ export function PoolMobileCard({
             <span className='text-foreground font-medium'>
               {pool.participantsCount}
             </span>{' '}
-            participantes ·{' '}
-            <span className='font-mono'>{pool.inviteCode}</span>
+            participantes
           </p>
         </div>
         <PoolStatusBadge status={pool.status} />

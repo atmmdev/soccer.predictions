@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.defineExtension = exports.InvitationOrderByRelevanceFieldEnum = exports.PoolOrderByRelevanceFieldEnum = exports.QueryMode = exports.JsonNullValueFilter = exports.TeamOrderByRelevanceFieldEnum = exports.ChampionshipOrderByRelevanceFieldEnum = exports.LeagueOrderByRelevanceFieldEnum = exports.EmailDispatchLogOrderByRelevanceFieldEnum = exports.EmailVerificationTokenOrderByRelevanceFieldEnum = exports.PasswordResetTokenOrderByRelevanceFieldEnum = exports.UserOrderByRelevanceFieldEnum = exports.NullsOrder = exports.JsonNullValueInput = exports.NullableJsonNullValueInput = exports.SortOrder = exports.PointHistoryScalarFieldEnum = exports.PredictionScalarFieldEnum = exports.InvitationScalarFieldEnum = exports.PoolUserScalarFieldEnum = exports.PoolScalarFieldEnum = exports.FixtureScalarFieldEnum = exports.TeamScalarFieldEnum = exports.ChampionshipScalarFieldEnum = exports.LeagueScalarFieldEnum = exports.EmailDispatchLogScalarFieldEnum = exports.EmailVerificationTokenScalarFieldEnum = exports.PasswordResetTokenScalarFieldEnum = exports.UserScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.prismaVersion = exports.getExtensionContext = exports.Decimal = exports.Sql = exports.raw = exports.join = exports.empty = exports.sql = exports.PrismaClientValidationError = exports.PrismaClientInitializationError = exports.PrismaClientRustPanicError = exports.PrismaClientUnknownRequestError = exports.PrismaClientKnownRequestError = void 0;
+exports.defineExtension = exports.PoolOrderByRelevanceFieldEnum = exports.QueryMode = exports.JsonNullValueFilter = exports.TeamOrderByRelevanceFieldEnum = exports.ChampionshipOrderByRelevanceFieldEnum = exports.LeagueOrderByRelevanceFieldEnum = exports.EmailDispatchLogOrderByRelevanceFieldEnum = exports.EmailVerificationTokenOrderByRelevanceFieldEnum = exports.PasswordResetTokenOrderByRelevanceFieldEnum = exports.UserOrderByRelevanceFieldEnum = exports.NullsOrder = exports.JsonNullValueInput = exports.NullableJsonNullValueInput = exports.SortOrder = exports.PointHistoryScalarFieldEnum = exports.PredictionScalarFieldEnum = exports.PoolUserScalarFieldEnum = exports.PoolScalarFieldEnum = exports.FixtureScalarFieldEnum = exports.TeamScalarFieldEnum = exports.ChampionshipScalarFieldEnum = exports.LeagueScalarFieldEnum = exports.EmailDispatchLogScalarFieldEnum = exports.EmailVerificationTokenScalarFieldEnum = exports.PasswordResetTokenScalarFieldEnum = exports.UserScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.prismaVersion = exports.getExtensionContext = exports.Decimal = exports.Sql = exports.raw = exports.join = exports.empty = exports.sql = exports.PrismaClientValidationError = exports.PrismaClientInitializationError = exports.PrismaClientRustPanicError = exports.PrismaClientUnknownRequestError = exports.PrismaClientKnownRequestError = void 0;
 const runtime = __importStar(require("@prisma/client/runtime/client"));
 exports.PrismaClientKnownRequestError = runtime.PrismaClientKnownRequestError;
 exports.PrismaClientUnknownRequestError = runtime.PrismaClientUnknownRequestError;
@@ -70,7 +70,6 @@ exports.ModelName = {
     Fixture: 'Fixture',
     Pool: 'Pool',
     PoolUser: 'PoolUser',
-    Invitation: 'Invitation',
     Prediction: 'Prediction',
     PointHistory: 'PointHistory'
 };
@@ -170,7 +169,6 @@ exports.PoolScalarFieldEnum = {
     ownerId: 'ownerId',
     championshipId: 'championshipId',
     name: 'name',
-    inviteCode: 'inviteCode',
     status: 'status',
     scoring: 'scoring',
     createdAt: 'createdAt',
@@ -182,13 +180,6 @@ exports.PoolUserScalarFieldEnum = {
     userId: 'userId',
     status: 'status',
     joinedAt: 'joinedAt'
-};
-exports.InvitationScalarFieldEnum = {
-    id: 'id',
-    poolId: 'poolId',
-    code: 'code',
-    expiresAt: 'expiresAt',
-    createdAt: 'createdAt'
 };
 exports.PredictionScalarFieldEnum = {
     id: 'id',
@@ -268,11 +259,7 @@ exports.QueryMode = {
     insensitive: 'insensitive'
 };
 exports.PoolOrderByRelevanceFieldEnum = {
-    name: 'name',
-    inviteCode: 'inviteCode'
-};
-exports.InvitationOrderByRelevanceFieldEnum = {
-    code: 'code'
+    name: 'name'
 };
 exports.defineExtension = runtime.Extensions.defineExtension;
 //# sourceMappingURL=prismaNamespace.js.map

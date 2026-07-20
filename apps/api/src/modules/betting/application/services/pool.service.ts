@@ -13,10 +13,8 @@ import type {
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 import type { AuthUser } from '../../../identity/application/types/auth-user.js';
 import type { CreatePoolDto } from '../dtos/create-pool.dto.js';
-import type { JoinPoolDto } from '../dtos/join-pool.dto.js';
 import type { UpdatePoolDto } from '../dtos/update-pool.dto.js';
 import type { UpdatePoolStatusDto } from '../dtos/update-pool-status.dto.js';
-import { generateInviteCode } from '../utils/generate-invite-code.js';
 import { assertCanParticipateInPools } from '../../../../shared/auth/pool-participation.js';
 
 export interface PoolListItem {
@@ -28,7 +26,6 @@ export interface PoolListItem {
   season: number;
   participantsCount: number;
   predictionsCount: number;
-  inviteCode: string;
   status: Pool['status'];
   scoring: Prisma.JsonValue;
   ownerId: number;
@@ -250,7 +247,6 @@ export class PoolService {
       );
     }
 
-    const inviteCode = await this.createUniqueInviteCode();
     const owner = await this.resolvePoolOwner(user, dto.delegateUserId);
 
     const result = await this.prisma.$transaction(async tx => {
@@ -259,7 +255,6 @@ export class PoolService {
           ownerId: owner.id,
           championshipId: dto.championshipId,
           name: dto.name,
-          inviteCode,
           scoring: dto.scoring as Prisma.InputJsonValue,
           ...(owner.addAsParticipant
             ? {
@@ -306,54 +301,6 @@ export class PoolService {
       pool: await this.loadPoolListItem(result.pool.id, result.user.id, result.user.role),
       user: result.user,
     };
-  }
-
-  async join(dto: JoinPoolDto, user: AuthUser): Promise<PoolListItem> {
-    assertCanParticipateInPools(user);
-
-    const pool = await this.prisma.pool.findUnique({
-      where: { inviteCode: dto.inviteCode.toUpperCase() },
-    });
-
-    if (!pool) {
-      throw new NotFoundException('Código de convite inválido');
-    }
-
-    if (pool.status !== 'ACTIVE') {
-      throw new ConflictException('Este bolão não aceita novos participantes');
-    }
-
-    const existingMembership = await this.prisma.poolUser.findUnique({
-      where: {
-        poolId_userId: {
-          poolId: pool.id,
-          userId: user.id,
-        },
-      },
-    });
-
-    if (existingMembership?.status === 'ACTIVE') {
-      return this.loadPoolListItem(pool.id, user.id, user.role);
-    }
-
-    if (existingMembership) {
-      await this.prisma.poolUser.update({
-        where: { id: existingMembership.id },
-        data: { status: 'ACTIVE' },
-      });
-
-      return this.loadPoolListItem(pool.id, user.id, user.role);
-    }
-
-    await this.prisma.poolUser.create({
-      data: {
-        poolId: pool.id,
-        userId: user.id,
-        status: 'ACTIVE',
-      },
-    });
-
-    return this.loadPoolListItem(pool.id, user.id, user.role);
   }
 
   async updateStatus(
@@ -629,23 +576,6 @@ export class PoolService {
     };
   }
 
-  private async createUniqueInviteCode(): Promise<string> {
-    for (let attempt = 0; attempt < 5; attempt += 1) {
-      const inviteCode = generateInviteCode();
-
-      const existing = await this.prisma.pool.findUnique({
-        where: { inviteCode },
-        select: { id: true },
-      });
-
-      if (!existing) {
-        return inviteCode;
-      }
-    }
-
-    throw new ConflictException('Não foi possível gerar código de convite');
-  }
-
   private toPoolListItem(
     pool: Pool & {
       championship: {
@@ -667,7 +597,6 @@ export class PoolService {
       season: pool.championship.season,
       participantsCount: pool._count.poolUsers,
       predictionsCount: pool._count.predictions,
-      inviteCode: pool.inviteCode,
       status: pool.status,
       scoring: pool.scoring,
       ownerId: pool.ownerId,

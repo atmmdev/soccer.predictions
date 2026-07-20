@@ -36,7 +36,7 @@ const OVERVIEW_ITEMS = [
   },
   {
     title: 'Bolões',
-    text: 'Grupos privados com convite, regras e classificação próprios.',
+    text: 'Grupos privados com solicitação de acesso, regras e classificação próprios.',
   },
   {
     title: 'Palpites',

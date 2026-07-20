@@ -4,13 +4,10 @@ import {
   Check,
   CheckCircle2,
   Clock3,
-  Copy,
-  Link2,
   Search,
   Users,
   X,
 } from 'lucide-react';
-import { toast } from 'sonner';
 
 import {
   Accordion,
@@ -46,7 +43,6 @@ import {
   lineTabTriggerClassName,
   lineTabsListClassName,
 } from '@/lib/line-tabs';
-import { buildJoinPoolUrl } from '@/lib/join-pool-url';
 import { cn } from '@/lib/utils';
 
 import {
@@ -80,24 +76,6 @@ function ParticipantStatusBadge({
   }
 
   return <StatusBadge tone='neutral'>Inativo</StatusBadge>;
-}
-
-async function copyInviteLink(inviteCode: string) {
-  try {
-    await navigator.clipboard.writeText(buildJoinPoolUrl(inviteCode));
-    toast.success('Link de convite copiado!');
-  } catch {
-    toast.error('Não foi possível copiar o link.');
-  }
-}
-
-async function copyInviteCode(inviteCode: string) {
-  try {
-    await navigator.clipboard.writeText(inviteCode);
-    toast.success('Código copiado!');
-  } catch {
-    toast.error('Não foi possível copiar o código.');
-  }
 }
 
 function TabCount({ value, active }: { value: number; active: boolean }) {
@@ -399,64 +377,43 @@ export function ParticipantList() {
                                   />
                                 </TableCell>
                                 <TableCell className='text-center'>
-                                  <div className='flex items-center justify-center gap-0.5'>
-                                    {canModerate ? (
-                                      <>
-                                        <IconActionButton
-                                          label='Aprovar'
-                                          icon={Check}
-                                          tone='success'
-                                          loading={isActing}
-                                          disabled={
-                                            isActing || actingKey !== null
-                                          }
-                                          onClick={() =>
-                                            void approveParticipant(
-                                              participant.poolId,
-                                              participant.userId,
-                                            )
-                                          }
-                                        />
-                                        <IconActionButton
-                                          label='Recusar'
-                                          icon={X}
-                                          tone='danger'
-                                          disabled={
-                                            isActing || actingKey !== null
-                                          }
-                                          onClick={() =>
-                                            void rejectParticipant(
-                                              participant.poolId,
-                                              participant.userId,
-                                            )
-                                          }
-                                        />
-                                      </>
-                                    ) : (
-                                      <>
-                                        <IconActionButton
-                                          label='Copiar link'
-                                          icon={Link2}
-                                          tone='link'
-                                          onClick={() =>
-                                            void copyInviteLink(
-                                              participant.inviteCode,
-                                            )
-                                          }
-                                        />
-                                        <IconActionButton
-                                          label='Código'
-                                          icon={Copy}
-                                          tone='copy'
-                                          onClick={() =>
-                                            void copyInviteCode(
-                                              participant.inviteCode,
-                                            )
-                                          }
-                                        />
-                                      </>
-                                    )}
-                                  </div>
+                                  {canModerate ? (
+                                    <div className='flex items-center justify-center gap-0.5'>
+                                      <IconActionButton
+                                        label='Aprovar'
+                                        icon={Check}
+                                        tone='success'
+                                        loading={isActing}
+                                        disabled={
+                                          isActing || actingKey !== null
+                                        }
+                                        onClick={() =>
+                                          void approveParticipant(
+                                            participant.poolId,
+                                            participant.userId,
+                                          )
+                                        }
+                                      />
+                                      <IconActionButton
+                                        label='Recusar'
+                                        icon={X}
+                                        tone='danger'
+                                        disabled={
+                                          isActing || actingKey !== null
+                                        }
+                                        onClick={() =>
+                                          void rejectParticipant(
+                                            participant.poolId,
+                                            participant.userId,
+                                          )
+                                        }
+                                      />
+                                    </div>
+                                  ) : (
+                                    <span className='text-muted-foreground text-xs'>
+                                      —
+                                    </span>
+                                  )}
                                 </TableCell>
                               </TableRow>
                             );

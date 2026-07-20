@@ -19,7 +19,6 @@ const pool_owner_guard_js_1 = require("../../../../shared/auth/pool-owner.guard.
 const current_user_decorator_js_1 = require("../../../identity/infrastructure/http/current-user.decorator.js");
 const jwt_auth_guard_js_1 = require("../../../identity/infrastructure/http/jwt-auth.guard.js");
 const create_pool_dto_js_1 = require("../../application/dtos/create-pool.dto.js");
-const join_pool_dto_js_1 = require("../../application/dtos/join-pool.dto.js");
 const update_pool_dto_js_1 = require("../../application/dtos/update-pool.dto.js");
 const update_pool_status_dto_js_1 = require("../../application/dtos/update-pool-status.dto.js");
 const pool_service_js_1 = require("../../application/services/pool.service.js");
@@ -33,9 +32,6 @@ let PoolsController = class PoolsController {
     }
     discover(user) {
         return this.poolService.discoverForUser(user);
-    }
-    join(dto, user) {
-        return this.poolService.join(dto, user);
     }
     requestAccess(id, user) {
         return this.poolService.requestAccess(id, user);
@@ -74,14 +70,6 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], PoolsController.prototype, "discover", null);
-__decorate([
-    (0, common_1.Post)('join'),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, current_user_decorator_js_1.CurrentUser)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [join_pool_dto_js_1.JoinPoolDto, Object]),
-    __metadata("design:returntype", void 0)
-], PoolsController.prototype, "join", null);
 __decorate([
     (0, common_1.Post)(':id/request-access'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),

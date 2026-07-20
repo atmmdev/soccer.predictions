@@ -25,8 +25,7 @@ export function usePoolSearchFilters(items: Pool[]) {
       const matchesSearch =
         query.length === 0 ||
         pool.name.toLowerCase().includes(query) ||
-        pool.championshipName.toLowerCase().includes(query) ||
-        pool.inviteCode.toLowerCase().includes(query);
+        pool.championshipName.toLowerCase().includes(query);
 
       const matchesStatus =
         status === DEFAULT_STATUS ||

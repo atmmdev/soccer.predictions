@@ -15,7 +15,6 @@ export interface Pool {
   season: number;
   participantsCount: number;
   predictionsCount: number;
-  inviteCode: string;
   status: PoolStatus;
   scoring: PoolScoringConfig;
   isOwner: boolean;

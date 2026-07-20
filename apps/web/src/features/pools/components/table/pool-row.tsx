@@ -17,7 +17,6 @@ export function PoolRow({ pool, onEdit, onStatusChange }: PoolRowProps) {
       <TableCell>{pool.championshipName}</TableCell>
       <TableCell>{pool.season}</TableCell>
       <TableCell>{pool.participantsCount}</TableCell>
-      <TableCell className='font-mono text-xs'>{pool.inviteCode}</TableCell>
       <TableCell>
         <PoolStatusBadge status={pool.status} />
       </TableCell>

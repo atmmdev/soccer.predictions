@@ -15,7 +15,6 @@ import { CurrentUser } from '../../../identity/infrastructure/http/current-user.
 import { JwtAuthGuard } from '../../../identity/infrastructure/http/jwt-auth.guard.js';
 import type { AuthUser } from '../../../identity/application/types/auth-user.js';
 import { CreatePoolDto } from '../../application/dtos/create-pool.dto.js';
-import { JoinPoolDto } from '../../application/dtos/join-pool.dto.js';
 import { UpdatePoolDto } from '../../application/dtos/update-pool.dto.js';
 import { UpdatePoolStatusDto } from '../../application/dtos/update-pool-status.dto.js';
 import { PoolService } from '../../application/services/pool.service.js';
@@ -33,11 +32,6 @@ export class PoolsController {
   @Get('discover')
   discover(@CurrentUser() user: AuthUser) {
     return this.poolService.discoverForUser(user);
-  }
-
-  @Post('join')
-  join(@Body() dto: JoinPoolDto, @CurrentUser() user: AuthUser) {
-    return this.poolService.join(dto, user);
   }
 
   @Post(':id/request-access')

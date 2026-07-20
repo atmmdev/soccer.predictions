@@ -7,7 +7,6 @@ export interface PoolParticipantItem {
   id: number;
   poolId: number;
   poolName: string;
-  inviteCode: string;
   userId: number;
   name: string;
   email: string;
@@ -42,7 +41,6 @@ export class ParticipantService {
           select: {
             id: true,
             name: true,
-            inviteCode: true,
             ownerId: true,
           },
         },
@@ -76,7 +74,6 @@ export class ParticipantService {
       id: member.id,
       poolId: member.pool.id,
       poolName: member.pool.name,
-      inviteCode: member.pool.inviteCode,
       userId: member.user.id,
       name: member.user.name,
       email: member.user.email,

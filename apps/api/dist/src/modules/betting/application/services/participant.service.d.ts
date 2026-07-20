@@ -5,7 +5,6 @@ export interface PoolParticipantItem {
     id: number;
     poolId: number;
     poolName: string;
-    inviteCode: string;
     userId: number;
     name: string;
     email: string;

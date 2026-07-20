@@ -8,7 +8,6 @@ export const PROTECTED_PATH_PREFIXES = [
   '/dashboard',
   '/championships',
   '/pools',
-  '/join',
   '/participants',
   '/matches',
   '/predictions',

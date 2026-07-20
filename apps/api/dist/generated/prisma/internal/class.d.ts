@@ -60,9 +60,6 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
     get poolUser(): Prisma.PoolUserDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;
-    get invitation(): Prisma.InvitationDelegate<ExtArgs, {
-        omit: OmitOpts;
-    }>;
     get prediction(): Prisma.PredictionDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;

@@ -1,6 +1,5 @@
 import type { AuthUser } from '../../../identity/application/types/auth-user.js';
 import { CreatePoolDto } from '../../application/dtos/create-pool.dto.js';
-import { JoinPoolDto } from '../../application/dtos/join-pool.dto.js';
 import { UpdatePoolDto } from '../../application/dtos/update-pool.dto.js';
 import { UpdatePoolStatusDto } from '../../application/dtos/update-pool-status.dto.js';
 import { PoolService } from '../../application/services/pool.service.js';
@@ -9,7 +8,6 @@ export declare class PoolsController {
     constructor(poolService: PoolService);
     list(user: AuthUser): Promise<import("../../application/services/pool.service.js").PoolListItem[]>;
     discover(user: AuthUser): Promise<import("../../application/services/pool.service.js").DiscoverablePoolItem[]>;
-    join(dto: JoinPoolDto, user: AuthUser): Promise<import("../../application/services/pool.service.js").PoolListItem>;
     requestAccess(id: number, user: AuthUser): Promise<import("../../application/services/pool.service.js").DiscoverablePoolItem>;
     approveMember(id: number, userId: number, user: AuthUser): Promise<{
         userId: number;

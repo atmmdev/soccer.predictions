@@ -80,21 +80,21 @@ export function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className='text-base'>Convites</CardTitle>
+          <CardTitle className='text-base'>Acesso aos bolões</CardTitle>
           <CardDescription>
             Como novos participantes entram nos bolões.
           </CardDescription>
         </CardHeader>
         <CardContent className='space-y-2 text-sm'>
           <p>
-            Compartilhe o link{' '}
-            <code className='bg-muted rounded px-1 py-0.5 text-xs'>
-              /join/CODIGO
-            </code>{' '}
-            ou o código de convite gerado na criação do bolão.
+            Usuários cadastrados pedem acesso aos bolões ativos em{' '}
+            <Link href='/pools' className='text-primary underline'>
+              Bolões
+            </Link>
+            , na aba Disponíveis.
           </p>
           <p className='text-muted-foreground'>
-            Gerencie participantes em{' '}
+            Aprove ou recuse pedidos em{' '}
             <Link href='/participants' className='text-primary underline'>
               Participantes
             </Link>

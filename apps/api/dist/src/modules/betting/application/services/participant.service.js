@@ -35,7 +35,6 @@ let ParticipantService = class ParticipantService {
                     select: {
                         id: true,
                         name: true,
-                        inviteCode: true,
                         ownerId: true,
                     },
                 },
@@ -64,7 +63,6 @@ let ParticipantService = class ParticipantService {
             id: member.id,
             poolId: member.pool.id,
             poolName: member.pool.name,
-            inviteCode: member.pool.inviteCode,
             userId: member.user.id,
             name: member.user.name,
             email: member.user.email,

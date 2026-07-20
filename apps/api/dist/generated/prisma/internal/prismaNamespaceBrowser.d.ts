@@ -21,7 +21,6 @@ export declare const ModelName: {
     readonly Fixture: "Fixture";
     readonly Pool: "Pool";
     readonly PoolUser: "PoolUser";
-    readonly Invitation: "Invitation";
     readonly Prediction: "Prediction";
     readonly PointHistory: "PointHistory";
 };
@@ -131,7 +130,6 @@ export declare const PoolScalarFieldEnum: {
     readonly ownerId: "ownerId";
     readonly championshipId: "championshipId";
     readonly name: "name";
-    readonly inviteCode: "inviteCode";
     readonly status: "status";
     readonly scoring: "scoring";
     readonly createdAt: "createdAt";
@@ -146,14 +144,6 @@ export declare const PoolUserScalarFieldEnum: {
     readonly joinedAt: "joinedAt";
 };
 export type PoolUserScalarFieldEnum = (typeof PoolUserScalarFieldEnum)[keyof typeof PoolUserScalarFieldEnum];
-export declare const InvitationScalarFieldEnum: {
-    readonly id: "id";
-    readonly poolId: "poolId";
-    readonly code: "code";
-    readonly expiresAt: "expiresAt";
-    readonly createdAt: "createdAt";
-};
-export type InvitationScalarFieldEnum = (typeof InvitationScalarFieldEnum)[keyof typeof InvitationScalarFieldEnum];
 export declare const PredictionScalarFieldEnum: {
     readonly id: "id";
     readonly poolId: "poolId";
@@ -248,10 +238,5 @@ export declare const QueryMode: {
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode];
 export declare const PoolOrderByRelevanceFieldEnum: {
     readonly name: "name";
-    readonly inviteCode: "inviteCode";
 };
 export type PoolOrderByRelevanceFieldEnum = (typeof PoolOrderByRelevanceFieldEnum)[keyof typeof PoolOrderByRelevanceFieldEnum];
-export declare const InvitationOrderByRelevanceFieldEnum: {
-    readonly code: "code";
-};
-export type InvitationOrderByRelevanceFieldEnum = (typeof InvitationOrderByRelevanceFieldEnum)[keyof typeof InvitationOrderByRelevanceFieldEnum];

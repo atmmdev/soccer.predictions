@@ -11,7 +11,6 @@ export function mapPoolResponse(pool: PoolResponse): Pool {
     season: pool.season,
     participantsCount: pool.participantsCount,
     predictionsCount: pool.predictionsCount,
-    inviteCode: pool.inviteCode,
     status: pool.status,
     scoring: pool.scoring,
     isOwner: pool.isOwner,

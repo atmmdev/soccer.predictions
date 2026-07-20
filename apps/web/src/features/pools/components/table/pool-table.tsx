@@ -63,9 +63,6 @@ export function PoolTable({
               sortDir={sortDir}
               onSort={onSort}
             />
-            <TableHead className='text-muted-foreground text-xs'>
-              Código
-            </TableHead>
             <PoolSortableHead
               label='Status'
               column='status'

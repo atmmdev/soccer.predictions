@@ -13,7 +13,6 @@ export interface PoolResponse {
   season: number;
   participantsCount: number;
   predictionsCount: number;
-  inviteCode: string;
   status: 'ACTIVE' | 'INACTIVE' | 'CLOSED';
   scoring: PoolScoringConfig;
   ownerId: number;
@@ -126,19 +125,6 @@ export async function createPoolRequest(payload: {
   }
 
   return response.json() as Promise<CreatePoolResponse>;
-}
-
-export async function joinPoolRequest(inviteCode: string): Promise<PoolResponse> {
-  const response = await authFetch(`${API_URL}/pools/join`, {
-    method: 'POST',
-    body: JSON.stringify({ inviteCode }),
-  });
-
-  if (!response.ok) {
-    throw new Error(await parseApiError(response));
-  }
-
-  return response.json() as Promise<PoolResponse>;
 }
 
 export async function updatePoolRequest(

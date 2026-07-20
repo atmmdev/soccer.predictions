@@ -34,7 +34,7 @@ export const WORKFLOW_STEPS = [
     step: 2,
     title: 'Entre ou crie um bolão',
     description:
-      'Entre com o código/link de convite, peça acesso a um bolão aberto ou crie o seu. Na criação, você pode importar o campeonato na hora se ainda não houver nenhum.',
+      'Peça acesso a um bolão ativo na aba Disponíveis ou crie o seu. Na criação, você pode importar o campeonato na hora se ainda não houver nenhum.',
   },
   {
     step: 3,
@@ -258,7 +258,7 @@ export const FAQ_ITEMS = [
     id: 'faq-invite',
     question: 'Como entro em um bolão?',
     answer:
-      'Peça o código ou o link de convite ao administrador (/join/CODIGO). Em Bolões você também pode pedir acesso a bolões disponíveis ou criar o seu (ao criar o primeiro, você vira administrador).',
+      'Em Bolões, abra a aba Disponíveis e solicite acesso a um bolão ativo. O administrador aprova o pedido em Participantes. Você também pode criar o seu (ao criar o primeiro, você vira administrador).',
   },
   {
     id: 'faq-create-pool-import',

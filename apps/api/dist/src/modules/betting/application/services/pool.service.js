@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PoolService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_js_1 = require("../../../../shared/prisma/prisma.service.js");
-const generate_invite_code_js_1 = require("../utils/generate-invite-code.js");
 const pool_participation_js_1 = require("../../../../shared/auth/pool-participation.js");
 let PoolService = class PoolService {
     prisma;
@@ -171,7 +170,6 @@ let PoolService = class PoolService {
         if (!championship.allowNewPools || championship.status !== 'ACTIVE') {
             throw new common_1.ConflictException('Este campeonato não permite novos bolões no momento');
         }
-        const inviteCode = await this.createUniqueInviteCode();
         const owner = await this.resolvePoolOwner(user, dto.delegateUserId);
         const result = await this.prisma.$transaction(async (tx) => {
             const pool = await tx.pool.create({
@@ -179,7 +177,6 @@ let PoolService = class PoolService {
                     ownerId: owner.id,
                     championshipId: dto.championshipId,
                     name: dto.name,
-                    inviteCode,
                     scoring: dto.scoring,
                     ...(owner.addAsParticipant
                         ? {
@@ -220,44 +217,6 @@ let PoolService = class PoolService {
             pool: await this.loadPoolListItem(result.pool.id, result.user.id, result.user.role),
             user: result.user,
         };
-    }
-    async join(dto, user) {
-        (0, pool_participation_js_1.assertCanParticipateInPools)(user);
-        const pool = await this.prisma.pool.findUnique({
-            where: { inviteCode: dto.inviteCode.toUpperCase() },
-        });
-        if (!pool) {
-            throw new common_1.NotFoundException('Código de convite inválido');
-        }
-        if (pool.status !== 'ACTIVE') {
-            throw new common_1.ConflictException('Este bolão não aceita novos participantes');
-        }
-        const existingMembership = await this.prisma.poolUser.findUnique({
-            where: {
-                poolId_userId: {
-                    poolId: pool.id,
-                    userId: user.id,
-                },
-            },
-        });
-        if (existingMembership?.status === 'ACTIVE') {
-            return this.loadPoolListItem(pool.id, user.id, user.role);
-        }
-        if (existingMembership) {
-            await this.prisma.poolUser.update({
-                where: { id: existingMembership.id },
-                data: { status: 'ACTIVE' },
-            });
-            return this.loadPoolListItem(pool.id, user.id, user.role);
-        }
-        await this.prisma.poolUser.create({
-            data: {
-                poolId: pool.id,
-                userId: user.id,
-                status: 'ACTIVE',
-            },
-        });
-        return this.loadPoolListItem(pool.id, user.id, user.role);
     }
     async updateStatus(poolId, dto, user) {
         const pool = await this.findAccessiblePool(poolId, user);
@@ -449,19 +408,6 @@ let PoolService = class PoolService {
             membershipStatus,
         };
     }
-    async createUniqueInviteCode() {
-        for (let attempt = 0; attempt < 5; attempt += 1) {
-            const inviteCode = (0, generate_invite_code_js_1.generateInviteCode)();
-            const existing = await this.prisma.pool.findUnique({
-                where: { inviteCode },
-                select: { id: true },
-            });
-            if (!existing) {
-                return inviteCode;
-            }
-        }
-        throw new common_1.ConflictException('Não foi possível gerar código de convite');
-    }
     toPoolListItem(pool, userId, userRole) {
         return {
             id: pool.id,
@@ -472,7 +418,6 @@ let PoolService = class PoolService {
             season: pool.championship.season,
             participantsCount: pool._count.poolUsers,
             predictionsCount: pool._count.predictions,
-            inviteCode: pool.inviteCode,
             status: pool.status,
             scoring: pool.scoring,
             ownerId: pool.ownerId,
