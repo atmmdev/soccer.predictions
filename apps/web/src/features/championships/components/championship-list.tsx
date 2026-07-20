@@ -1,13 +1,12 @@
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
 import { ListPagination } from '@/components/ui/list-pagination';
 import { PageLoading } from '@/components/ui/page-loading';
 import { useClientPagination } from '@/hooks/use-client-pagination';
 
 import { useChampionshipList } from '../hooks/use-championship-list';
 import { ChampionshipFilters } from './filters/championship-filters';
-import { ChampionshipTable } from './table/championship-table';
+import { ChampionshipView } from './table/championship-view';
 
 export function ChampionshipList() {
   const {
@@ -68,7 +67,7 @@ export function ChampionshipList() {
         </div>
       ) : (
         <>
-          <ChampionshipTable
+          <ChampionshipView
             rows={pagination.pageItems}
             sortKey={tableState.sortKey}
             sortDir={tableState.sortDir}

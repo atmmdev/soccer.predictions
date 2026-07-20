@@ -33,18 +33,8 @@ export function ChampionshipTable({
   onSync,
   onStatusChange,
 }: ChampionshipTableProps) {
-  if (rows.length === 0) {
-    return (
-      <div className='flex items-center justify-center py-12'>
-        <p className='text-muted-foreground text-sm'>
-          Nenhum campeonato encontrado com os filtros selecionados.
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <div className='overflow-x-auto'>
+    <div className='min-w-0 [&_[data-slot=table-container]]:overflow-x-auto'>
       <Table className='bg-white'>
         <TableHeader>
           <TableRow className='hover:bg-transparent'>
