@@ -14,6 +14,8 @@ const apiMain = path.join(apiDir, 'dist', 'src', 'main.js');
 const apiPort = Number(process.env.API_INTERNAL_PORT ?? '3001');
 const port = Number(process.env.PORT || 3000);
 const hostname = '0.0.0.0';
+const PORT_FREE_ATTEMPTS = 10;
+const API_HEALTH_TIMEOUT_MS = 45_000;
 
 /** @type {import('node:child_process').ChildProcess | null} */
 let apiProcess = null;
@@ -30,6 +32,10 @@ process.on('uncaughtException', error => {
 process.on('unhandledRejection', reason => {
   console.error('[startup] unhandledRejection:', reason);
 });
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 function resolveDatabaseUrl() {
   const databaseUrl = process.env.DATABASE_URL;
@@ -64,57 +70,133 @@ function isPortFree(listenPort) {
   });
 }
 
-/** Free leftover Nest processes from previous Hostinger restarts. */
-function freeApiPort(listenPort) {
-  try {
-    execSync(`fuser -k ${listenPort}/tcp`, { stdio: 'ignore' });
-    console.log(`[api] Freed port ${listenPort} via fuser`);
-    return;
-  } catch {
-    // fuser may be unavailable
+function listPortListenerPids(listenPort) {
+  const commands = [
+    `lsof -t -iTCP:${listenPort} -sTCP:LISTEN 2>/dev/null`,
+    `fuser ${listenPort}/tcp 2>/dev/null`,
+  ];
+
+  const pids = new Set();
+
+  for (const command of commands) {
+    try {
+      const output = execSync(command, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+      for (const token of output.split(/\s+/)) {
+        const pid = Number.parseInt(token, 10);
+        if (Number.isFinite(pid) && pid > 1) {
+          pids.add(pid);
+        }
+      }
+    } catch {
+      // tool unavailable or no listeners
+    }
   }
 
-  try {
-    execSync(
-      `sh -c 'pids=$(lsof -t -iTCP:${listenPort} -sTCP:LISTEN 2>/dev/null); [ -n "$pids" ] && kill -TERM $pids'`,
-      { stdio: 'ignore' },
-    );
-    console.log(`[api] Freed port ${listenPort} via lsof`);
-  } catch {
-    // nothing listening / tools missing
-  }
+  return [...pids];
 }
 
+function signalPortListeners(listenPort, signal) {
+  const pids = listPortListenerPids(listenPort);
+
+  if (pids.length === 0) {
+    return 0;
+  }
+
+  for (const pid of pids) {
+    try {
+      process.kill(pid, signal);
+    } catch {
+      // process already gone
+    }
+  }
+
+  console.log(`[api] Sent ${signal} to port ${listenPort} listener(s): ${pids.join(', ')}`);
+  return pids.length;
+}
+
+/** Free leftover Nest processes from previous Hostinger restarts. */
 async function ensureApiPortAvailable(listenPort) {
   if (await isPortFree(listenPort)) {
-    return;
+    return true;
   }
 
-  console.warn(`[api] Port ${listenPort} already in use — freeing leftover process`);
-  freeApiPort(listenPort);
-  await new Promise(resolve => setTimeout(resolve, 500));
+  for (let attempt = 1; attempt <= PORT_FREE_ATTEMPTS; attempt += 1) {
+    console.warn(
+      `[api] Port ${listenPort} busy (attempt ${attempt}/${PORT_FREE_ATTEMPTS}) — freeing leftover process`,
+    );
 
-  if (!(await isPortFree(listenPort))) {
+    signalPortListeners(listenPort, 'SIGTERM');
+    await sleep(400 * attempt);
+
+    if (await isPortFree(listenPort)) {
+      console.log(`[api] Port ${listenPort} is free after attempt ${attempt}`);
+      return true;
+    }
+
+    if (attempt === PORT_FREE_ATTEMPTS - 1) {
+      signalPortListeners(listenPort, 'SIGKILL');
+      await sleep(1500);
+    }
+  }
+
+  const stillBusy = !(await isPortFree(listenPort));
+
+  if (stillBusy) {
     console.error(
-      `[api] Port ${listenPort} still busy after cleanup. NestAPI will fail to bind.`,
+      `[api] Port ${listenPort} still busy after cleanup. Nest API will fail to bind.`,
     );
   }
+
+  return !stillBusy;
+}
+
+async function waitForApiHealth(listenPort) {
+  const deadline = Date.now() + API_HEALTH_TIMEOUT_MS;
+
+  while (Date.now() < deadline) {
+    if (apiProcess && apiProcess.exitCode !== null) {
+      console.error(
+        `[api] Process exited before health check (code=${apiProcess.exitCode})`,
+      );
+      return false;
+    }
+
+    try {
+      const response = await fetch(`http://127.0.0.1:${listenPort}/api/health`);
+      if (response.ok) {
+        const body = await response.json();
+        console.log(`[api] Health check OK: ${JSON.stringify(body)}`);
+        return true;
+      }
+    } catch {
+      // API still booting
+    }
+
+    await sleep(500);
+  }
+
+  console.error(`[api] Health check timed out after ${API_HEALTH_TIMEOUT_MS}ms`);
+  return false;
 }
 
 async function startApi() {
   if (!existsSync(apiMain)) {
     console.error(`[api] Build not found: ${apiMain}`);
-    return;
+    return false;
   }
 
   const databaseUrl = resolveDatabaseUrl();
 
   if (!databaseUrl) {
     console.error('[api] DATABASE_URL is not set.');
-    return;
+    return false;
   }
 
-  await ensureApiPortAvailable(apiPort);
+  const portReady = await ensureApiPortAvailable(apiPort);
+
+  if (!portReady) {
+    return false;
+  }
 
   console.log(`[api] Starting on port ${apiPort}...`);
 
@@ -142,6 +224,8 @@ async function startApi() {
       `[api] Process exited unexpectedly (code=${code}, signal=${signal})`,
     );
   });
+
+  return waitForApiHealth(apiPort);
 }
 
 function shutdown(signal) {
@@ -195,7 +279,12 @@ server.listen(port, hostname, () => {
 
 async function bootNext() {
   try {
-    await startApi();
+    const apiReady = await startApi();
+
+    if (!apiReady) {
+      console.error('[startup] Nest API failed to start — aborting boot');
+      process.exit(1);
+    }
 
     console.log('[startup] Preparing Next.js...');
     const app = next({ dev: false, dir: webDir });
