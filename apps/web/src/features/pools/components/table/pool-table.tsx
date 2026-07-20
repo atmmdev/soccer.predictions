@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 import {
   Table,
   TableBody,
@@ -10,10 +8,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import type { CreatePoolFormData } from '../../schemas/create-pool.schema';
-import type { Pool, PoolStatus } from '../../types/pool';
 import type { PoolSortKey, SortDirection } from '../../hooks/use-pool-table';
-import { EditPoolDialog } from '../dialogs/edit-pool-dialog';
+import type { Pool, PoolStatus } from '../../types/pool';
 import { PoolRow } from './pool-row';
 import { PoolSortableHead } from './pool-sortable-head';
 
@@ -22,10 +18,7 @@ interface PoolTableProps {
   sortKey: PoolSortKey;
   sortDir: SortDirection;
   onSort: (key: PoolSortKey) => void;
-  onUpdatePool: (
-    poolId: number,
-    data: CreatePoolFormData,
-  ) => boolean | Promise<boolean>;
+  onEdit: (pool: Pool) => void;
   onStatusChange: (poolId: number, status: PoolStatus) => Promise<boolean>;
 }
 
@@ -34,91 +27,68 @@ export function PoolTable({
   sortKey,
   sortDir,
   onSort,
-  onUpdatePool,
+  onEdit,
   onStatusChange,
 }: PoolTableProps) {
-  const [editingPool, setEditingPool] = useState<Pool | null>(null);
-
-  if (rows.length === 0) {
-    return (
-      <div className='flex items-center justify-center py-12'>
-        <p className='text-muted-foreground text-sm'>
-          Nenhum bolão encontrado com os filtros selecionados.
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <>
-      <div className='overflow-x-auto'>
-        <Table className='bg-white'>
-          <TableHeader>
-            <TableRow className='hover:bg-transparent'>
-              <PoolSortableHead
-                label='Nome'
-                column='name'
-                sortKey={sortKey}
-                sortDir={sortDir}
-                onSort={onSort}
-              />
-              <PoolSortableHead
-                label='Campeonato'
-                column='championshipName'
-                sortKey={sortKey}
-                sortDir={sortDir}
-                onSort={onSort}
-              />
-              <PoolSortableHead
-                label='Temporada'
-                column='season'
-                sortKey={sortKey}
-                sortDir={sortDir}
-                onSort={onSort}
-              />
-              <PoolSortableHead
-                label='Participantes'
-                column='participantsCount'
-                sortKey={sortKey}
-                sortDir={sortDir}
-                onSort={onSort}
-              />
-              <TableHead className='text-muted-foreground text-xs'>Código</TableHead>
-              <PoolSortableHead
-                label='Status'
-                column='status'
-                sortKey={sortKey}
-                sortDir={sortDir}
-                onSort={onSort}
-              />
-              <TableHead className='text-muted-foreground text-center text-xs'>
-                Ações
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.map(pool => (
-              <PoolRow
-                key={pool.id}
-                pool={pool}
-                onEdit={setEditingPool}
-                onStatusChange={onStatusChange}
-              />
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-
-      <EditPoolDialog
-        pool={editingPool}
-        open={editingPool !== null}
-        onOpenChange={open => {
-          if (!open) {
-            setEditingPool(null);
-          }
-        }}
-        onUpdate={onUpdatePool}
-      />
-    </>
+    <div className='min-w-0 [&_[data-slot=table-container]]:overflow-x-auto'>
+      <Table className='bg-white'>
+        <TableHeader>
+          <TableRow className='hover:bg-transparent'>
+            <PoolSortableHead
+              label='Nome'
+              column='name'
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSort={onSort}
+            />
+            <PoolSortableHead
+              label='Campeonato'
+              column='championshipName'
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSort={onSort}
+            />
+            <PoolSortableHead
+              label='Temporada'
+              column='season'
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSort={onSort}
+            />
+            <PoolSortableHead
+              label='Participantes'
+              column='participantsCount'
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSort={onSort}
+            />
+            <TableHead className='text-muted-foreground text-xs'>
+              Código
+            </TableHead>
+            <PoolSortableHead
+              label='Status'
+              column='status'
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSort={onSort}
+            />
+            <TableHead className='text-muted-foreground text-center text-xs'>
+              Ações
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map(pool => (
+            <PoolRow
+              key={pool.id}
+              pool={pool}
+              onEdit={onEdit}
+              onStatusChange={onStatusChange}
+            />
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

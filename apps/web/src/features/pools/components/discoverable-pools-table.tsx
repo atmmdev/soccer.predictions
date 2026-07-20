@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ListPagination } from '@/components/ui/list-pagination';
 import { PageLoading } from '@/components/ui/page-loading';
+import { ResponsiveDataView } from '@/components/ui/responsive-data-view';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import {
   Table,
@@ -18,6 +19,7 @@ import {
 import { useClientPagination } from '@/hooks/use-client-pagination';
 
 import type { DiscoverablePool } from '../types/pool';
+import { DiscoverablePoolMobileCard } from './discoverable-pool-mobile-card';
 
 interface DiscoverablePoolsTableProps {
   pools: DiscoverablePool[];
@@ -105,55 +107,81 @@ export function DiscoverablePoolsTable({
 
   return (
     <div className='space-y-4'>
-      <div className='overflow-x-auto'>
-        <Table>
-          <TableHeader>
-            <TableRow className='hover:bg-transparent'>
-              <TableHead className='text-muted-foreground text-xs'>Nome</TableHead>
-              <TableHead className='text-muted-foreground text-xs'>
-                Campeonato
-              </TableHead>
-              <TableHead className='text-muted-foreground text-xs'>
-                Temporada
-              </TableHead>
-              <TableHead className='text-muted-foreground text-xs'>
-                Participantes
-              </TableHead>
-              <TableHead className='text-muted-foreground text-xs'>Dono</TableHead>
-              <TableHead className='text-muted-foreground text-right text-xs'>
-                Ação
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+      <ResponsiveDataView
+        breakpoint='md'
+        desktop={
+          <div className='min-w-0 [&_[data-slot=table-container]]:overflow-x-auto'>
+            <Table className='bg-white'>
+              <TableHeader>
+                <TableRow className='hover:bg-transparent'>
+                  <TableHead className='text-muted-foreground text-xs'>
+                    Nome
+                  </TableHead>
+                  <TableHead className='text-muted-foreground text-xs'>
+                    Campeonato
+                  </TableHead>
+                  <TableHead className='text-muted-foreground text-xs'>
+                    Temporada
+                  </TableHead>
+                  <TableHead className='text-muted-foreground text-xs'>
+                    Participantes
+                  </TableHead>
+                  <TableHead className='text-muted-foreground text-xs'>
+                    Dono
+                  </TableHead>
+                  <TableHead className='text-muted-foreground text-right text-xs'>
+                    Ação
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pagination.pageItems.map(pool => (
+                  <TableRow key={pool.id}>
+                    <TableCell className='font-medium'>{pool.name}</TableCell>
+                    <TableCell>{pool.championshipName}</TableCell>
+                    <TableCell>{pool.season}</TableCell>
+                    <TableCell>{pool.participantsCount}</TableCell>
+                    <TableCell>
+                      <div className='flex items-center gap-2'>
+                        <UserAvatar
+                          name={pool.ownerName}
+                          avatarDataUrl={pool.ownerAvatarDataUrl}
+                          className='size-7'
+                        />
+                        <span>{pool.ownerName}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className='text-right'>
+                      <MembershipAction
+                        pool={pool}
+                        requestingPoolId={requestingPoolId}
+                        onRequestAccess={onRequestAccess}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        }
+        mobile={
+          <div className='space-y-3'>
             {pagination.pageItems.map(pool => (
-              <TableRow key={pool.id}>
-                <TableCell className='font-medium'>{pool.name}</TableCell>
-                <TableCell>{pool.championshipName}</TableCell>
-                <TableCell>{pool.season}</TableCell>
-                <TableCell>{pool.participantsCount}</TableCell>
-                <TableCell>
-                  <div className='flex items-center gap-2'>
-                    <UserAvatar
-                      name={pool.ownerName}
-                      avatarDataUrl={pool.ownerAvatarDataUrl}
-                      className='size-7'
-                    />
-                    <span>{pool.ownerName}</span>
-                  </div>
-                </TableCell>
-                <TableCell className='text-right'>
+              <DiscoverablePoolMobileCard
+                key={pool.id}
+                pool={pool}
+                action={
                   <MembershipAction
                     pool={pool}
                     requestingPoolId={requestingPoolId}
                     onRequestAccess={onRequestAccess}
                   />
-                </TableCell>
-              </TableRow>
+                }
+              />
             ))}
-          </TableBody>
-        </Table>
-      </div>
+          </div>
+        }
+      />
       <ListPagination pagination={pagination} itemLabel='bolões' />
     </div>
   );

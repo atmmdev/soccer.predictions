@@ -18,7 +18,7 @@ import { useDiscoverablePools } from '../hooks/use-discoverable-pools';
 import { usePoolList } from '../hooks/use-pool-list';
 import { DiscoverablePoolsTable } from './discoverable-pools-table';
 import { PoolFilters } from './filters/pool-filters';
-import { PoolTable } from './table/pool-table';
+import { PoolView } from './table/pool-view';
 
 type PoolsTab = 'mine' | 'available';
 
@@ -175,7 +175,7 @@ function MyPoolsSection({
         </div>
       ) : (
         <>
-          <PoolTable
+          <PoolView
             rows={pagination.pageItems}
             sortKey={tableState.sortKey}
             sortDir={tableState.sortDir}
