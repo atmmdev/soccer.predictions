@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  Check,
-  CheckCircle2,
-  Clock3,
-  Search,
-  Users,
-  X,
-} from 'lucide-react';
+import { Search } from 'lucide-react';
 
 import {
   Accordion,
@@ -17,25 +10,10 @@ import {
 } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import {
-  DateTimeDisplay,
-  dateTimeTableCellClassName,
-} from '@/components/ui/datetime-display';
-import { IconActionButton } from '@/components/ui/icon-action-button';
 import { Input } from '@/components/ui/input';
 import { ListPagination } from '@/components/ui/list-pagination';
 import { NativeSelect } from '@/components/ui/native-select';
 import { PageLoading } from '@/components/ui/page-loading';
-import { StatusBadge } from '@/components/ui/status-badge';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useClientPagination } from '@/hooks/use-client-pagination';
@@ -50,33 +28,7 @@ import {
   useParticipants,
   type ParticipantRoleTab,
 } from '../hooks/use-participants';
-import type { PoolParticipant } from '../types/participant';
-
-function ParticipantStatusBadge({
-  status,
-}: {
-  status: PoolParticipant['status'];
-}) {
-  if (status === 'ACTIVE') {
-    return (
-      <StatusBadge tone='success' className='gap-1'>
-        <CheckCircle2 className='size-3' aria-hidden />
-        Ativo
-      </StatusBadge>
-    );
-  }
-
-  if (status === 'PENDING') {
-    return (
-      <StatusBadge tone='warning' className='gap-1'>
-        <Clock3 className='size-3' aria-hidden />
-        Pendente
-      </StatusBadge>
-    );
-  }
-
-  return <StatusBadge tone='neutral'>Inativo</StatusBadge>;
-}
+import { ParticipantMembershipsView } from './participant-memberships-view';
 
 function TabCount({ value, active }: { value: number; active: boolean }) {
   return (
@@ -192,7 +144,7 @@ export function ParticipantList() {
             <Search className='text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2' />
             <Input
               placeholder='Buscar participantes...'
-              className='pl-9  bg-white'
+              className='bg-white pl-9'
               value={filters.search}
               onChange={event => filters.setSearch(event.target.value)}
             />
@@ -204,7 +156,7 @@ export function ParticipantList() {
                 event.target.value as 'recent' | 'name-asc' | 'name-desc',
               )
             }
-            className='w-full sm:w-40 bg-white'
+            className='w-full bg-white sm:w-40'
           >
             <option value='recent'>Mais recentes</option>
             <option value='name-asc'>Nome A–Z</option>
@@ -310,117 +262,16 @@ export function ParticipantList() {
                   </AccordionTrigger>
 
                   <AccordionContent className='pb-3'>
-                    <div className='overflow-x-auto rounded-lg border bg-zinc-50/70'>
-                      <Table>
-                        <TableHeader>
-                          <TableRow className='hover:bg-transparent'>
-                            <TableHead className='text-[11px] tracking-wide uppercase'>
-                              Bolão
-                            </TableHead>
-                            <TableHead className='text-[11px] tracking-wide uppercase'>
-                              Status
-                            </TableHead>
-                            <TableHead className='text-center text-[11px] tracking-wide uppercase'>
-                              Palpites
-                            </TableHead>
-                            <TableHead className='text-[11px] tracking-wide uppercase'>
-                              Entrada
-                            </TableHead>
-                            <TableHead className='text-center text-[11px] tracking-wide uppercase'>
-                              Ações
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {group.memberships.map(participant => {
-                            const actionKey = `${participant.poolId}:${participant.userId}`;
-                            const isActing = actingKey === actionKey;
-                            const canModerate =
-                              participant.status === 'PENDING' &&
-                              !participant.isOwner;
-
-                            return (
-                              <TableRow
-                                key={participant.id}
-                                className='bg-transparent'
-                              >
-                                <TableCell>
-                                  <div className='flex items-center gap-2 font-medium'>
-                                    <Users
-                                      className='text-muted-foreground size-4 shrink-0'
-                                      aria-hidden
-                                    />
-                                    <span>{participant.poolName}</span>
-                                    {participant.isOwner ? (
-                                      <Badge
-                                        variant='secondary'
-                                        className='bg-primary/10 text-xs text-primary'
-                                      >
-                                        Dono
-                                      </Badge>
-                                    ) : null}
-                                  </div>
-                                </TableCell>
-                                <TableCell>
-                                  <ParticipantStatusBadge
-                                    status={participant.status}
-                                  />
-                                </TableCell>
-                                <TableCell className='text-center tabular-nums'>
-                                  {participant.predictionsCount}
-                                </TableCell>
-                                <TableCell
-                                  className={dateTimeTableCellClassName}
-                                >
-                                  <DateTimeDisplay
-                                    value={participant.joinedAt}
-                                  />
-                                </TableCell>
-                                <TableCell className='text-center'>
-                                  {canModerate ? (
-                                    <div className='flex items-center justify-center gap-0.5'>
-                                      <IconActionButton
-                                        label='Aprovar'
-                                        icon={Check}
-                                        tone='success'
-                                        loading={isActing}
-                                        disabled={
-                                          isActing || actingKey !== null
-                                        }
-                                        onClick={() =>
-                                          void approveParticipant(
-                                            participant.poolId,
-                                            participant.userId,
-                                          )
-                                        }
-                                      />
-                                      <IconActionButton
-                                        label='Recusar'
-                                        icon={X}
-                                        tone='danger'
-                                        disabled={
-                                          isActing || actingKey !== null
-                                        }
-                                        onClick={() =>
-                                          void rejectParticipant(
-                                            participant.poolId,
-                                            participant.userId,
-                                          )
-                                        }
-                                      />
-                                    </div>
-                                  ) : (
-                                    <span className='text-muted-foreground text-xs'>
-                                      —
-                                    </span>
-                                  )}
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
-                    </div>
+                    <ParticipantMembershipsView
+                      memberships={group.memberships}
+                      actingKey={actingKey}
+                      onApprove={(poolId, userId) =>
+                        void approveParticipant(poolId, userId)
+                      }
+                      onReject={(poolId, userId) =>
+                        void rejectParticipant(poolId, userId)
+                      }
+                    />
                   </AccordionContent>
                 </AccordionItem>
               );

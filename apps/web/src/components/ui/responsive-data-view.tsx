@@ -24,7 +24,13 @@ interface ResponsiveDataViewProps {
 }
 
 function useIsMinWidth(minWidthPx: number) {
-  const [matches, setMatches] = useState<boolean | null>(null);
+  const [matches, setMatches] = useState<boolean | null>(() => {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+
+    return window.matchMedia(`(min-width: ${minWidthPx}px)`).matches;
+  });
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(`(min-width: ${minWidthPx}px)`);
