@@ -1,6 +1,6 @@
 import { execSync, spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import { createServer } from 'node:http';
+import { createServer, request as httpRequest } from 'node:http';
 import { createRequire } from 'node:module';
 import net from 'node:net';
 import path from 'node:path';
@@ -19,6 +19,7 @@ const API_HEALTH_TIMEOUT_MS = 45_000;
 
 /** @type {import('node:child_process').ChildProcess | null} */
 let apiProcess = null;
+let apiReady = false;
 let shuttingDown = false;
 
 console.log('[startup] Soccer Predictions booting...');
@@ -215,6 +216,7 @@ async function startApi() {
 
   apiProcess.on('exit', (code, signal) => {
     apiProcess = null;
+    apiReady = false;
 
     if (shuttingDown) {
       return;
@@ -225,7 +227,42 @@ async function startApi() {
     );
   });
 
-  return waitForApiHealth(apiPort);
+  return waitForApiHealth(apiPort).then(healthy => {
+    if (healthy) {
+      apiReady = true;
+      console.log('[api] Proxy enabled for /api/*');
+    }
+    return healthy;
+  });
+}
+
+function proxyToApi(req, res) {
+  const proxyReq = httpRequest(
+    {
+      hostname: '127.0.0.1',
+      port: apiPort,
+      path: req.url,
+      method: req.method,
+      headers: {
+        ...req.headers,
+        host: `127.0.0.1:${apiPort}`,
+      },
+    },
+    proxyRes => {
+      res.writeHead(proxyRes.statusCode ?? 502, proxyRes.headers);
+      proxyRes.pipe(res);
+    },
+  );
+
+  proxyReq.on('error', error => {
+    console.error('[api] Proxy error:', error);
+    if (!res.headersSent) {
+      res.writeHead(502, { 'Content-Type': 'text/plain; charset=utf-8' });
+      res.end('API unavailable');
+    }
+  });
+
+  req.pipe(proxyReq);
 }
 
 function shutdown(signal) {
@@ -257,6 +294,19 @@ let ready = false;
 let handleRequest = null;
 
 const server = createServer(async (req, res) => {
+  const url = req.url ?? '/';
+
+  if (url.startsWith('/api/') || url === '/api') {
+    if (apiReady) {
+      proxyToApi(req, res);
+      return;
+    }
+
+    res.writeHead(503, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('API is starting, please retry in a few seconds.');
+    return;
+  }
+
   if (!ready || !handleRequest) {
     res.writeHead(503, { 'Content-Type': 'text/plain; charset=utf-8' });
     res.end('Application is starting, please retry in a few seconds.');
