@@ -12,13 +12,17 @@ const webDir = path.join(rootDir, 'apps/web');
 const apiDir = path.join(rootDir, 'apps/api');
 const apiMain = path.join(apiDir, 'dist', 'src', 'main.js');
 const apiPort = Number(process.env.API_INTERNAL_PORT ?? '3001');
+const instanceLockPort = Number(process.env.INSTANCE_LOCK_PORT ?? '3099');
 const port = Number(process.env.PORT || 3000);
 const hostname = '0.0.0.0';
 const PORT_FREE_ATTEMPTS = 10;
 const API_HEALTH_TIMEOUT_MS = 45_000;
+const INSTANCE_LOCK_WAIT_MS = 20_000;
 
 /** @type {import('node:child_process').ChildProcess | null} */
 let apiProcess = null;
+/** @type {import('node:net').Server | null} */
+let instanceLockServer = null;
 let apiReady = false;
 let shuttingDown = false;
 
@@ -71,6 +75,38 @@ function isPortFree(listenPort) {
   });
 }
 
+function tryAcquireInstanceLock() {
+  return new Promise(resolve => {
+    const lockServer = net.createServer();
+
+    lockServer.once('error', () => resolve(false));
+    lockServer.listen(instanceLockPort, '127.0.0.1', () => {
+      instanceLockServer = lockServer;
+      resolve(true);
+    });
+  });
+}
+
+async function acquireInstanceLock() {
+  const deadline = Date.now() + INSTANCE_LOCK_WAIT_MS;
+
+  while (Date.now() < deadline) {
+    if (await tryAcquireInstanceLock()) {
+      console.log(
+        `[startup] Instance lock acquired on port ${instanceLockPort}`,
+      );
+      return true;
+    }
+
+    await sleep(400);
+  }
+
+  console.error(
+    `[startup] Could not acquire instance lock on port ${instanceLockPort} after ${INSTANCE_LOCK_WAIT_MS}ms`,
+  );
+  return false;
+}
+
 function listPortListenerPids(listenPort) {
   const commands = [
     `lsof -t -iTCP:${listenPort} -sTCP:LISTEN 2>/dev/null`,
@@ -81,7 +117,11 @@ function listPortListenerPids(listenPort) {
 
   for (const command of commands) {
     try {
-      const output = execSync(command, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+      const output = execSync(command, {
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }).trim();
+
       for (const token of output.split(/\s+/)) {
         const pid = Number.parseInt(token, 10);
         if (Number.isFinite(pid) && pid > 1) {
@@ -111,8 +151,24 @@ function signalPortListeners(listenPort, signal) {
     }
   }
 
-  console.log(`[api] Sent ${signal} to port ${listenPort} listener(s): ${pids.join(', ')}`);
+  console.log(
+    `[api] Sent ${signal} to port ${listenPort} listener(s): ${pids.join(', ')}`,
+  );
   return pids.length;
+}
+
+async function probeApiHealth(listenPort) {
+  try {
+    const response = await fetch(`http://127.0.0.1:${listenPort}/api/health`);
+    if (!response.ok) {
+      return false;
+    }
+
+    const body = await response.json();
+    return body.status === 'ok' && body.database === 'up';
+  } catch {
+    return false;
+  }
 }
 
 /** Free leftover Nest processes from previous Hostinger restarts. */
@@ -140,15 +196,7 @@ async function ensureApiPortAvailable(listenPort) {
     }
   }
 
-  const stillBusy = !(await isPortFree(listenPort));
-
-  if (stillBusy) {
-    console.error(
-      `[api] Port ${listenPort} still busy after cleanup. Nest API will fail to bind.`,
-    );
-  }
-
-  return !stillBusy;
+  return isPortFree(listenPort);
 }
 
 async function waitForApiHealth(listenPort) {
@@ -162,15 +210,9 @@ async function waitForApiHealth(listenPort) {
       return false;
     }
 
-    try {
-      const response = await fetch(`http://127.0.0.1:${listenPort}/api/health`);
-      if (response.ok) {
-        const body = await response.json();
-        console.log(`[api] Health check OK: ${JSON.stringify(body)}`);
-        return true;
-      }
-    } catch {
-      // API still booting
+    if (await probeApiHealth(listenPort)) {
+      console.log('[api] Health check OK');
+      return true;
     }
 
     await sleep(500);
@@ -178,6 +220,11 @@ async function waitForApiHealth(listenPort) {
 
   console.error(`[api] Health check timed out after ${API_HEALTH_TIMEOUT_MS}ms`);
   return false;
+}
+
+function markApiReady() {
+  apiReady = true;
+  console.log('[api] Proxy enabled for /api/*');
 }
 
 async function startApi() {
@@ -193,16 +240,23 @@ async function startApi() {
     return false;
   }
 
+  if (await probeApiHealth(apiPort)) {
+    console.log(`[api] Reusing existing Nest API on port ${apiPort}`);
+    markApiReady();
+    return true;
+  }
+
   const portReady = await ensureApiPortAvailable(apiPort);
 
   if (!portReady) {
+    console.error(
+      `[api] Port ${apiPort} still busy after cleanup. Nest API will fail to bind.`,
+    );
     return false;
   }
 
   console.log(`[api] Starting on port ${apiPort}...`);
 
-  // Keep Nest as a child of this process (not detached) so Hostinger
-  // restarts tear down the API with the parent and avoid EADDRINUSE.
   apiProcess = spawn(process.execPath, [apiMain], {
     cwd: apiDir,
     env: {
@@ -227,13 +281,13 @@ async function startApi() {
     );
   });
 
-  return waitForApiHealth(apiPort).then(healthy => {
-    if (healthy) {
-      apiReady = true;
-      console.log('[api] Proxy enabled for /api/*');
-    }
-    return healthy;
-  });
+  const healthy = await waitForApiHealth(apiPort);
+
+  if (healthy) {
+    markApiReady();
+  }
+
+  return healthy;
 }
 
 function proxyToApi(req, res) {
@@ -275,6 +329,11 @@ function shutdown(signal) {
 
   if (apiProcess && !apiProcess.killed) {
     apiProcess.kill('SIGTERM');
+  }
+
+  if (instanceLockServer) {
+    instanceLockServer.close();
+    instanceLockServer = null;
   }
 
   server.close(() => {
@@ -322,28 +381,48 @@ const server = createServer(async (req, res) => {
   }
 });
 
-server.listen(port, hostname, () => {
-  console.log(`[startup] Listening on http://${hostname}:${port}`);
-  void bootNext();
-});
-
 async function bootNext() {
-  try {
-    const apiReady = await startApi();
+  const nestReady = await startApi();
 
-    if (!apiReady) {
-      console.error('[startup] Nest API failed to start — aborting boot');
-      process.exit(1);
-    }
-
-    console.log('[startup] Preparing Next.js...');
-    const app = next({ dev: false, dir: webDir });
-    handleRequest = app.getRequestHandler();
-    await app.prepare();
-    ready = true;
-    console.log('[startup] Next.js ready');
-  } catch (error) {
-    console.error('[startup] Failed to boot Next.js:', error);
+  if (!nestReady) {
+    console.error('[startup] Nest API failed to start — aborting boot');
     process.exit(1);
   }
+
+  console.log('[startup] Preparing Next.js...');
+  const app = next({ dev: false, dir: webDir });
+  handleRequest = app.getRequestHandler();
+  await app.prepare();
+  ready = true;
+  console.log('[startup] Next.js ready');
 }
+
+async function main() {
+  const locked = await acquireInstanceLock();
+
+  if (!locked) {
+    if (await probeApiHealth(apiPort)) {
+      console.log(
+        '[startup] Another instance is already running with a healthy API — exiting',
+      );
+      process.exit(0);
+    }
+
+    process.exit(1);
+  }
+
+  await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(port, hostname, () => {
+      console.log(`[startup] Listening on http://${hostname}:${port}`);
+      resolve();
+    });
+  });
+
+  await bootNext();
+}
+
+main().catch(error => {
+  console.error('[startup] Failed to boot application:', error);
+  process.exit(1);
+});
