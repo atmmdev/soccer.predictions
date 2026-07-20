@@ -41,6 +41,11 @@ let RankingUpdateNotificationService = RankingUpdateNotificationService_1 = clas
                 },
             },
         });
+        if (pools.length === 0) {
+            this.logger.log(`Nenhum pool ACTIVE para championship=${championshipId} — e-mails de ranking ignorados`);
+            return;
+        }
+        this.logger.log(`Notificando ranking de ${pools.length} pool(s) do championship=${championshipId}`);
         for (const pool of pools) {
             try {
                 await this.notifyForPool({
@@ -75,8 +80,10 @@ let RankingUpdateNotificationService = RankingUpdateNotificationService_1 = clas
             },
         });
         if (members.length === 0) {
+            this.logger.warn(`Pool=${params.poolId} sem membros elegíveis para e-mail de ranking`);
             return;
         }
+        this.logger.log(`Preparando ranking update pool=${params.poolId} (${members.length} destinatários)`);
         const ranked = [];
         for (const member of members) {
             const pointHistory = await this.prisma.pointHistory.findMany({
@@ -106,6 +113,7 @@ let RankingUpdateNotificationService = RankingUpdateNotificationService_1 = clas
         const topStandings = ranked.slice(0, TOP_STANDINGS_LIMIT);
         let sent = 0;
         let failed = 0;
+        let skipped = 0;
         for (let index = 0; index < ranked.length; index += 1) {
             const entry = ranked[index];
             const standingsForRecipient = topStandings.map(row => ({
@@ -138,6 +146,9 @@ let RankingUpdateNotificationService = RankingUpdateNotificationService_1 = clas
                 if (ok) {
                     sent += 1;
                 }
+                else {
+                    skipped += 1;
+                }
             }
             catch (error) {
                 failed += 1;
@@ -147,7 +158,7 @@ let RankingUpdateNotificationService = RankingUpdateNotificationService_1 = clas
                 await sleep(SEND_GAP_MS);
             }
         }
-        this.logger.log(`Ranking update emails pool=${params.poolId}: ${sent}/${ranked.length} (falhas: ${failed})`);
+        this.logger.log(`Ranking update emails pool=${params.poolId}: ${sent}/${ranked.length} enviados, ${skipped} ignorados, ${failed} falhas`);
     }
 };
 exports.RankingUpdateNotificationService = RankingUpdateNotificationService;

@@ -10,5 +10,5 @@ export declare class MailService {
     private readonly resend;
     constructor(configService: ConfigService);
     isEnabled(): boolean;
-    send(input: SendMailInput): Promise<void>;
+    send(input: SendMailInput): Promise<boolean>;
 }

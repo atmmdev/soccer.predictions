@@ -22,7 +22,7 @@ export class MailService {
     return this.configService.get<string>('EMAIL_ENABLED', 'false') === 'true';
   }
 
-  async send(input: SendMailInput): Promise<void> {
+  async send(input: SendMailInput): Promise<boolean> {
     if (!this.isEnabled()) {
       this.logger.log(
         `[email disabled] to=${input.to} subject="${input.subject}"`,
@@ -33,7 +33,7 @@ export class MailService {
       for (const link of links) {
         this.logger.log(`Link: ${link}`);
       }
-      return;
+      return false;
     }
 
     const from = this.configService.getOrThrow<string>('MAIL_FROM');
@@ -43,7 +43,7 @@ export class MailService {
         `EMAIL_ENABLED=true mas RESEND_API_KEY ausente. E-mail para ${input.to} não enviado.`,
       );
       this.logger.log(`subject="${input.subject}" to=${input.to}`);
-      return;
+      return false;
     }
 
     const result = await this.resend.emails.send({
@@ -59,5 +59,7 @@ export class MailService {
       );
       throw new Error(result.error.message);
     }
+
+    return true;
   }
 }

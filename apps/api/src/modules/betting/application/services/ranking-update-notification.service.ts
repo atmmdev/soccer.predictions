@@ -44,6 +44,17 @@ export class RankingUpdateNotificationService {
       },
     });
 
+    if (pools.length === 0) {
+      this.logger.log(
+        `Nenhum pool ACTIVE para championship=${championshipId} — e-mails de ranking ignorados`,
+      );
+      return;
+    }
+
+    this.logger.log(
+      `Notificando ranking de ${pools.length} pool(s) do championship=${championshipId}`,
+    );
+
     for (const pool of pools) {
       try {
         await this.notifyForPool({
@@ -85,8 +96,15 @@ export class RankingUpdateNotificationService {
     });
 
     if (members.length === 0) {
+      this.logger.warn(
+        `Pool=${params.poolId} sem membros elegíveis para e-mail de ranking`,
+      );
       return;
     }
+
+    this.logger.log(
+      `Preparando ranking update pool=${params.poolId} (${members.length} destinatários)`,
+    );
 
     const ranked: StandingEntry[] = [];
 
@@ -123,6 +141,7 @@ export class RankingUpdateNotificationService {
     const topStandings = ranked.slice(0, TOP_STANDINGS_LIMIT);
     let sent = 0;
     let failed = 0;
+    let skipped = 0;
 
     for (let index = 0; index < ranked.length; index += 1) {
       const entry = ranked[index]!;
@@ -161,6 +180,8 @@ export class RankingUpdateNotificationService {
 
         if (ok) {
           sent += 1;
+        } else {
+          skipped += 1;
         }
       } catch (error) {
         failed += 1;
@@ -175,7 +196,7 @@ export class RankingUpdateNotificationService {
     }
 
     this.logger.log(
-      `Ranking update emails pool=${params.poolId}: ${sent}/${ranked.length} (falhas: ${failed})`,
+      `Ranking update emails pool=${params.poolId}: ${sent}/${ranked.length} enviados, ${skipped} ignorados, ${failed} falhas`,
     );
   }
 }

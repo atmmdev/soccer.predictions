@@ -33,13 +33,13 @@ let MailService = MailService_1 = class MailService {
             for (const link of links) {
                 this.logger.log(`Link: ${link}`);
             }
-            return;
+            return false;
         }
         const from = this.configService.getOrThrow('MAIL_FROM');
         if (!this.resend) {
             this.logger.warn(`EMAIL_ENABLED=true mas RESEND_API_KEY ausente. E-mail para ${input.to} não enviado.`);
             this.logger.log(`subject="${input.subject}" to=${input.to}`);
-            return;
+            return false;
         }
         const result = await this.resend.emails.send({
             from,
@@ -51,6 +51,7 @@ let MailService = MailService_1 = class MailService {
             this.logger.error(`Falha ao enviar e-mail para ${input.to}: ${result.error.message}`);
             throw new Error(result.error.message);
         }
+        return true;
     }
 };
 exports.MailService = MailService;

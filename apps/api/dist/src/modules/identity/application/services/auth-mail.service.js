@@ -110,11 +110,14 @@ let AuthMailService = AuthMailService_1 = class AuthMailService {
             webOrigin,
             fixtures: params.fixtures,
         });
-        await this.mailService.send({
+        const delivered = await this.mailService.send({
             to: params.email,
             subject: template.subject,
             html: template.html,
         });
+        if (!delivered) {
+            return false;
+        }
         await this.prisma.emailDispatchLog.create({
             data: {
                 userId: params.userId,
@@ -136,6 +139,7 @@ let AuthMailService = AuthMailService_1 = class AuthMailService {
             },
         });
         if (alreadySent) {
+            this.logger.debug(`Ranking update já enviado hoje para user=${params.userId} pool=${params.poolId}`);
             return false;
         }
         const webOrigin = this.getWebOrigin();
@@ -151,11 +155,15 @@ let AuthMailService = AuthMailService_1 = class AuthMailService {
             recipientPoints: params.recipientPoints,
             standings: params.standings,
         });
-        await this.mailService.send({
+        const delivered = await this.mailService.send({
             to: params.email,
             subject: template.subject,
             html: template.html,
         });
+        if (!delivered) {
+            this.logger.warn(`Ranking update não entregue (mail desabilitado ou Resend indisponível) para ${params.email}`);
+            return false;
+        }
         await this.prisma.emailDispatchLog.create({
             data: {
                 userId: params.userId,
