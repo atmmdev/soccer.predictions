@@ -49,8 +49,10 @@ let ChampionshipsController = class ChampionshipsController {
     import(dto) {
         return this.importChampionshipService.import(dto);
     }
-    sync(id) {
-        return this.syncFixturesService.syncChampionship(id);
+    sync(id, notifyRanking) {
+        return this.syncFixturesService.syncChampionship(id, {
+            notifyRanking: notifyRanking === 'true' || notifyRanking === '1',
+        });
     }
     updateStatus(id, dto) {
         return this.championshipService.updateStatus(id, dto.active);
@@ -103,8 +105,9 @@ __decorate([
     (0, common_1.UseGuards)(roles_guard_js_1.RolesGuard),
     (0, roles_decorator_js_1.Roles)('ADMIN', 'SUPER_ADMIN'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Query)('notifyRanking')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, String]),
     __metadata("design:returntype", void 0)
 ], ChampionshipsController.prototype, "sync", null);
 __decorate([

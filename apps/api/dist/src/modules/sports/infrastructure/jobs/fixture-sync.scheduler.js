@@ -22,14 +22,18 @@ let FixtureSyncScheduler = FixtureSyncScheduler_1 = class FixtureSyncScheduler {
     }
     async syncMorning() {
         this.logger.log('Iniciando sync matinal de fixtures');
-        await this.syncFixturesService.syncActiveChampionships('all');
+        await this.syncFixturesService.syncActiveChampionships('all', {
+            notifyRanking: false,
+        });
     }
     async syncLive() {
         await this.syncFixturesService.syncActiveChampionships('live');
     }
     async syncNightly() {
-        this.logger.log('Iniciando sync noturno de fixtures');
-        await this.syncFixturesService.syncActiveChampionships('all');
+        this.logger.log('Iniciando sync noturno de fixtures (com e-mails de classificação)');
+        await this.syncFixturesService.syncActiveChampionships('all', {
+            notifyRanking: true,
+        });
     }
 };
 exports.FixtureSyncScheduler = FixtureSyncScheduler;

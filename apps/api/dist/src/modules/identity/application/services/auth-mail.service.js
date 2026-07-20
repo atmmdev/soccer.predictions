@@ -100,6 +100,7 @@ let AuthMailService = AuthMailService_1 = class AuthMailService {
             },
         });
         if (alreadySent) {
+            this.logger.debug(`Lembrete de palpite já enviado hoje para user=${params.userId}`);
             return false;
         }
         const webOrigin = this.getWebOrigin();
@@ -116,6 +117,7 @@ let AuthMailService = AuthMailService_1 = class AuthMailService {
             html: template.html,
         });
         if (!delivered) {
+            this.logger.warn(`Lembrete de palpite não entregue (mail desabilitado ou Resend indisponível) para ${params.email}`);
             return false;
         }
         await this.prisma.emailDispatchLog.create({

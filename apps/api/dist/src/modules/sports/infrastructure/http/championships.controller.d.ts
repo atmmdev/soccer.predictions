@@ -15,6 +15,6 @@ export declare class ChampionshipsController {
     listCountries(): Promise<import("../../application/services/catalog.service.js").CatalogCountry[]>;
     listLeagues(country: string, season?: string): Promise<import("../../application/services/catalog.service.js").CatalogLeague[]>;
     import(dto: ImportChampionshipDto): Promise<import("../../application/services/import-championship.service.js").ChampionshipListItem>;
-    sync(id: number): Promise<number>;
+    sync(id: number, notifyRanking?: string): Promise<number>;
     updateStatus(id: number, dto: UpdateChampionshipStatusDto): Promise<import("../../application/services/championship.service.js").ChampionshipListItem>;
 }

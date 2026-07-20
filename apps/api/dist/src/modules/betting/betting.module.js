@@ -24,6 +24,7 @@ const activity_controller_js_1 = require("./infrastructure/http/activity.control
 const participants_controller_js_1 = require("./infrastructure/http/participants.controller.js");
 const pools_controller_js_1 = require("./infrastructure/http/pools.controller.js");
 const predictions_controller_js_1 = require("./infrastructure/http/predictions.controller.js");
+const notifications_controller_js_1 = require("./infrastructure/http/notifications.controller.js");
 const rankings_controller_js_1 = require("./infrastructure/http/rankings.controller.js");
 const prediction_reminder_scheduler_js_1 = require("./infrastructure/jobs/prediction-reminder.scheduler.js");
 let BettingModule = class BettingModule {
@@ -38,6 +39,7 @@ exports.BettingModule = BettingModule = __decorate([
             rankings_controller_js_1.RankingsController,
             participants_controller_js_1.ParticipantsController,
             activity_controller_js_1.ActivityController,
+            notifications_controller_js_1.NotificationsController,
         ],
         providers: [
             pool_service_js_1.PoolService,

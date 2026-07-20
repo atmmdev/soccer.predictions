@@ -29,7 +29,8 @@ let SyncFixturesService = SyncFixturesService_1 = class SyncFixturesService {
         this.scoringService = scoringService;
         this.rankingUpdateNotificationService = rankingUpdateNotificationService;
     }
-    async syncChampionship(championshipId) {
+    async syncChampionship(championshipId, options = {}) {
+        const notifyRanking = options.notifyRanking === true;
         const championship = await this.prisma.championship.findUnique({
             where: { id: championshipId },
             include: {
@@ -49,15 +50,17 @@ let SyncFixturesService = SyncFixturesService_1 = class SyncFixturesService {
             updated += result.count;
         }
         await this.scoringService.syncScoresForChampionship(championshipId);
-        try {
-            await this.rankingUpdateNotificationService.notifyForChampionship(championshipId);
-        }
-        catch (error) {
-            this.logger.warn(`Falha ao enviar e-mails de classificação do championship=${championshipId}: ${String(error)}`);
+        if (notifyRanking) {
+            try {
+                await this.rankingUpdateNotificationService.notifyForChampionship(championshipId);
+            }
+            catch (error) {
+                this.logger.warn(`Falha ao enviar e-mails de classificação do championship=${championshipId}: ${String(error)}`);
+            }
         }
         return updated;
     }
-    async syncActiveChampionships(mode = 'all') {
+    async syncActiveChampionships(mode = 'all', options = {}) {
         try {
             this.footballDataClient.assertConfigured();
         }
@@ -78,7 +81,9 @@ let SyncFixturesService = SyncFixturesService_1 = class SyncFixturesService {
             return;
         }
         for (const championship of championships) {
-            await this.syncChampionship(championship.id);
+            await this.syncChampionship(championship.id, {
+                notifyRanking: options.notifyRanking,
+            });
         }
     }
     async syncLiveAcrossChampionships(championships) {

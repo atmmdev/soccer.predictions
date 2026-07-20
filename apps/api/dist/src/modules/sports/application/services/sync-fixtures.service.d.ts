@@ -9,7 +9,11 @@ export declare class SyncFixturesService {
     private readonly rankingUpdateNotificationService;
     private readonly logger;
     constructor(prisma: PrismaService, footballDataClient: FootballDataClient, scoringService: ScoringService, rankingUpdateNotificationService: RankingUpdateNotificationService);
-    syncChampionship(championshipId: number): Promise<number>;
-    syncActiveChampionships(mode?: 'all' | 'live'): Promise<void>;
+    syncChampionship(championshipId: number, options?: {
+        notifyRanking?: boolean;
+    }): Promise<number>;
+    syncActiveChampionships(mode?: 'all' | 'live', options?: {
+        notifyRanking?: boolean;
+    }): Promise<void>;
     private syncLiveAcrossChampionships;
 }

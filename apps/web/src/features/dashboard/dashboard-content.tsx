@@ -6,21 +6,14 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { NativeSelect } from '@/components/ui/native-select';
 import { PageLoading } from '@/components/ui/page-loading';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 
 import { ActivityFeed } from './activity';
 import { useDashboardData } from './hooks/use-dashboard-data';
-import { MatchTableRow } from './matches/components/match-table-row';
 import { MatchTabs } from './matches/components/match-tabs';
-import { RankingRow } from './rankings/components/ranking-row';
+import { UpcomingMatchesView } from './matches/components/upcoming-matches-view';
+import { ActivePoolsView } from './pools/components/active-pools-view';
+import { DashboardRankingView } from './rankings/components/dashboard-ranking-view';
 import { StatsCard } from './stats/components/stats-card';
 
 type MatchTab = 'all' | 'live' | 'today' | 'tomorrow';
@@ -81,9 +74,7 @@ export function DashboardContent() {
           <section>
             <Card className='shadow-sm'>
               <CardHeader className='flex flex-row items-center justify-between border-b'>
-                <h2 className='section-title mb-0'>
-                  Próximos Jogos
-                </h2>
+                <h2 className='section-title mb-0'>Próximos Jogos</h2>
                 <Link
                   href='/predictions'
                   className='text-primary text-sm font-medium hover:underline'
@@ -97,38 +88,16 @@ export function DashboardContent() {
                   onTabChange={setMatchTab}
                   counts={matchCounts}
                 />
-                <div className='overflow-x-auto'>
-                  {matches.length === 0 ? (
-                    <p className='text-muted-foreground py-8 text-center text-sm'>
-                      Nenhum jogo encontrado para este filtro.
-                    </p>
-                  ) : (
-                    <Table>
-                      <TableHeader>
-                        <TableRow className='text-xs'>
-                          <TableHead>Data / Hora</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead className='text-center'>Jogo</TableHead>
-                          <TableHead className='text-center'>
-                            Resultado Oficial
-                          </TableHead>
-                          <TableHead className='text-center'>
-                            Meu Palpite
-                          </TableHead>
-                          <TableHead>Pontos</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {matches.map((match, index) => (
-                          <MatchTableRow
-                            key={`${matchTab}-${match.id}-${index}`}
-                            match={match}
-                          />
-                        ))}
-                      </TableBody>
-                    </Table>
-                  )}
-                </div>
+                {matches.length === 0 ? (
+                  <p className='text-muted-foreground py-8 text-center text-sm'>
+                    Nenhum jogo encontrado para este filtro.
+                  </p>
+                ) : (
+                  <UpcomingMatchesView
+                    matches={matches}
+                    rowKeyPrefix={matchTab}
+                  />
+                )}
               </CardContent>
             </Card>
           </section>
@@ -149,7 +118,9 @@ export function DashboardContent() {
                       onChange={event =>
                         setSelectedPoolId(Number(event.target.value))
                       }
-                      className={cn('w-44 shrink-0 [&_select]:h-8 [&_select]:text-xs')}
+                      className={cn(
+                        'w-44 shrink-0 [&_select]:h-8 [&_select]:text-xs',
+                      )}
                     >
                       {rankingPools.map(pool => (
                         <option key={pool.id} value={pool.id}>
@@ -170,24 +141,7 @@ export function DashboardContent() {
                     Participe de um bolão para ver a classificação.
                   </p>
                 ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow className='text-xs'>
-                        <TableHead className='w-14'>Posição</TableHead>
-                        <TableHead>Participante</TableHead>
-                        <TableHead className='text-right'>Pontos</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {topRanking.map((user, index) => (
-                        <RankingRow
-                          key={user.id}
-                          user={user}
-                          position={index + 1}
-                        />
-                      ))}
-                    </TableBody>
-                  </Table>
+                  <DashboardRankingView users={topRanking} />
                 )}
               </CardContent>
             </Card>
@@ -204,40 +158,13 @@ export function DashboardContent() {
                   Ver todos
                 </Link>
               </CardHeader>
-              <CardContent className='overflow-x-auto'>
+              <CardContent>
                 {activePools.length === 0 ? (
                   <p className='text-muted-foreground py-6 text-center text-sm'>
                     Nenhum bolão encontrado.
                   </p>
                 ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow className='text-xs'>
-                        <TableHead>Bolão</TableHead>
-                        <TableHead>Campeonato</TableHead>
-                        <TableHead className='text-right'>
-                          Participantes
-                        </TableHead>
-                        <TableHead className='text-right'>Palpites</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {activePools.map(pool => (
-                        <TableRow key={pool.id}>
-                          <TableCell className='font-medium'>
-                            {pool.name}
-                          </TableCell>
-                          <TableCell>{pool.championshipName}</TableCell>
-                          <TableCell className='text-right font-bold'>
-                            {pool.participantsCount}
-                          </TableCell>
-                          <TableCell className='text-right font-bold'>
-                            {pool.predictionsCount}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                  <ActivePoolsView pools={activePools} />
                 )}
               </CardContent>
             </Card>
