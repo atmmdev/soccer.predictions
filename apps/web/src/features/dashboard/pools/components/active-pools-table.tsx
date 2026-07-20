@@ -19,20 +19,20 @@ export function ActivePoolsTable({ pools }: ActivePoolsTableProps) {
       <TableHeader>
         <TableRow className='text-xs'>
           <TableHead>Bolão</TableHead>
-          <TableHead>Campeonato</TableHead>
-          <TableHead className='text-right'>Participantes</TableHead>
-          <TableHead className='text-right'>Palpites</TableHead>
+          <TableHead className='text-center'>Participantes</TableHead>
+          <TableHead className='text-center'>Palpites</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {pools.map(pool => (
           <TableRow key={pool.id}>
-            <TableCell className='font-medium'>{pool.name}</TableCell>
-            <TableCell>{pool.championshipName}</TableCell>
-            <TableCell className='text-right font-bold'>
+            <TableCell className='font-medium'>
+              <p>{pool.name}</p>
+              <p className='text-muted-foreground text-xs'>{pool.championshipName}</p></TableCell>
+            <TableCell className='text-center font-bold'>
               {pool.participantsCount}
             </TableCell>
-            <TableCell className='text-right font-bold'>
+            <TableCell className='text-center font-bold'>
               {pool.predictionsCount}
             </TableCell>
           </TableRow>

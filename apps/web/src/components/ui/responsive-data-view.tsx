@@ -1,23 +1,18 @@
-import type { ReactNode } from 'react';
+'use client';
+
+import { useEffect, useState, type ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
 
 export type ResponsiveBreakpoint = 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 
-const desktopVisibility: Record<ResponsiveBreakpoint, string> = {
-  sm: 'hidden sm:block',
-  md: 'hidden md:block',
-  lg: 'hidden lg:block',
-  xl: 'hidden xl:block',
-  '2xl': 'hidden 2xl:block',
-};
-
-const mobileVisibility: Record<ResponsiveBreakpoint, string> = {
-  sm: 'sm:hidden',
-  md: 'md:hidden',
-  lg: 'lg:hidden',
-  xl: 'xl:hidden',
-  '2xl': '2xl:hidden',
+/** Matches Tailwind default screens (rem → px at 16px root). */
+const BREAKPOINT_MIN_WIDTH_PX: Record<ResponsiveBreakpoint, number> = {
+  sm: 640,
+  md: 768,
+  lg: 1024,
+  xl: 1280,
+  '2xl': 1536,
 };
 
 interface ResponsiveDataViewProps {
@@ -26,32 +21,37 @@ interface ResponsiveDataViewProps {
   /** Viewport width at which the desktop view appears. Default: `lg`. */
   breakpoint?: ResponsiveBreakpoint;
   className?: string;
-  desktopClassName?: string;
-  mobileClassName?: string;
 }
 
+function useIsMinWidth(minWidthPx: number) {
+  const [matches, setMatches] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(`(min-width: ${minWidthPx}px)`);
+    const update = () => setMatches(mediaQuery.matches);
+
+    update();
+    mediaQuery.addEventListener('change', update);
+    return () => mediaQuery.removeEventListener('change', update);
+  }, [minWidthPx]);
+
+  return matches;
+}
+
+/**
+ * Renders either the desktop or mobile view — never both.
+ * Uses matchMedia so only one tree is in the DOM.
+ */
 export function ResponsiveDataView({
   desktop,
   mobile,
   breakpoint = 'lg',
   className,
-  desktopClassName,
-  mobileClassName,
 }: ResponsiveDataViewProps) {
-  return (
-    <div className={cn('min-w-0', className)}>
-      <div
-        className={cn(
-          desktopVisibility[breakpoint],
-          'min-w-0',
-          desktopClassName,
-        )}
-      >
-        {desktop}
-      </div>
-      <div className={cn(mobileVisibility[breakpoint], mobileClassName)}>
-        {mobile}
-      </div>
-    </div>
-  );
+  const isDesktop = useIsMinWidth(BREAKPOINT_MIN_WIDTH_PX[breakpoint]);
+
+  // Before mount, prefer desktop to avoid a mobile flash on large screens.
+  const content = isDesktop === false ? mobile : desktop;
+
+  return <div className={cn('min-w-0', className)}>{content}</div>;
 }
