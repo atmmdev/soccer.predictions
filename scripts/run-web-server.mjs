@@ -11,14 +11,17 @@ const rootDir = path.join(scriptDir, '..');
 const webDir = path.join(rootDir, 'apps/web');
 const apiDir = path.join(rootDir, 'apps/api');
 const apiMain = path.join(apiDir, 'dist', 'src', 'main.js');
-const apiPort = Number(process.env.API_INTERNAL_PORT ?? '3001');
+const preferredApiPort = Number(process.env.API_INTERNAL_PORT ?? '3001');
 const port = Number(process.env.PORT || 3000);
 const hostname = '0.0.0.0';
-const PORT_FREE_ATTEMPTS = 10;
+const PORT_FREE_ATTEMPTS = 3;
 const API_HEALTH_TIMEOUT_MS = 45_000;
+const FALLBACK_PORT_RANGE = 20;
 
 /** @type {import('node:child_process').ChildProcess | null} */
 let apiProcess = null;
+/** Port the live Nest child is bound to (may differ from preferred after fallback). */
+let activeApiPort = preferredApiPort;
 let apiReady = false;
 let shuttingDown = false;
 
@@ -71,10 +74,21 @@ function isPortFree(listenPort) {
   });
 }
 
+function addPidTokens(pids, text) {
+  for (const token of String(text).split(/[\s,=]+/)) {
+    const pid = Number.parseInt(token, 10);
+    if (Number.isFinite(pid) && pid > 1 && pid !== process.pid) {
+      pids.add(pid);
+    }
+  }
+}
+
 function listPortListenerPids(listenPort) {
   const commands = [
     `lsof -t -iTCP:${listenPort} -sTCP:LISTEN 2>/dev/null`,
     `fuser ${listenPort}/tcp 2>/dev/null`,
+    `ss -ltnp "sport = :${listenPort}" 2>/dev/null`,
+    `netstat -tlnp 2>/dev/null | grep ":${listenPort} "`,
   ];
 
   const pids = new Set();
@@ -86,12 +100,18 @@ function listPortListenerPids(listenPort) {
         stdio: ['ignore', 'pipe', 'ignore'],
       }).trim();
 
-      for (const token of output.split(/\s+/)) {
-        const pid = Number.parseInt(token, 10);
-        if (Number.isFinite(pid) && pid > 1) {
-          pids.add(pid);
-        }
+      if (!output) {
+        continue;
       }
+
+      for (const match of output.matchAll(/pid[=:]?\s*(\d+)/gi)) {
+        addPidTokens(pids, match[1]);
+      }
+      for (const match of output.matchAll(/\b(\d+)\/\S+/g)) {
+        addPidTokens(pids, match[1]);
+      }
+
+      addPidTokens(pids, output);
     } catch {
       // tool unavailable or no listeners
     }
@@ -135,32 +155,69 @@ async function probeApiHealth(listenPort) {
   }
 }
 
-/** Free leftover Nest processes from previous Hostinger restarts. */
-async function ensureApiPortAvailable(listenPort) {
+/**
+ * Try to free a port. Never reuses an existing Nest — that caused deploys to
+ * keep serving stale API code on Hostinger.
+ */
+async function tryFreePort(listenPort) {
   if (await isPortFree(listenPort)) {
     return true;
   }
 
   for (let attempt = 1; attempt <= PORT_FREE_ATTEMPTS; attempt += 1) {
+    const pids = listPortListenerPids(listenPort);
     console.warn(
-      `[api] Port ${listenPort} busy (attempt ${attempt}/${PORT_FREE_ATTEMPTS}) — freeing leftover process`,
+      `[api] Port ${listenPort} busy (attempt ${attempt}/${PORT_FREE_ATTEMPTS})` +
+        (pids.length > 0
+          ? ` — pids: ${pids.join(', ')}`
+          : ' — no listener pid found'),
     );
 
-    signalPortListeners(listenPort, 'SIGTERM');
-    await sleep(400 * attempt);
+    const signal = attempt >= 2 ? 'SIGKILL' : 'SIGTERM';
+    const signaled = signalPortListeners(listenPort, signal);
+
+    if (signaled === 0) {
+      await sleep(150);
+      if (await isPortFree(listenPort)) {
+        return true;
+      }
+      // Shared hosting often hides PIDs — stop wasting boot time.
+      return false;
+    }
+
+    await sleep(200 * attempt);
 
     if (await isPortFree(listenPort)) {
       console.log(`[api] Port ${listenPort} is free after attempt ${attempt}`);
       return true;
     }
-
-    if (attempt === PORT_FREE_ATTEMPTS - 1) {
-      signalPortListeners(listenPort, 'SIGKILL');
-      await sleep(1500);
-    }
   }
 
   return isPortFree(listenPort);
+}
+
+async function reserveApiPort() {
+  if (await tryFreePort(preferredApiPort)) {
+    return preferredApiPort;
+  }
+
+  console.warn(
+    `[api] Preferred port ${preferredApiPort} still busy — picking a free fallback port (will NOT reuse orphan Nest)`,
+  );
+
+  for (let offset = 1; offset <= FALLBACK_PORT_RANGE; offset += 1) {
+    const candidate = preferredApiPort + offset;
+    if (candidate === port) {
+      continue;
+    }
+
+    if (await isPortFree(candidate)) {
+      console.log(`[api] Using fallback port ${candidate}`);
+      return candidate;
+    }
+  }
+
+  return null;
 }
 
 async function waitForApiHealth(listenPort) {
@@ -188,7 +245,7 @@ async function waitForApiHealth(listenPort) {
 
 function markApiReady() {
   apiReady = true;
-  console.log('[api] Proxy enabled for /api/*');
+  console.log(`[api] Proxy enabled for /api/* → 127.0.0.1:${activeApiPort}`);
 }
 
 async function startApi() {
@@ -204,23 +261,24 @@ async function startApi() {
     return false;
   }
 
-  const portReady = await ensureApiPortAvailable(apiPort);
+  const listenPort = await reserveApiPort();
 
-  if (!portReady) {
+  if (listenPort == null) {
     console.error(
-      `[api] Port ${apiPort} still busy after cleanup. Nest API will fail to bind.`,
+      `[api] No free port near ${preferredApiPort} — Nest API cannot start.`,
     );
     return false;
   }
 
-  console.log(`[api] Starting on port ${apiPort}...`);
+  activeApiPort = listenPort;
+  console.log(`[api] Starting on port ${activeApiPort}...`);
 
   apiProcess = spawn(process.execPath, [apiMain], {
     cwd: apiDir,
     env: {
       ...process.env,
       DATABASE_URL: databaseUrl,
-      PORT: String(apiPort),
+      PORT: String(activeApiPort),
       NODE_ENV: process.env.NODE_ENV ?? 'production',
     },
     stdio: 'inherit',
@@ -239,7 +297,7 @@ async function startApi() {
     );
   });
 
-  const healthy = await waitForApiHealth(apiPort);
+  const healthy = await waitForApiHealth(activeApiPort);
 
   if (healthy) {
     markApiReady();
@@ -252,12 +310,12 @@ function proxyToApi(req, res) {
   const proxyReq = httpRequest(
     {
       hostname: '127.0.0.1',
-      port: apiPort,
+      port: activeApiPort,
       path: req.url,
       method: req.method,
       headers: {
         ...req.headers,
-        host: `127.0.0.1:${apiPort}`,
+        host: `127.0.0.1:${activeApiPort}`,
       },
     },
     proxyRes => {
@@ -287,6 +345,11 @@ function shutdown(signal) {
 
   if (apiProcess && !apiProcess.killed) {
     apiProcess.kill('SIGTERM');
+    setTimeout(() => {
+      if (apiProcess && !apiProcess.killed) {
+        apiProcess.kill('SIGKILL');
+      }
+    }, 800).unref();
   }
 
   server.close(() => {
