@@ -73,8 +73,15 @@ export class ChampionshipsController {
   @Post(':id/sync')
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'SUPER_ADMIN')
-  sync(@Param('id', ParseIntPipe) id: number) {
-    return this.syncFixturesService.syncChampionship(id);
+  sync(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('notifyRanking') notifyRanking?: string,
+  ) {
+    return this.syncFixturesService.syncChampionship(id, {
+      // Em produção o e-mail de ranking sai só no cron 23:59.
+      // Use ?notifyRanking=true para testar o envio manualmente.
+      notifyRanking: notifyRanking === 'true' || notifyRanking === '1',
+    });
   }
 
   @Patch(':id/status')

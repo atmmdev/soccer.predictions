@@ -12,7 +12,9 @@ export class FixtureSyncScheduler {
   @Cron('0 6 * * *', { timeZone: 'America/Sao_Paulo' })
   async syncMorning(): Promise<void> {
     this.logger.log('Iniciando sync matinal de fixtures');
-    await this.syncFixturesService.syncActiveChampionships('all');
+    await this.syncFixturesService.syncActiveChampionships('all', {
+      notifyRanking: false,
+    });
   }
 
   @Cron(CronExpression.EVERY_5_MINUTES)
@@ -22,7 +24,11 @@ export class FixtureSyncScheduler {
 
   @Cron('59 23 * * *', { timeZone: 'America/Sao_Paulo' })
   async syncNightly(): Promise<void> {
-    this.logger.log('Iniciando sync noturno de fixtures');
-    await this.syncFixturesService.syncActiveChampionships('all');
+    this.logger.log(
+      'Iniciando sync noturno de fixtures (com e-mails de classificação)',
+    );
+    await this.syncFixturesService.syncActiveChampionships('all', {
+      notifyRanking: true,
+    });
   }
 }

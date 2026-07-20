@@ -16,6 +16,7 @@ import { ActivityController } from './infrastructure/http/activity.controller.js
 import { ParticipantsController } from './infrastructure/http/participants.controller.js';
 import { PoolsController } from './infrastructure/http/pools.controller.js';
 import { PredictionsController } from './infrastructure/http/predictions.controller.js';
+import { NotificationsController } from './infrastructure/http/notifications.controller.js';
 import { RankingsController } from './infrastructure/http/rankings.controller.js';
 import { PredictionReminderScheduler } from './infrastructure/jobs/prediction-reminder.scheduler.js';
 
@@ -27,6 +28,7 @@ import { PredictionReminderScheduler } from './infrastructure/jobs/prediction-re
     RankingsController,
     ParticipantsController,
     ActivityController,
+    NotificationsController,
   ],
   providers: [
     PoolService,

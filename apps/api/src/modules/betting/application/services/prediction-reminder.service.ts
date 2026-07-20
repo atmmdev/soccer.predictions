@@ -110,8 +110,13 @@ export class PredictionReminderService {
     }
 
     let sent = 0;
+    let skipped = 0;
     let failed = 0;
     const recipients = [...byUser.entries()];
+
+    this.logger.log(
+      `Lembretes de palpite: ${recipients.length} candidato(s) com jogos pendentes nas próximas 24h`,
+    );
 
     for (let index = 0; index < recipients.length; index += 1) {
       const [userId, payload] = recipients[index]!;
@@ -125,6 +130,8 @@ export class PredictionReminderService {
         });
         if (ok) {
           sent += 1;
+        } else {
+          skipped += 1;
         }
       } catch (error) {
         failed += 1;
@@ -139,7 +146,7 @@ export class PredictionReminderService {
     }
 
     this.logger.log(
-      `Lembretes de palpite: ${sent} enviados de ${byUser.size} candidatos (falhas: ${failed})`,
+      `Lembretes de palpite: ${sent}/${byUser.size} enviados, ${skipped} ignorados, ${failed} falhas`,
     );
   }
 

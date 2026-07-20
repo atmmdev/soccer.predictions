@@ -17,7 +17,12 @@ export class SyncFixturesService {
     private readonly rankingUpdateNotificationService: RankingUpdateNotificationService,
   ) {}
 
-  async syncChampionship(championshipId: number): Promise<number> {
+  async syncChampionship(
+    championshipId: number,
+    options: { notifyRanking?: boolean } = {},
+  ): Promise<number> {
+    const notifyRanking = options.notifyRanking === true;
+
     const championship = await this.prisma.championship.findUnique({
       where: { id: championshipId },
       include: {
@@ -47,20 +52,25 @@ export class SyncFixturesService {
 
     await this.scoringService.syncScoresForChampionship(championshipId);
 
-    try {
-      await this.rankingUpdateNotificationService.notifyForChampionship(
-        championshipId,
-      );
-    } catch (error) {
-      this.logger.warn(
-        `Falha ao enviar e-mails de classificação do championship=${championshipId}: ${String(error)}`,
-      );
+    if (notifyRanking) {
+      try {
+        await this.rankingUpdateNotificationService.notifyForChampionship(
+          championshipId,
+        );
+      } catch (error) {
+        this.logger.warn(
+          `Falha ao enviar e-mails de classificação do championship=${championshipId}: ${String(error)}`,
+        );
+      }
     }
 
     return updated;
   }
 
-  async syncActiveChampionships(mode: 'all' | 'live' = 'all'): Promise<void> {
+  async syncActiveChampionships(
+    mode: 'all' | 'live' = 'all',
+    options: { notifyRanking?: boolean } = {},
+  ): Promise<void> {
     try {
       this.footballDataClient.assertConfigured();
     } catch {
@@ -83,7 +93,9 @@ export class SyncFixturesService {
     }
 
     for (const championship of championships) {
-      await this.syncChampionship(championship.id);
+      await this.syncChampionship(championship.id, {
+        notifyRanking: options.notifyRanking,
+      });
     }
   }
 
