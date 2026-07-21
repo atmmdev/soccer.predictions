@@ -9,14 +9,34 @@ import { RankingFilters } from './filters/ranking-filters';
 import { RankingView } from './table/ranking-view';
 
 export function RankingList() {
-  const { searchFilters, tableState, isLoading, error, reloadRankings } =
-    useRankingList();
+  const {
+    poolCatalog,
+    selectedPoolId,
+    selectedRound,
+    selectedChampionshipName,
+    isLeague,
+    availableRounds,
+    isPoolSelected,
+    search,
+    setSearch,
+    scoringRule,
+    setScoringRule,
+    selectPool,
+    selectRound,
+    hasActiveFilters,
+    clearFilters,
+    tableState,
+    isLoading,
+    error,
+    reloadRankings,
+  } = useRankingList();
 
   const pagination = useClientPagination(tableState.rows, {
     resetKey: [
-      searchFilters.search,
-      searchFilters.poolName,
-      searchFilters.scoringRule,
+      search,
+      selectedPoolId ?? '',
+      selectedRound ?? '',
+      scoringRule,
       tableState.sortKey,
       tableState.sortDir,
     ].join('|'),
@@ -25,17 +45,21 @@ export function RankingList() {
   return (
     <>
       <RankingFilters
-        search={searchFilters.search}
-        onSearchChange={searchFilters.setSearch}
-        poolName={searchFilters.poolName}
-        onPoolNameChange={searchFilters.setPoolName}
-        poolOptions={searchFilters.poolOptions}
-        scoringRule={searchFilters.scoringRule}
-        onScoringRuleChange={searchFilters.setScoringRule}
-        championshipName={searchFilters.selectedChampionshipName}
-        isPoolSelected={searchFilters.isPoolSelected}
-        hasActiveFilters={searchFilters.hasActiveFilters}
-        onClearFilters={searchFilters.clearFilters}
+        search={search}
+        onSearchChange={setSearch}
+        selectedPoolId={selectedPoolId}
+        onPoolChange={selectPool}
+        poolOptions={poolCatalog}
+        scoringRule={scoringRule}
+        onScoringRuleChange={setScoringRule}
+        isLeague={isLeague}
+        availableRounds={availableRounds}
+        selectedRound={selectedRound}
+        onRoundChange={selectRound}
+        championshipName={selectedChampionshipName}
+        isPoolSelected={isPoolSelected}
+        hasActiveFilters={hasActiveFilters}
+        onClearFilters={clearFilters}
       />
 
       {isLoading ? (
@@ -55,8 +79,8 @@ export function RankingList() {
         <>
           <RankingView
             rows={pagination.pageItems}
-            isPoolSelected={searchFilters.isPoolSelected}
-            scoringRule={searchFilters.scoringRule}
+            isPoolSelected={isPoolSelected}
+            scoringRule={scoringRule}
             sortKey={tableState.sortKey}
             sortDir={tableState.sortDir}
             onSort={tableState.toggleSort}

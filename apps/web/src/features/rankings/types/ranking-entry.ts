@@ -1,3 +1,5 @@
+import type { Championship } from '@/features/championships/types/championship';
+
 export type ScoringAchievementKey =
   | 'exactScore'
   | 'winnerScore'
@@ -24,6 +26,7 @@ export interface RankingEntry {
   poolId: number;
   poolName: string;
   championshipName: string;
+  championshipType: Championship['type'];
   name: string;
   email: string;
   avatarDataUrl: string | null;
@@ -31,4 +34,16 @@ export interface RankingEntry {
   predictionsCount: number;
   scoringAchievements: RankingScoringAchievements;
   isCurrentUser?: boolean;
+}
+
+export interface RankingPoolOption {
+  id: number;
+  name: string;
+}
+
+export interface RankingContext {
+  poolId: number;
+  championshipType: Championship['type'];
+  championshipName: string;
+  rounds: number[];
 }

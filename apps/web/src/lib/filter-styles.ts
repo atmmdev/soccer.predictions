@@ -8,6 +8,9 @@ export const filterSearchFieldClassName = 'relative w-full xl:min-w-[200px] xl:f
 /** Select médio (bolão, campeonato). */
 export const filterSelectMdClassName = 'w-full xl:w-56';
 
+/** Select largo (regra de pontuação). */
+export const filterSelectLgClassName = 'w-full xl:w-64';
+
 /** Select compacto (status). */
 export const filterSelectSmClassName = 'w-full xl:w-44';
 

@@ -21,7 +21,7 @@ let RankingService = class RankingService {
         this.prisma = prisma;
         this.scoringService = scoringService;
     }
-    async listForUser(user, poolId) {
+    async listForUser(user, poolId, round) {
         const pools = await this.findAccessiblePools(user, poolId);
         if (pools.length === 0) {
             return [];
@@ -29,6 +29,7 @@ let RankingService = class RankingService {
         await this.scoringService.syncPoolsScores(pools.map(pool => pool.id));
         const rows = [];
         for (const pool of pools) {
+            const roundFilter = this.resolveRoundFilter(pool.championship.type, round);
             const members = await this.prisma.poolUser.findMany({
                 where: {
                     poolId: pool.id,
@@ -51,11 +52,15 @@ let RankingService = class RankingService {
                 },
             });
             for (const member of members) {
+                const fixtureFilter = roundFilter !== undefined
+                    ? { round: { lte: roundFilter } }
+                    : undefined;
                 const [pointHistory, predictionsCount] = await Promise.all([
                     this.prisma.pointHistory.findMany({
                         where: {
                             poolId: pool.id,
                             userId: member.userId,
+                            ...(fixtureFilter ? { fixture: fixtureFilter } : {}),
                         },
                         select: {
                             points: true,
@@ -66,6 +71,7 @@ let RankingService = class RankingService {
                         where: {
                             poolId: pool.id,
                             userId: member.userId,
+                            ...(fixtureFilter ? { fixture: fixtureFilter } : {}),
                         },
                     }),
                 ]);
@@ -75,6 +81,7 @@ let RankingService = class RankingService {
                     poolId: pool.id,
                     poolName: pool.name,
                     championshipName: pool.championship.name,
+                    championshipType: pool.championship.type,
                     name: member.user.name,
                     email: member.user.email,
                     avatarDataUrl: member.user.avatarDataUrl,
@@ -99,6 +106,27 @@ let RankingService = class RankingService {
                 name: right.name,
             });
         });
+    }
+    async getContextForPool(user, poolId) {
+        const pool = await this.findAccessiblePoolById(poolId, user);
+        const fixtureRounds = await this.prisma.fixture.findMany({
+            where: {
+                championshipId: pool.championshipId,
+                round: { not: null },
+            },
+            select: { round: true },
+            distinct: ['round'],
+            orderBy: { round: 'asc' },
+        });
+        const rounds = fixtureRounds
+            .map(fixture => fixture.round)
+            .filter((value) => typeof value === 'number');
+        return {
+            poolId: pool.id,
+            championshipType: pool.championship.type,
+            championshipName: pool.championship.name,
+            rounds,
+        };
     }
     async getPoolMemberPositions(poolIds, options) {
         const positions = new Map();
@@ -149,6 +177,15 @@ let RankingService = class RankingService {
             });
         }
         return positions;
+    }
+    resolveRoundFilter(championshipType, round) {
+        if (championshipType !== 'LEAGUE' ||
+            round === undefined ||
+            !Number.isInteger(round) ||
+            round < 1) {
+            return undefined;
+        }
+        return round;
     }
     async findAccessiblePools(user, poolId) {
         if (poolId !== undefined) {

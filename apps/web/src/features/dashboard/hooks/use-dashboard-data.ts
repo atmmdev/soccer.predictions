@@ -1,7 +1,7 @@
 'use client';
 
 import { Calendar, Target, Trophy, Users } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { TbPercentage } from 'react-icons/tb';
 
 import { usePredictions } from '@/features/predictions/hooks/use-predictions';
@@ -30,30 +30,6 @@ export interface RankingPoolOption {
   name: string;
 }
 
-function getPrimaryPoolId(entries: RankingEntry[]): number | null {
-  const currentUserPool = entries.find(entry => entry.isCurrentUser);
-
-  if (currentUserPool) {
-    return currentUserPool.poolId;
-  }
-
-  return entries[0]?.poolId ?? null;
-}
-
-function toRankingPools(entries: RankingEntry[]): RankingPoolOption[] {
-  const pools = new Map<number, string>();
-
-  for (const entry of entries) {
-    if (!pools.has(entry.poolId)) {
-      pools.set(entry.poolId, entry.poolName);
-    }
-  }
-
-  return [...pools.entries()]
-    .map(([id, name]) => ({ id, name }))
-    .sort((left, right) => left.name.localeCompare(right.name));
-}
-
 function toRankingUsers(entries: RankingEntry[]): RankingUser[] {
   return entries.map(entry => ({
     id: entry.id,
@@ -68,7 +44,6 @@ export function useDashboardData() {
   const poolsState = usePools();
   const predictionsState = usePredictions();
   const rankingsState = useRankings();
-  const [selectedPoolId, setSelectedPoolId] = useState<number | null>(null);
 
   const isLoading =
     poolsState.isLoading ||
@@ -83,43 +58,40 @@ export function useDashboardData() {
     [predictionsState.fixtures],
   );
 
-  const rankingPools = useMemo(
-    () => toRankingPools(rankingsState.entries),
-    [rankingsState.entries],
-  );
-
-  const primaryPoolId = useMemo(
-    () => getPrimaryPoolId(rankingsState.entries),
-    [rankingsState.entries],
-  );
+  const rankingPools = rankingsState.poolCatalog;
 
   useEffect(() => {
     if (rankingPools.length === 0) {
-      setSelectedPoolId(null);
+      if (rankingsState.selectedPoolId !== null) {
+        rankingsState.selectPool(null);
+      }
       return;
     }
 
     const selectionStillValid =
-      selectedPoolId !== null &&
-      rankingPools.some(pool => pool.id === selectedPoolId);
+      rankingsState.selectedPoolId !== null &&
+      rankingPools.some(pool => pool.id === rankingsState.selectedPoolId);
 
     if (!selectionStillValid) {
-      setSelectedPoolId(primaryPoolId ?? rankingPools[0].id);
+      rankingsState.selectPool(rankingPools[0].id);
     }
-  }, [rankingPools, primaryPoolId, selectedPoolId]);
+  }, [
+    rankingPools,
+    rankingsState.selectedPoolId,
+    rankingsState.selectPool,
+  ]);
 
   const topRanking = useMemo(() => {
-    if (selectedPoolId === null) {
+    if (rankingsState.selectedPoolId === null) {
       return [];
     }
 
     return toRankingUsers(
-      rankingsState.entries
-        .filter(entry => entry.poolId === selectedPoolId)
+      [...rankingsState.entries]
         .sort(compareRankingStandings)
         .slice(0, TOP_RANKING_LIMIT),
     );
-  }, [rankingsState.entries, selectedPoolId]);
+  }, [rankingsState.entries, rankingsState.selectedPoolId]);
 
   const activePools = useMemo(
     () =>
@@ -163,9 +135,10 @@ export function useDashboardData() {
     const activePoolCount = poolsState.pools.filter(
       pool => pool.status === 'ACTIVE',
     ).length;
-    const participantsTotal = new Set(
-      rankingsState.entries.map(entry => entry.id),
-    ).size;
+    const participantsTotal = poolsState.pools.reduce(
+      (sum, pool) => sum + pool.participantsCount,
+      0,
+    );
     const gamesToday = ownFixtures.filter(fixture =>
       isFixtureToday(fixture.date),
     ).length;
@@ -251,7 +224,7 @@ export function useDashboardData() {
         iconColor: 'text-rose-600',
       },
     ];
-  }, [ownFixtures, poolsState.pools, rankingsState.entries]);
+  }, [ownFixtures, poolsState.pools]);
 
   const filterMatches = (tab: 'all' | 'live' | 'today' | 'tomorrow'): Match[] => {
     const filtered = ownFixtures.filter(fixture => {
@@ -282,8 +255,8 @@ export function useDashboardData() {
     stats,
     topRanking,
     rankingPools,
-    selectedPoolId,
-    setSelectedPoolId,
+    selectedPoolId: rankingsState.selectedPoolId,
+    setSelectedPoolId: rankingsState.selectPool,
     activePools,
     matchCounts,
     filterMatches,

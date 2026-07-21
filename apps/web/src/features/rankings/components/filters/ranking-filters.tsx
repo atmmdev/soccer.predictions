@@ -7,21 +7,30 @@ import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
 import {
   filterSearchFieldClassName,
+  filterSelectLgClassName,
   filterSelectMdClassName,
   filterToolbarClassName,
 } from '@/lib/filter-styles';
+import { cn } from '@/lib/utils';
 
 import { SCORING_RULE_FILTER_OPTIONS } from '../../constants/scoring-rule-filters';
-import type { RankingScoringRuleFilter } from '../../types/ranking-entry';
+import type {
+  RankingPoolOption,
+  RankingScoringRuleFilter,
+} from '../../types/ranking-entry';
 
 interface RankingFiltersProps {
   search: string;
   onSearchChange: (value: string) => void;
-  poolName: string;
-  onPoolNameChange: (value: string) => void;
-  poolOptions: string[];
+  selectedPoolId: number | null;
+  onPoolChange: (poolId: number | null) => void;
+  poolOptions: RankingPoolOption[];
   scoringRule: RankingScoringRuleFilter;
   onScoringRuleChange: (value: RankingScoringRuleFilter) => void;
+  isLeague: boolean;
+  availableRounds: number[];
+  selectedRound: number | null;
+  onRoundChange: (round: number | null) => void;
   championshipName: string | null;
   isPoolSelected: boolean;
   hasActiveFilters: boolean;
@@ -31,11 +40,15 @@ interface RankingFiltersProps {
 export function RankingFilters({
   search,
   onSearchChange,
-  poolName,
-  onPoolNameChange,
+  selectedPoolId,
+  onPoolChange,
   poolOptions,
   scoringRule,
   onScoringRuleChange,
+  isLeague,
+  availableRounds,
+  selectedRound,
+  onRoundChange,
   championshipName,
   isPoolSelected,
   hasActiveFilters,
@@ -56,17 +69,40 @@ export function RankingFilters({
         </div>
 
         <NativeSelect
-          value={poolName}
-          onChange={event => onPoolNameChange(event.target.value)}
-          className={filterSelectMdClassName + ' bg-white'}
+          value={selectedPoolId === null ? '' : String(selectedPoolId)}
+          onChange={event => {
+            const value = event.target.value;
+            onPoolChange(value.length > 0 ? Number(value) : null);
+          }}
+          className={cn(filterSelectMdClassName, 'bg-white')}
         >
           <option value=''>Selecione um bolão</option>
-          {poolOptions.map(name => (
-            <option key={name} value={name}>
-              {name}
+          {poolOptions.map(pool => (
+            <option key={pool.id} value={pool.id}>
+              {pool.name}
             </option>
           ))}
         </NativeSelect>
+
+        {isLeague && isPoolSelected ? (
+          <NativeSelect
+            value={selectedRound === null ? '' : String(selectedRound)}
+            onChange={event => {
+              const value = event.target.value;
+              onRoundChange(value.length > 0 ? Number(value) : null);
+            }}
+            className={cn(filterSelectMdClassName, 'bg-white')}
+            aria-label='Até a rodada'
+            disabled={availableRounds.length === 0}
+          >
+            <option value=''>Escolha a Rodada</option>
+            {availableRounds.map(round => (
+              <option key={round} value={round}>
+                Rodada {round}
+              </option>
+            ))}
+          </NativeSelect>
+        ) : null}
 
         <NativeSelect
           value={scoringRule}
@@ -75,7 +111,7 @@ export function RankingFilters({
               event.target.value as RankingScoringRuleFilter,
             )
           }
-          className='w-full xl:w-64 bg-white'
+          className={cn(filterSelectLgClassName, 'bg-white')}
           aria-label='Regra de pontuação'
           disabled={!isPoolSelected}
         >
@@ -99,6 +135,15 @@ export function RankingFilters({
             <span className='text-foreground font-medium'>
               {championshipName}
             </span>
+            {isLeague && selectedRound !== null ? (
+              <>
+                {' '}
+                · até a rodada{' '}
+                <span className='text-foreground font-medium'>
+                  {selectedRound}
+                </span>
+              </>
+            ) : null}
           </p>
         ) : (
           <span />

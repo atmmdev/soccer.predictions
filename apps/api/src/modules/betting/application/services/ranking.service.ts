@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import type { ChampionshipType, Prisma } from '../../../../../generated/prisma/client.js';
 
 import { PrismaService } from '../../../../shared/prisma/prisma.service.js';
 import type { AuthUser } from '../../../identity/application/types/auth-user.js';
@@ -10,6 +11,7 @@ export interface RankingListItem {
   poolId: number;
   poolName: string;
   championshipName: string;
+  championshipType: ChampionshipType;
   name: string;
   email: string;
   avatarDataUrl: string | null;
@@ -27,6 +29,13 @@ export interface RankingListItem {
   isCurrentUser: boolean;
 }
 
+export interface RankingContext {
+  poolId: number;
+  championshipType: ChampionshipType;
+  championshipName: string;
+  rounds: number[];
+}
+
 @Injectable()
 export class RankingService {
   constructor(
@@ -37,6 +46,7 @@ export class RankingService {
   async listForUser(
     user: AuthUser,
     poolId?: number,
+    round?: number,
   ): Promise<RankingListItem[]> {
     const pools = await this.findAccessiblePools(user, poolId);
 
@@ -49,6 +59,8 @@ export class RankingService {
     const rows: RankingListItem[] = [];
 
     for (const pool of pools) {
+      const roundFilter = this.resolveRoundFilter(pool.championship.type, round);
+
       const members = await this.prisma.poolUser.findMany({
         where: {
           poolId: pool.id,
@@ -72,11 +84,17 @@ export class RankingService {
       });
 
       for (const member of members) {
+        const fixtureFilter: Prisma.FixtureWhereInput | undefined =
+          roundFilter !== undefined
+            ? { round: { lte: roundFilter } }
+            : undefined;
+
         const [pointHistory, predictionsCount] = await Promise.all([
           this.prisma.pointHistory.findMany({
             where: {
               poolId: pool.id,
               userId: member.userId,
+              ...(fixtureFilter ? { fixture: fixtureFilter } : {}),
             },
             select: {
               points: true,
@@ -87,6 +105,7 @@ export class RankingService {
             where: {
               poolId: pool.id,
               userId: member.userId,
+              ...(fixtureFilter ? { fixture: fixtureFilter } : {}),
             },
           }),
         ]);
@@ -98,6 +117,7 @@ export class RankingService {
           poolId: pool.id,
           poolName: pool.name,
           championshipName: pool.championship.name,
+          championshipType: pool.championship.type,
           name: member.user.name,
           email: member.user.email,
           avatarDataUrl: member.user.avatarDataUrl,
@@ -127,6 +147,34 @@ export class RankingService {
         },
       );
     });
+  }
+
+  async getContextForPool(
+    user: AuthUser,
+    poolId: number,
+  ): Promise<RankingContext> {
+    const pool = await this.findAccessiblePoolById(poolId, user);
+
+    const fixtureRounds = await this.prisma.fixture.findMany({
+      where: {
+        championshipId: pool.championshipId,
+        round: { not: null },
+      },
+      select: { round: true },
+      distinct: ['round'],
+      orderBy: { round: 'asc' },
+    });
+
+    const rounds = fixtureRounds
+      .map(fixture => fixture.round)
+      .filter((value): value is number => typeof value === 'number');
+
+    return {
+      poolId: pool.id,
+      championshipType: pool.championship.type,
+      championshipName: pool.championship.name,
+      rounds,
+    };
   }
 
   async getPoolMemberPositions(
@@ -184,9 +232,7 @@ export class RankingService {
         }),
       );
 
-      ranked.sort((left, right) =>
-        compareRankingStandings(left, right),
-      );
+      ranked.sort((left, right) => compareRankingStandings(left, right));
 
       ranked.forEach((entry, index) => {
         positions.set(`${poolId}:${entry.userId}`, index + 1);
@@ -194,6 +240,22 @@ export class RankingService {
     }
 
     return positions;
+  }
+
+  private resolveRoundFilter(
+    championshipType: ChampionshipType,
+    round?: number,
+  ): number | undefined {
+    if (
+      championshipType !== 'LEAGUE' ||
+      round === undefined ||
+      !Number.isInteger(round) ||
+      round < 1
+    ) {
+      return undefined;
+    }
+
+    return round;
   }
 
   private async findAccessiblePools(user: AuthUser, poolId?: number) {
