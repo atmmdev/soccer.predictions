@@ -1,7 +1,12 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { endOfDay, parseISO, startOfDay } from 'date-fns';
+
+import {
+  listDistinctRounds,
+  resolveCurrentLeagueRound,
+} from '@/lib/league-rounds';
 
 import type { MatchFixtureItem, MatchStatus } from '../types/match-fixture';
 
@@ -40,13 +45,79 @@ export function useMatchSearchFilters(fixtures: MatchFixtureItem[]) {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<MatchFilterStatus>(DEFAULT_STATUS);
   const [championshipName, setChampionshipName] = useState(DEFAULT_CHAMPIONSHIP);
+  const [selectedRound, setSelectedRound] = useState<number | null>(null);
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
+
+  const championshipOptions = useMemo(() => {
+    const names = [...new Set(fixtures.map(fixture => fixture.championshipName))];
+
+    return names.sort((left, right) => left.localeCompare(right, 'pt-BR'));
+  }, [fixtures]);
+
+  const selectedChampionshipFixtures = useMemo(() => {
+    if (championshipName === DEFAULT_CHAMPIONSHIP) {
+      return [];
+    }
+
+    return fixtures.filter(
+      fixture => fixture.championshipName === championshipName,
+    );
+  }, [championshipName, fixtures]);
+
+  const isLeagueChampionship =
+    selectedChampionshipFixtures.length > 0 &&
+    selectedChampionshipFixtures.every(
+      fixture => fixture.championshipType === 'LEAGUE',
+    );
+
+  const availableRounds = useMemo(
+    () =>
+      isLeagueChampionship
+        ? listDistinctRounds(selectedChampionshipFixtures)
+        : [],
+    [isLeagueChampionship, selectedChampionshipFixtures],
+  );
+
+  const currentRound = useMemo(
+    () =>
+      isLeagueChampionship
+        ? resolveCurrentLeagueRound(selectedChampionshipFixtures)
+        : null,
+    [isLeagueChampionship, selectedChampionshipFixtures],
+  );
+
+  useEffect(() => {
+    if (!isLeagueChampionship) {
+      setSelectedRound(null);
+      return;
+    }
+
+    setSelectedRound(previous => {
+      if (previous !== null && availableRounds.includes(previous)) {
+        return previous;
+      }
+
+      return currentRound ?? availableRounds[0] ?? null;
+    });
+  }, [availableRounds, currentRound, isLeagueChampionship]);
+
+  const handleChampionshipNameChange = useCallback((value: string) => {
+    setChampionshipName(value);
+    setSelectedRound(null);
+  }, []);
+
+  const isRoundFilterActive =
+    isLeagueChampionship &&
+    selectedRound !== null &&
+    currentRound !== null &&
+    selectedRound !== currentRound;
 
   const hasActiveFilters =
     search.trim().length > 0 ||
     status !== DEFAULT_STATUS ||
     championshipName !== DEFAULT_CHAMPIONSHIP ||
+    isRoundFilterActive ||
     dateFrom.length > 0 ||
     dateTo.length > 0;
 
@@ -54,15 +125,10 @@ export function useMatchSearchFilters(fixtures: MatchFixtureItem[]) {
     setSearch('');
     setStatus(DEFAULT_STATUS);
     setChampionshipName(DEFAULT_CHAMPIONSHIP);
+    setSelectedRound(null);
     setDateFrom('');
     setDateTo('');
   }, []);
-
-  const championshipOptions = useMemo(() => {
-    const names = [...new Set(fixtures.map(fixture => fixture.championshipName))];
-
-    return names.sort();
-  }, [fixtures]);
 
   const filteredFixtures = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
@@ -83,14 +149,29 @@ export function useMatchSearchFilters(fixtures: MatchFixtureItem[]) {
 
       const matchesDate = matchesDateRange(fixture.date, dateFrom, dateTo);
 
+      const matchesRound =
+        !isLeagueChampionship ||
+        selectedRound === null ||
+        fixture.round === selectedRound;
+
       return (
         matchesSearch &&
         matchesChampionship &&
         matchesStatus &&
-        matchesDate
+        matchesDate &&
+        matchesRound
       );
     });
-  }, [championshipName, dateFrom, dateTo, fixtures, search, status]);
+  }, [
+    championshipName,
+    dateFrom,
+    dateTo,
+    fixtures,
+    isLeagueChampionship,
+    search,
+    selectedRound,
+    status,
+  ]);
 
   return {
     search,
@@ -98,12 +179,17 @@ export function useMatchSearchFilters(fixtures: MatchFixtureItem[]) {
     status,
     setStatus,
     championshipName,
-    setChampionshipName,
+    setChampionshipName: handleChampionshipNameChange,
+    selectedRound,
+    setSelectedRound,
     dateFrom,
     setDateFrom,
     dateTo,
     setDateTo,
     championshipOptions,
+    availableRounds,
+    currentRound,
+    isLeagueChampionship,
     filteredFixtures,
     hasActiveFilters,
     clearFilters,

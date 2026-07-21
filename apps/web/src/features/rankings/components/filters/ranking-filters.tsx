@@ -2,6 +2,7 @@
 
 import { Search } from 'lucide-react';
 
+import { RoundFilterSelect } from '@/components/filters/round-filter-select';
 import { ClearFiltersButton } from '@/components/ui/clear-filters-button';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
@@ -85,23 +86,14 @@ export function RankingFilters({
         </NativeSelect>
 
         {isLeague && isPoolSelected ? (
-          <NativeSelect
-            value={selectedRound === null ? '' : String(selectedRound)}
-            onChange={event => {
-              const value = event.target.value;
-              onRoundChange(value.length > 0 ? Number(value) : null);
-            }}
-            className={cn(filterSelectMdClassName, 'bg-white')}
-            aria-label='Até a rodada'
-            disabled={availableRounds.length === 0}
-          >
-            <option value=''>Escolha a Rodada</option>
-            {availableRounds.map(round => (
-              <option key={round} value={round}>
-                Rodada {round}
-              </option>
-            ))}
-          </NativeSelect>
+          <RoundFilterSelect
+            availableRounds={availableRounds}
+            value={selectedRound}
+            onChange={onRoundChange}
+            emptyOptionLabel='Escolha a Rodada'
+            formatOptionLabel={round => `Rodada ${round}`}
+            ariaLabel='Até a rodada'
+          />
         ) : null}
 
         <NativeSelect

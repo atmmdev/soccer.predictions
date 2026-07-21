@@ -36,7 +36,9 @@ let FixtureService = class FixtureService {
         });
         return fixtures.map(fixture => ({
             id: fixture.id,
+            championshipId: fixture.championshipId,
             championshipName: fixture.championship.name,
+            championshipType: fixture.championship.type,
             round: fixture.round,
             phase: fixture.phase,
             homeTeam: fixture.homeTeam.name,

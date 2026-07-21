@@ -16,6 +16,7 @@ export function MatchList() {
       searchFilters.search,
       searchFilters.status,
       searchFilters.championshipName,
+      searchFilters.selectedRound ?? '',
       searchFilters.dateFrom,
       searchFilters.dateTo,
     ].join('|'),
@@ -30,6 +31,11 @@ export function MatchList() {
         onStatusChange={searchFilters.setStatus}
         championshipName={searchFilters.championshipName}
         onChampionshipNameChange={searchFilters.setChampionshipName}
+        selectedRound={searchFilters.selectedRound}
+        onRoundChange={searchFilters.setSelectedRound}
+        availableRounds={searchFilters.availableRounds}
+        currentRound={searchFilters.currentRound}
+        isLeagueChampionship={searchFilters.isLeagueChampionship}
         dateFrom={searchFilters.dateFrom}
         onDateFromChange={searchFilters.setDateFrom}
         dateTo={searchFilters.dateTo}

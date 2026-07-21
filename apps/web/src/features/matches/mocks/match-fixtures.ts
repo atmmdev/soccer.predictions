@@ -3,7 +3,9 @@ import type { MatchFixtureItem } from '../types/match-fixture';
 export const matchFixtures: MatchFixtureItem[] = [
   {
     id: 101,
+    championshipId: 2,
     championshipName: 'Brasileirão Série A',
+    championshipType: 'LEAGUE',
     round: 12,
     phase: null,
     homeTeam: 'Flamengo',
@@ -17,7 +19,9 @@ export const matchFixtures: MatchFixtureItem[] = [
   },
   {
     id: 102,
+    championshipId: 2,
     championshipName: 'Brasileirão Série A',
+    championshipType: 'LEAGUE',
     round: 12,
     phase: null,
     homeTeam: 'São Paulo',
@@ -31,7 +35,9 @@ export const matchFixtures: MatchFixtureItem[] = [
   },
   {
     id: 103,
+    championshipId: 3,
     championshipName: 'Champions League',
+    championshipType: 'CUP',
     round: 6,
     phase: null,
     homeTeam: 'Real Madrid',
@@ -45,7 +51,9 @@ export const matchFixtures: MatchFixtureItem[] = [
   },
   {
     id: 106,
+    championshipId: 2,
     championshipName: 'Brasileirão Série A',
+    championshipType: 'LEAGUE',
     round: 12,
     phase: null,
     homeTeam: 'São Paulo',
@@ -59,7 +67,9 @@ export const matchFixtures: MatchFixtureItem[] = [
   },
   {
     id: 104,
+    championshipId: 2,
     championshipName: 'Brasileirão Série A',
+    championshipType: 'LEAGUE',
     round: 11,
     phase: null,
     homeTeam: 'Man City',
@@ -73,16 +83,18 @@ export const matchFixtures: MatchFixtureItem[] = [
   },
   {
     id: 105,
+    championshipId: 2,
     championshipName: 'Brasileirão Série A',
+    championshipType: 'LEAGUE',
     round: 12,
     phase: null,
     homeTeam: 'Grêmio',
     awayTeam: 'Internacional',
     homeTeamLogo: '',
     awayTeamLogo: '',
-    date: '2026-06-24T09:00:00',
+    date: '2026-06-22T16:00:00',
     status: 'FINISHED',
-    officialHomeScore: 2,
-    officialAwayScore: 2,
+    officialHomeScore: 0,
+    officialAwayScore: 0,
   },
 ];

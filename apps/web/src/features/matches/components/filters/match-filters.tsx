@@ -2,6 +2,7 @@
 
 import { Search } from 'lucide-react';
 
+import { RoundFilterSelect } from '@/components/filters/round-filter-select';
 import { ClearFiltersButton } from '@/components/ui/clear-filters-button';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
@@ -12,6 +13,7 @@ import {
   filterSelectSmClassName,
   filterToolbarClassName,
 } from '@/lib/filter-styles';
+import { cn } from '@/lib/utils';
 
 import type { MatchFilterStatus } from '../../hooks/use-match-search-filters';
 
@@ -22,6 +24,11 @@ interface MatchFiltersProps {
   onStatusChange: (value: MatchFilterStatus) => void;
   championshipName: string;
   onChampionshipNameChange: (value: string) => void;
+  selectedRound: number | null;
+  onRoundChange: (round: number | null) => void;
+  availableRounds: number[];
+  currentRound: number | null;
+  isLeagueChampionship: boolean;
   dateFrom: string;
   onDateFromChange: (value: string) => void;
   dateTo: string;
@@ -38,6 +45,11 @@ export function MatchFilters({
   onStatusChange,
   championshipName,
   onChampionshipNameChange,
+  selectedRound,
+  onRoundChange,
+  availableRounds,
+  currentRound,
+  isLeagueChampionship,
   dateFrom,
   onDateFromChange,
   dateTo,
@@ -62,7 +74,7 @@ export function MatchFilters({
         <NativeSelect
           value={championshipName}
           onChange={event => onChampionshipNameChange(event.target.value)}
-          className={filterSelectMdClassName + ' bg-white'}
+          className={cn(filterSelectMdClassName, 'bg-white')}
         >
           <option value='ALL'>Todos os campeonatos</option>
           {championshipOptions.map(name => (
@@ -72,12 +84,26 @@ export function MatchFilters({
           ))}
         </NativeSelect>
 
+        {isLeagueChampionship ? (
+          <RoundFilterSelect
+            availableRounds={availableRounds}
+            value={selectedRound}
+            onChange={onRoundChange}
+            ariaLabel='Rodada'
+            formatOptionLabel={round =>
+              round === currentRound
+                ? `Rodada ${round} · Atual`
+                : `Rodada ${round}`
+            }
+          />
+        ) : null}
+
         <NativeSelect
           value={status}
           onChange={event =>
             onStatusChange(event.target.value as MatchFilterStatus)
           }
-          className={filterSelectSmClassName + ' bg-white'}
+          className={cn(filterSelectSmClassName, 'bg-white')}
         >
           <option value='ALL'>Todos</option>
           <option value='SCHEDULED'>Agendado</option>
@@ -90,7 +116,7 @@ export function MatchFilters({
           type='date'
           aria-label='Data inicial'
           title='Data inicial'
-          className={filterDateInputClassName + ' bg-white'}
+          className={cn(filterDateInputClassName, 'bg-white')}
           value={dateFrom}
           onChange={event => onDateFromChange(event.target.value)}
         />
@@ -100,7 +126,7 @@ export function MatchFilters({
           type='date'
           aria-label='Data final'
           title='Data final'
-          className={filterDateInputClassName + ' bg-white'}
+          className={cn(filterDateInputClassName, 'bg-white')}
           min={dateFrom || undefined}
           value={dateTo}
           onChange={event => onDateToChange(event.target.value)}
@@ -111,6 +137,22 @@ export function MatchFilters({
           disabled={!hasActiveFilters}
         />
       </div>
+
+      {isLeagueChampionship && currentRound !== null ? (
+        <p className='text-muted-foreground px-2 text-xs'>
+          Rodada atual:{' '}
+          <span className='text-foreground font-medium'>{currentRound}</span>
+          {selectedRound !== null && selectedRound !== currentRound ? (
+            <>
+              {' '}
+              · exibindo rodada{' '}
+              <span className='text-foreground font-medium'>
+                {selectedRound}
+              </span>
+            </>
+          ) : null}
+        </p>
+      ) : null}
     </>
   );
 }
