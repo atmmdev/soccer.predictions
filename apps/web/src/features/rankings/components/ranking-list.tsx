@@ -6,7 +6,7 @@ import { useClientPagination } from '@/hooks/use-client-pagination';
 
 import { useRankingList } from '../hooks/use-ranking-list';
 import { RankingFilters } from './filters/ranking-filters';
-import { RankingTable } from './table/ranking-table';
+import { RankingView } from './table/ranking-view';
 
 export function RankingList() {
   const { searchFilters, tableState, isLoading, error, reloadRankings } =
@@ -53,7 +53,7 @@ export function RankingList() {
         </div>
       ) : (
         <>
-          <RankingTable
+          <RankingView
             rows={pagination.pageItems}
             isPoolSelected={searchFilters.isPoolSelected}
             scoringRule={searchFilters.scoringRule}
