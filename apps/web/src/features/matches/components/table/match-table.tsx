@@ -16,27 +16,18 @@ interface MatchTableProps {
 }
 
 export function MatchTable({ rows }: MatchTableProps) {
-  if (rows.length === 0) {
-    return (
-      <div className='flex items-center justify-center py-12'>
-        <p className='text-muted-foreground text-center text-sm'>
-          Nenhum jogo encontrado com os filtros selecionados.
-          <br />
-          Tente limpar a busca, o intervalo de datas e usar &quot;Todos&quot; nos
-          filtros.
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <div className='overflow-x-auto'>
-      <Table className='bg-white border border-gray-200'>
+    <div className='min-w-0 [&_[data-slot=table-container]]:overflow-x-auto'>
+      <Table className='border border-gray-200 bg-white'>
         <TableHeader>
           <TableRow className='hover:bg-transparent'>
-            <TableHead className='text-muted-foreground text-xs text-center'>Data</TableHead>
-            <TableHead className='text-muted-foreground text-xs text-center w-1/6'>Jogo</TableHead>
-            <TableHead className='text-muted-foreground text-xs text-center'>
+            <TableHead className='text-muted-foreground text-center text-xs'>
+              Data
+            </TableHead>
+            <TableHead className='text-muted-foreground w-1/6 text-center text-xs'>
+              Jogo
+            </TableHead>
+            <TableHead className='text-muted-foreground text-center text-xs'>
               Campeonato
             </TableHead>
             <TableHead className='text-muted-foreground text-center text-xs'>
@@ -45,7 +36,9 @@ export function MatchTable({ rows }: MatchTableProps) {
             <TableHead className='text-muted-foreground text-center text-xs'>
               Resultado Oficial
             </TableHead>
-          <TableHead className='text-muted-foreground text-xs text-center'>Status</TableHead>
+            <TableHead className='text-muted-foreground text-center text-xs'>
+              Status
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

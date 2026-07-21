@@ -6,7 +6,7 @@ import { useClientPagination } from '@/hooks/use-client-pagination';
 
 import { useMatchList } from '../hooks/use-match-list';
 import { MatchFilters } from './filters/match-filters';
-import { MatchTable } from './table/match-table';
+import { MatchView } from './table/match-view';
 
 export function MatchList() {
   const { searchFilters, isLoading, error, reloadFixtures } = useMatchList();
@@ -54,7 +54,7 @@ export function MatchList() {
         </div>
       ) : (
         <>
-          <MatchTable rows={pagination.pageItems} />
+          <MatchView rows={pagination.pageItems} />
           <ListPagination pagination={pagination} itemLabel='jogos' />
         </>
       )}

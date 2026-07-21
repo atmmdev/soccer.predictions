@@ -15,8 +15,7 @@ export function DateTimeDisplay({ value, className }: DateTimeDisplayProps) {
         className,
       )}
     >
-      <span>{formatDisplayDate(value)}</span>
-      <span>{formatDisplayTime(value)}</span>
+      <span>{formatDisplayDate(value)}  · {formatDisplayTime(value)}</span>
     </div>
   );
 }
