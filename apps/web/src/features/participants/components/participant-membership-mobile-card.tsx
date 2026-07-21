@@ -26,11 +26,10 @@ export function ParticipantMembershipMobileCard({
 
   return (
     <article className='border-border flex items-center gap-2 rounded-md border bg-card px-2.5 py-2'>
-
       <div className='min-w-0 flex-1'>
-        <div className='flex flex-wrap justify-between'>
-          <p className='truncate text-xs font-medium'>
-            {participant.poolName} {' '}
+        <div className='flex flex-wrap justify-between gap-1.5'>
+          <span className='truncate text-sm font-medium'>
+            {participant.poolName}{' '}
             {participant.isOwner ? (
               <Badge
                 variant='secondary'
@@ -39,16 +38,37 @@ export function ParticipantMembershipMobileCard({
                 Dono
               </Badge>
             ) : null}
-          </p>
+          </span>
+
           <ParticipantStatusBadge status={participant.status} />
         </div>
-        <p className='text-muted-foreground truncate text-[11px]'>
+        <div className='text-muted-foreground truncate text-[11px]'>
           <span className='text-foreground font-medium tabular-nums'>
             {participant.predictionsCount}
           </span>{' '}
           palpites · {formatDisplayDate(participant.joinedAt)}
-        </p>
+        </div>
       </div>
+
+      {canModerate ? (
+        <div className='flex shrink-0 gap-0.5'>
+          <IconActionButton
+            label='Aprovar'
+            icon={Check}
+            tone='success'
+            loading={isActing}
+            disabled={isActing || actingKey !== null}
+            onClick={() => onApprove(participant.poolId, participant.userId)}
+          />
+          <IconActionButton
+            label='Recusar'
+            icon={X}
+            tone='danger'
+            disabled={isActing || actingKey !== null}
+            onClick={() => onReject(participant.poolId, participant.userId)}
+          />
+        </div>
+      ) : null}
     </article>
   );
 }
