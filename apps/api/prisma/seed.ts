@@ -4,13 +4,16 @@ import { PrismaClient } from '../generated/prisma/client.js';
 import { createPrismaAdapter } from '../src/shared/prisma/create-prisma-adapter.js';
 
 const PASSWORD_SALT_ROUNDS = 10;
-const SEED_PASSWORD = 'WebAtm1979#';
-// Super Administrador
-const SEED_SUPER_ADMIN = {
-  email: 'atmmdev@gmail.com',
-  name: 'Super Admin',
-  role: 'SUPER_ADMIN' as const,
-};
+
+function requiredEnv(name: string): string {
+  const value = process.env[name]?.trim();
+  if (!value) {
+    throw new Error(
+      `${name} is required to run seed. See senhas.txt (local) and apps/api/.env.example.`,
+    );
+  }
+  return value;
+}
 
 async function main(): Promise<void> {
   const databaseUrl = process.env.DATABASE_URL;
@@ -19,31 +22,38 @@ async function main(): Promise<void> {
     throw new Error('DATABASE_URL is required to run seed');
   }
 
+  const seedPassword = requiredEnv('SEED_SUPER_ADMIN_PASSWORD');
+  const seedSuperAdmin = {
+    email: requiredEnv('SEED_SUPER_ADMIN_EMAIL'),
+    name: process.env.SEED_SUPER_ADMIN_NAME?.trim() || 'Super Admin',
+    role: 'SUPER_ADMIN' as const,
+  };
+
   const adapter = createPrismaAdapter(databaseUrl);
   const prisma = new PrismaClient({ adapter });
-  const passwordHash = await hash(SEED_PASSWORD, PASSWORD_SALT_ROUNDS);
+  const passwordHash = await hash(seedPassword, PASSWORD_SALT_ROUNDS);
 
   const superAdmin = await prisma.user.upsert({
-    where: { email: SEED_SUPER_ADMIN.email },
+    where: { email: seedSuperAdmin.email },
     update: {
-      name: SEED_SUPER_ADMIN.name,
+      name: seedSuperAdmin.name,
       password: passwordHash,
-      role: SEED_SUPER_ADMIN.role,
+      role: seedSuperAdmin.role,
       authProvider: 'LOCAL',
       emailVerifiedAt: new Date(),
     },
     create: {
-      email: SEED_SUPER_ADMIN.email,
-      name: SEED_SUPER_ADMIN.name,
+      email: seedSuperAdmin.email,
+      name: seedSuperAdmin.name,
       password: passwordHash,
-      role: SEED_SUPER_ADMIN.role,
+      role: seedSuperAdmin.role,
       authProvider: 'LOCAL',
       emailVerifiedAt: new Date(),
     },
   });
 
   const obsoleteUsers = await prisma.user.findMany({
-    where: { email: { not: SEED_SUPER_ADMIN.email } },
+    where: { email: { not: seedSuperAdmin.email } },
     select: { id: true },
   });
 

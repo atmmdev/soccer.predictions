@@ -37,13 +37,19 @@ npm run start:dev
 API: `http://localhost:3001/api/health`  
 Swagger: `http://localhost:3001/api/docs`
 
-### Credenciais padrão (seed)
+### Seed (SUPER_ADMIN)
 
-| E-mail              | Senha         | Papel       |
-| ------------------- | ------------- | ----------- |
-| `atmmdev@gmail.com` | `WebAtm1979#` | SUPER_ADMIN |
+Credenciais ficam apenas em `senhas.txt` (local, fora do Git). Defina no `apps/api/.env`:
 
-Rodar seed: `cd apps/api && npm run prisma:seed`
+- `SEED_SUPER_ADMIN_EMAIL`
+- `SEED_SUPER_ADMIN_PASSWORD`
+- `SEED_SUPER_ADMIN_NAME` (opcional)
+
+```bash
+cd apps/api && npm run prisma:seed
+```
+
+Demais usuários: cadastro em `/register` (sempre PARTICIPANT; vira ADMIN ao criar o 1º bolão).
 
 ## Documentation football-data.org
 
@@ -51,12 +57,6 @@ URL: https://www.football-data.org/documentation/quickstart
 
 Provider: football-data.org v4 (free plan — fixtures, scores, crests).  
 Env: `FOOTBALL_DATA_TOKEN`, `FOOTBALL_DATA_BASE_URL`.
-
-Credenciais de Teste (seed):
-
-- `atmmdev@gmail.com` / `WebAtm1979#` (SUPER_ADMIN)
-
-Demais usuários: cadastro em `/register` (sempre PARTICIPANT; vira ADMIN ao criar o 1º bolão).
 
 ## Deploy (Hostinger — soccer.atmm.dev)
 

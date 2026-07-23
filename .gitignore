@@ -1,0 +1,16 @@
+# Credenciais e segredos locais
+senhas.txt
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Dependências e builds
+node_modules/
+dist/
+.next/
+*.tsbuildinfo
+
+# OS / IDE
+.DS_Store
+Thumbs.db
